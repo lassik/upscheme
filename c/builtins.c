@@ -27,7 +27,7 @@
 #include "htable.h"
 #include "htableh_inc.h"
 #include "bitvector.h"
-#include "dirpath.h"
+#include "fs.h"
 #include "random.h"
 #include "llt.h"
 

@@ -15,7 +15,7 @@
 #include "htable.h"
 #include "htableh_inc.h"
 #include "bitvector.h"
-#include "dirpath.h"
+#include "fs.h"
 #include "random.h"
 #include "llt.h"
 
@@ -50,8 +50,7 @@ int main(int argc, char *argv[])
     if (exedir == NULL) {
         snprintf(fname_buf, sizeof(fname_buf), "%s", bootfile);
     } else {
-        snprintf(fname_buf, sizeof(fname_buf), "%s%s%s", exedir,
-                 PATHSEPSTRING, bootfile);
+        snprintf(fname_buf, sizeof(fname_buf), "%s/%s", exedir, bootfile);
     }
 
     value_t args[2];
