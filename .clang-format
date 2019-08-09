@@ -4,14 +4,11 @@ AlignAfterOpenBracket: Align
 AlignEscapedNewlines: Left
 AlignOperands: true
 AlignTrailingComments: true
-AllowShortBlocksOnASingleLine: true
-AllowShortCaseLabelsOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: true
-AllowShortLoopsOnASingleLine: true
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Linux
 ContinuationIndentWidth: 0
-DerivePointerAlignment: true
-MaxEmptyLinesToKeep: 2
+PointerAlignment: Right
+MaxEmptyLinesToKeep: 1
 SortIncludes: false
 SpacesBeforeTrailingComments: 2
+ColumnLimit: 78
