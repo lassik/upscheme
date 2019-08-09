@@ -279,12 +279,12 @@ typedef struct {
     char _space[1];
 } cprim_t;
 
-typedef struct {
+struct function {
     value_t bcode;
     value_t vals;
     value_t env;
     value_t name;
-} function_t;
+};
 
 #define CPRIM_NWORDS 2
 #define MAX_INL_SIZE 384

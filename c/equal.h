@@ -108,8 +108,8 @@ compare_top:
     case TAG_FUNCTION:
         if (tagb == TAG_FUNCTION) {
             if (uintval(a) > N_BUILTINS && uintval(b) > N_BUILTINS) {
-                function_t *fa = (function_t *)ptr(a);
-                function_t *fb = (function_t *)ptr(b);
+                struct function *fa = (struct function *)ptr(a);
+                struct function *fb = (struct function *)ptr(b);
                 d = bounded_compare(fa->bcode, fb->bcode, bound - 1, eq);
                 if (d == NIL || numval(d) != 0)
                     return d;
@@ -239,8 +239,8 @@ cyc_compare_top:
     } else if (isvector(a) && isvector(b)) {
         return cyc_vector_compare(a, b, table, eq);
     } else if (isclosure(a) && isclosure(b)) {
-        function_t *fa = (function_t *)ptr(a);
-        function_t *fb = (function_t *)ptr(b);
+        struct function *fa = (struct function *)ptr(a);
+        struct function *fb = (struct function *)ptr(b);
         d = bounded_compare(fa->bcode, fb->bcode, 1, eq);
         if (numval(d) != 0)
             return d;
@@ -322,7 +322,8 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
         return doublehash(u.i64);
     case TAG_FUNCTION:
         if (uintval(a) > N_BUILTINS)
-            return bounded_hash(((function_t *)ptr(a))->bcode, bound, oob);
+            return bounded_hash(((struct function *)ptr(a))->bcode, bound,
+                                oob);
         return inthash(a);
     case TAG_SYM:
         return ((symbol_t *)ptr(a))->hash;

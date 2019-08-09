@@ -80,7 +80,7 @@ void print_traverse(value_t v)
         // don't consider shared references to e.g. chars
     } else if (isclosure(v)) {
         mark_cons(v);
-        function_t *f = (function_t *)ptr(v);
+        struct function *f = (struct function *)ptr(v);
         print_traverse(f->bcode);
         print_traverse(f->vals);
         print_traverse(f->env);
@@ -395,7 +395,7 @@ void fl_print_child(struct ios *f, value_t v)
             if (!print_princ) {
                 if (print_circle_prefix(f, v))
                     break;
-                function_t *fn = (function_t *)ptr(v);
+                struct function *fn = (struct function *)ptr(v);
                 outs("#fn(", f);
                 char *data = cvalue_data(fn->bcode);
                 size_t i, sz = cvalue_len(fn->bcode);

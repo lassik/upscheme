@@ -510,8 +510,8 @@ static value_t relocate(value_t v)
     } else if (t == TAG_CVALUE) {
         return cvalue_relocate(v);
     } else if (t == TAG_FUNCTION) {
-        function_t *fn = (function_t *)ptr(v);
-        function_t *nfn = (function_t *)alloc_words(4);
+        struct function *fn = (struct function *)ptr(v);
+        struct function *nfn = (struct function *)alloc_words(4);
         nfn->bcode = fn->bcode;
         nfn->vals = fn->vals;
         nc = tagptr(nfn, TAG_FUNCTION);
@@ -2251,7 +2251,7 @@ static value_t fl_function(value_t *args, uint32_t nargs)
     }
     uint32_t ms = compute_maxstack((uint8_t *)data, cv_len(arr), swap);
     PUT_INT32(data, ms);
-    function_t *fn = (function_t *)alloc_words(4);
+    struct function *fn = (struct function *)alloc_words(4);
     value_t fv = tagptr(fn, TAG_FUNCTION);
     fn->bcode = args[0];
     fn->vals = args[1];
