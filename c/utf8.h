@@ -1,19 +1,3 @@
-#ifndef __UTF8_H_
-#define __UTF8_H_
-
-#if !defined(MACOSX)
-#if !defined(__DTYPES_H_) && !defined(_SYS_TYPES_H)
-typedef char int8_t;
-typedef short int16_t;
-typedef int int32_t;
-typedef long long int64_t;
-typedef unsigned char u_int8_t;
-typedef unsigned short u_int16_t;
-typedef unsigned int u_int32_t;
-typedef unsigned long long u_int64_t;
-#endif
-#endif
-
 extern int locale_is_utf8;
 
 #if defined(__WIN32__)
@@ -128,5 +112,3 @@ int u8_isvalid(const char *str, int length);
 /* reverse a UTF-8 string. len is length in bytes. dest and src must both
    be allocated to at least len+1 bytes. returns 1 for error, 0 otherwise */
 int u8_reverse(char *dest, char *src, size_t len);
-
-#endif

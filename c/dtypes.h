@@ -1,6 +1,3 @@
-#ifndef __DTYPES_H_
-#define __DTYPES_H_
-
 /*
   This file defines sane integer types for our target platforms. This
   library only runs on machines with the following characteristics:
@@ -211,5 +208,3 @@ extern float F_PNAN;
 extern float F_NNAN;
 extern float F_PINF;
 extern float F_NINF;
-
-#endif

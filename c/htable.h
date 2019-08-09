@@ -1,6 +1,3 @@
-#ifndef __HTABLE_H_
-#define __HTABLE_H_
-
 #define HT_N_INLINE 32
 
 struct htable {
@@ -18,5 +15,3 @@ void htable_free(struct htable *h);
 
 // clear and (possibly) change size
 void htable_reset(struct htable *h, size_t sz);
-
-#endif

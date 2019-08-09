@@ -59,8 +59,6 @@
 #include "random.h"
 #include "llt.h"
 
-#include "utils.h"
-
 #include "ieee754.h"
 
 #include "flisp.h"
@@ -415,8 +413,6 @@ value_t alloc_vector(size_t n, int init)
 // cvalues
 // --------------------------------------------------------------------
 
-#include "htable.h"
-#include "htableh_inc.h"
 #include "ptrhash.h"
 #include "operators.h"
 #include "cvalues.h"

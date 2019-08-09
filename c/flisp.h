@@ -1,6 +1,3 @@
-#ifndef FLISP_H
-#define FLISP_H
-
 typedef uptrint_t value_t;
 typedef int_t fixnum_t;
 typedef uint_t ufixnum_t;
@@ -417,5 +414,3 @@ value_t cvalue_wchar(value_t *args, uint32_t nargs);
 
 void fl_init(size_t initial_heapsize);
 int fl_load_system_image(value_t ios);
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef __LLTSOCKET_H_
-#define __LLTSOCKET_H_
-
 #ifdef WIN32
 #include <winsock2.h>
 #else
@@ -26,6 +23,4 @@ void bzero(void *s, size_t n);
 #endif
 #ifndef WIN32
 void closesocket(int fd);
-#endif
-
 #endif

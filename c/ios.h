@@ -1,6 +1,3 @@
-#ifndef __IOS_H_
-#define __IOS_H_
-
 // this flag controls when data actually moves out to the underlying I/O
 // channel. memory streams are a special case of this where the data
 // never moves out.
@@ -204,5 +201,3 @@ int ios_ungetc(int c, struct ios *s);
   as optimizations, we do no writing if the buffer isn't "dirty", and we
   do no reading if the data will only be overwritten.
 */
-
-#endif

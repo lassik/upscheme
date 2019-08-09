@@ -1,6 +1,3 @@
-#ifndef __UTILS_H_
-#define __UTILS_H_
-
 #if defined(__amd64__) || defined(_M_AMD64)
 #define ARCH_X86_64
 #define __CPU__ 686
@@ -106,7 +103,5 @@ STATIC_INLINE u_int64_t ByteSwap64(u_int64_t x)
     return r.ll;
 }
 #define bswap_64(x) ByteSwap64(x)
-
-#endif
 
 #endif

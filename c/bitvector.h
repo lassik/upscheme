@@ -1,6 +1,3 @@
-#ifndef __BITVECTOR_H_
-#define __BITVECTOR_H_
-
 // a mask with n set lo or hi bits
 #define lomask(n) (u_int32_t)((((u_int32_t)1) << (n)) - 1)
 #define himask(n) (~lomask(32 - n))
@@ -67,5 +64,3 @@ void bitvector_xor_to(u_int32_t *dest, u_int32_t doffs, u_int32_t *a,
 u_int64_t bitvector_count(u_int32_t *b, u_int32_t offs, u_int64_t nbits);
 u_int32_t bitvector_any0(u_int32_t *b, u_int32_t offs, u_int32_t nbits);
 u_int32_t bitvector_any1(u_int32_t *b, u_int32_t offs, u_int32_t nbits);
-
-#endif
