@@ -633,8 +633,9 @@ size_t u8_vprintf(const char *fmt, va_list ap)
         return 0;
     }
     if (!(buf = calloc(cnt + 1, 1))) {
-        vsnprintf(buf, cnt + 1, fmt, ap);
+        return 0;
     }
+    vsnprintf(buf, cnt + 1, fmt, ap);
     if (!(wcs = calloc(cnt + 1, sizeof(uint32_t)))) {
         free(buf);
         return 0;
