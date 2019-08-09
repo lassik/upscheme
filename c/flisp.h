@@ -1,6 +1,6 @@
 typedef uintptr_t value_t;
-typedef intptr_t fixnum_t;
 typedef uintptr_t ufixnum_t;
+typedef intptr_t fixnum_t;
 #ifdef BITS64
 #define T_FIXNUM T_INT64
 #else

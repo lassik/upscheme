@@ -104,19 +104,12 @@ typedef int bool_t;
 #ifdef BITS64
 #define TOP_BIT 0x8000000000000000
 #define NBITS 64
-typedef int64_t offset_t;
 typedef uint64_t index_t;
 #else
 #define TOP_BIT 0x80000000
 #define NBITS 32
-typedef int32_t offset_t;
 typedef uint32_t index_t;
 #endif
-
-typedef uint8_t uint8_t;
-typedef uint16_t uint16_t;
-typedef uint32_t uint32_t;
-typedef uint64_t uint64_t;
 
 #define LLT_ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
 
