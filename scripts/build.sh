@@ -38,18 +38,19 @@ $CC $LFLAGS -o flisp -lm \
     builtins.o equalhash.o flisp.o flmain.o iostream.o string.o table.o \
     bitvector-ops.o bitvector.o dirpath.o dump.o hashing.o htable.o \
     int2str.o ios.o lltinit.o ptrhash.o random.o socket.o timefuncs.o utf8.o
-ln -s ../scheme-core/flisp.boot flisp.boot
+ln -s ../scheme-boot/flisp.boot flisp.boot
 { set +x; } 2>/dev/null
 cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 0 boot file..."
 set -x
 ../"$builddir"/flisp mkboot0.scm system.scm compiler.scm >flisp.boot.new
-mv flisp.boot.new flisp.boot
+mv flisp.boot.new ../scheme-boot/flisp.boot
 { set +x; } 2>/dev/null
 echo "Creating stage 1 boot file..."
 set -x
 ../"$builddir"/flisp mkboot1.scm
+mv flisp.boot.new ../scheme-boot/flisp.boot
 { set +x; } 2>/dev/null
 cd ../scheme-tests
 echo "Entering directory '$PWD'"
