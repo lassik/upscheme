@@ -261,12 +261,12 @@ SAFECAST_OP(string, char *, cvalue_data)
 
 struct symbol *symtab = NULL;
 
-int fl_is_keyword_name(char *str, size_t len)
+int fl_is_keyword_name(const char *str, size_t len)
 {
     return ((str[0] == ':' || str[len - 1] == ':') && str[1] != '\0');
 }
 
-static struct symbol *mk_symbol(char *str)
+static struct symbol *mk_symbol(const char *str)
 {
     struct symbol *sym;
     size_t len = strlen(str);
@@ -289,7 +289,7 @@ static struct symbol *mk_symbol(char *str)
     return sym;
 }
 
-static struct symbol **symtab_lookup(struct symbol **ptree, char *str)
+static struct symbol **symtab_lookup(struct symbol **ptree, const char *str)
 {
     int x;
 
@@ -305,7 +305,7 @@ static struct symbol **symtab_lookup(struct symbol **ptree, char *str)
     return ptree;
 }
 
-value_t symbol(char *str)
+value_t symbol(const char *str)
 {
     struct symbol **pnode;
 
