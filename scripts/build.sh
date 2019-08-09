@@ -37,14 +37,14 @@ $CC $CFLAGS -c ../c/random.c
 $CC $CFLAGS -c ../c/socket.c
 $CC $CFLAGS -c ../c/string.c
 $CC $CFLAGS -c ../c/table.c
-$CC $CFLAGS -c ../c/timefuncs.c
+$CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 $CC $LFLAGS -o flisp -lm \
         bitvector-ops.o bitvector.o builtins.o dump.o \
         equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
         hashing.o htable.o int2str.o \
         ios.o iostream.o lltinit.o ptrhash.o random.o socket.o \
-        string.o table.o timefuncs.o utf8.o
+        string.o table.o time_unix.o utf8.o
 { set +x; } 2>/dev/null
 cd ../scheme-core
 echo "Entering directory '$PWD'"
