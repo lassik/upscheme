@@ -133,7 +133,7 @@ void bitvector_shl_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s,
 // assumes offs < 32
 void bitvector_fill(uint32_t *b, uint32_t offs, uint32_t c, uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
     uint32_t mask;
 
@@ -177,7 +177,7 @@ void bitvector_fill(uint32_t *b, uint32_t offs, uint32_t c, uint32_t nbits)
 
 void bitvector_not(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
     uint32_t mask;
 
@@ -212,7 +212,7 @@ void bitvector_not(uint32_t *b, uint32_t offs, uint32_t nbits)
     void bitvector_##name(uint32_t *dest, uint32_t doffs, uint32_t *src,     \
                           uint32_t soffs, uint32_t nbits)                    \
     {                                                                        \
-        index_t i;                                                           \
+        uintptr_t i;                                                         \
         uint32_t s, nw, tail, snw;                                           \
         uint32_t mask, scrap;                                                \
                                                                              \
@@ -331,7 +331,7 @@ s)
 void bitvector_reverse_to(uint32_t *dest, uint32_t *src, uint32_t soffs,
                           uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
 
     if (nbits == 0)
@@ -353,7 +353,7 @@ void bitvector_reverse_to(uint32_t *dest, uint32_t *src, uint32_t soffs,
 
 void bitvector_reverse(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
     uint32_t *temp;
 
@@ -414,7 +414,7 @@ uint64_t bitvector_count(uint32_t *b, uint32_t offs, uint64_t nbits)
 
 uint32_t bitvector_any0(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
     uint32_t mask;
 
@@ -452,7 +452,7 @@ uint32_t bitvector_any0(uint32_t *b, uint32_t offs, uint32_t nbits)
 
 uint32_t bitvector_any1(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
-    index_t i;
+    uintptr_t i;
     uint32_t nw, tail;
     uint32_t mask;
 
