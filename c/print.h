@@ -190,7 +190,7 @@ static int lengthestimate(value_t v)
     // get the width of an expression if we can do so cheaply
     if (issymbol(v))
         return u8_strwidth(symbol_name(v));
-    if (iscprim(v) && cp_class((cprim_t *)ptr(v)) == wchartype)
+    if (iscprim(v) && cp_class((struct cprim *)ptr(v)) == wchartype)
         return 4;
     return -1;
 }

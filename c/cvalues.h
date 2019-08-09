@@ -121,7 +121,8 @@ static value_t cprim(fltype_t *type, size_t sz)
 {
     assert(!ismanaged((uptrint_t)type));
     assert(sz == type->size);
-    cprim_t *pcp = (cprim_t *)alloc_words(CPRIM_NWORDS - 1 + NWORDS(sz));
+    struct cprim *pcp =
+    (struct cprim *)alloc_words(CPRIM_NWORDS - 1 + NWORDS(sz));
     pcp->type = type;
     return tagptr(pcp, TAG_CPRIM);
 }
@@ -244,7 +245,7 @@ void cv_pin(cvalue_t *cv)
         if (isfixnum(arg)) {                                       \
             n = numval(arg);                                       \
         } else if (iscprim(arg)) {                                 \
-            cprim_t *cp = (cprim_t *)ptr(arg);                     \
+            struct cprim *cp = (struct cprim *)ptr(arg);           \
             void *p = cp_data(cp);                                 \
             n = (fl_##ctype##_t)conv_to_##cnvt(p, cp_numtype(cp)); \
         } else {                                                   \
@@ -259,25 +260,25 @@ num_init(int32, int32, T_INT32) num_init(uint32, uint32, T_UINT32)
 num_init(int64, int64, T_INT64) num_init(uint64, uint64, T_UINT64)
 num_init(float, double, T_FLOAT) num_init(double, double, T_DOUBLE)
 
-#define num_ctor_init(typenam, ctype, tag)                         \
-    value_t cvalue_##typenam(value_t *args, u_int32_t nargs)       \
-    {                                                              \
-        if (nargs == 0) {                                          \
-            PUSH(fixnum(0));                                       \
-            args = &Stack[SP - 1];                                 \
-        }                                                          \
-        value_t cp = cprim(typenam##type, sizeof(fl_##ctype##_t)); \
-        if (cvalue_##ctype##_init(typenam##type, args[0],          \
-                                  cp_data((cprim_t *)ptr(cp))))    \
-            type_error(#typenam, "number", args[0]);               \
-        return cp;                                                 \
+#define num_ctor_init(typenam, ctype, tag)                           \
+    value_t cvalue_##typenam(value_t *args, u_int32_t nargs)         \
+    {                                                                \
+        if (nargs == 0) {                                            \
+            PUSH(fixnum(0));                                         \
+            args = &Stack[SP - 1];                                   \
+        }                                                            \
+        value_t cp = cprim(typenam##type, sizeof(fl_##ctype##_t));   \
+        if (cvalue_##ctype##_init(typenam##type, args[0],            \
+                                  cp_data((struct cprim *)ptr(cp)))) \
+            type_error(#typenam, "number", args[0]);                 \
+        return cp;                                                   \
     }
 
 #define num_ctor_ctor(typenam, ctype, tag)                         \
     value_t mk_##typenam(fl_##ctype##_t n)                         \
     {                                                              \
         value_t cp = cprim(typenam##type, sizeof(fl_##ctype##_t)); \
-        *(fl_##ctype##_t *)cp_data((cprim_t *)ptr(cp)) = n;        \
+        *(fl_##ctype##_t *)cp_data((struct cprim *)ptr(cp)) = n;   \
         return cp;                                                 \
     }
 
@@ -309,7 +310,7 @@ size_t toulong(value_t n, char *fname)
     if (isfixnum(n))
         return numval(n);
     if (iscprim(n)) {
-        cprim_t *cp = (cprim_t *)ptr(n);
+        struct cprim *cp = (struct cprim *)ptr(n);
         return conv_to_ulong(cp_data(cp), cp_numtype(cp));
     }
     type_error(fname, "number", n);
@@ -337,7 +338,7 @@ static int cvalue_enum_init(fltype_t *ft, value_t arg, void *dest)
     if (isfixnum(arg)) {
         n = (int)numval(arg);
     } else if (iscprim(arg)) {
-        cprim_t *cp = (cprim_t *)ptr(arg);
+        struct cprim *cp = (struct cprim *)ptr(arg);
         n = conv_to_int32(cp_data(cp), cp_numtype(cp));
     } else {
         type_error("enum", "number", arg);
@@ -354,7 +355,7 @@ value_t cvalue_enum(value_t *args, u_int32_t nargs)
     value_t type = fl_list2(enumsym, args[0]);
     fltype_t *ft = get_type(type);
     value_t cv = cvalue(ft, sizeof(int32_t));
-    cvalue_enum_init(ft, args[1], cp_data((cprim_t *)ptr(cv)));
+    cvalue_enum_init(ft, args[1], cp_data((struct cprim *)ptr(cv)));
     return cv;
 }
 
@@ -585,7 +586,7 @@ void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
             return;
         }
     } else if (iscprim(v)) {
-        cprim_t *pcp = (cprim_t *)ptr(v);
+        struct cprim *pcp = (struct cprim *)ptr(v);
         *pdata = cp_data(pcp);
         *psz = cp_class(pcp)->size;
         return;
@@ -1058,7 +1059,7 @@ static value_t fl_add_any(value_t *args, u_int32_t nargs, fixnum_t carryIn)
             Saccum += numval(arg);
             continue;
         } else if (iscprim(arg)) {
-            cprim_t *cp = (cprim_t *)ptr(arg);
+            struct cprim *cp = (struct cprim *)ptr(arg);
             void *a = cp_data(cp);
             int64_t i64;
             switch (cp_numtype(cp)) {
@@ -1140,7 +1141,7 @@ static value_t fl_neg(value_t n)
         else
             return s;
     } else if (iscprim(n)) {
-        cprim_t *cp = (cprim_t *)ptr(n);
+        struct cprim *cp = (struct cprim *)ptr(n);
         void *a = cp_data(cp);
         uint32_t ui32;
         int32_t i32;
@@ -1195,7 +1196,7 @@ static value_t fl_mul_any(value_t *args, u_int32_t nargs, int64_t Saccum)
             Saccum *= numval(arg);
             continue;
         } else if (iscprim(arg)) {
-            cprim_t *cp = (cprim_t *)ptr(arg);
+            struct cprim *cp = (struct cprim *)ptr(arg);
             void *a = cp_data(cp);
             int64_t i64;
             switch (cp_numtype(cp)) {
@@ -1264,13 +1265,13 @@ static value_t fl_mul_any(value_t *args, u_int32_t nargs, int64_t Saccum)
 
 static int num_to_ptr(value_t a, fixnum_t *pi, numerictype_t *pt, void **pp)
 {
-    cprim_t *cp;
+    struct cprim *cp;
     if (isfixnum(a)) {
         *pi = numval(a);
         *pp = pi;
         *pt = T_FIXNUM;
     } else if (iscprim(a)) {
-        cp = (cprim_t *)ptr(a);
+        cp = (struct cprim *)ptr(a);
         *pp = cp_data(cp);
         *pt = cp_numtype(cp);
     } else {
@@ -1554,12 +1555,12 @@ static value_t fl_lognot(value_t *args, u_int32_t nargs)
     value_t a = args[0];
     if (isfixnum(a))
         return fixnum(~numval(a));
-    cprim_t *cp;
+    struct cprim *cp;
     int ta;
     void *aptr;
 
     if (iscprim(a)) {
-        cp = (cprim_t *)ptr(a);
+        cp = (struct cprim *)ptr(a);
         ta = cp_numtype(cp);
         aptr = cp_data(cp);
         switch (ta) {
@@ -1600,13 +1601,13 @@ static value_t fl_ash(value_t *args, u_int32_t nargs)
         else
             return return_from_int64(accum);
     }
-    cprim_t *cp;
+    struct cprim *cp;
     int ta;
     void *aptr;
     if (iscprim(a)) {
         if (n == 0)
             return a;
-        cp = (cprim_t *)ptr(a);
+        cp = (struct cprim *)ptr(a);
         ta = cp_numtype(cp);
         aptr = cp_data(cp);
         if (n < 0) {

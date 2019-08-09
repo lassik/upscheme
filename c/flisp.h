@@ -274,10 +274,10 @@ typedef struct {
 
 #define CVALUE_NWORDS 4
 
-typedef struct {
+struct cprim {
     fltype_t *type;
     char _space[1];
-} cprim_t;
+};
 
 struct function {
     value_t bcode;
@@ -312,8 +312,9 @@ struct function {
 #define cp_data(cp) (&(cp)->_space[0])
 
 // WARNING: multiple evaluation!
-#define cptr(v) \
-    (iscprim(v) ? cp_data((cprim_t *)ptr(v)) : cv_data((cvalue_t *)ptr(v)))
+#define cptr(v)                                   \
+    (iscprim(v) ? cp_data((struct cprim *)ptr(v)) \
+                : cv_data((cvalue_t *)ptr(v)))
 
 /* C type names corresponding to cvalues type names */
 typedef int8_t fl_int8_t;

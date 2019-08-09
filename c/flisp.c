@@ -499,9 +499,9 @@ static value_t relocate(value_t v)
         }
         return nc;
     } else if (t == TAG_CPRIM) {
-        cprim_t *pcp = (cprim_t *)ptr(v);
+        struct cprim *pcp = (struct cprim *)ptr(v);
         size_t nw = CPRIM_NWORDS - 1 + NWORDS(cp_class(pcp)->size);
-        cprim_t *ncp = (cprim_t *)alloc_words(nw);
+        struct cprim *ncp = (struct cprim *)alloc_words(nw);
         while (nw--)
             ((value_t *)ncp)[nw] = ((value_t *)pcp)[nw];
         nc = tagptr(ncp, TAG_CPRIM);
@@ -763,7 +763,7 @@ int fl_isnumber(value_t v)
     if (isfixnum(v))
         return 1;
     if (iscprim(v)) {
-        cprim_t *c = (cprim_t *)ptr(v);
+        struct cprim *c = (struct cprim *)ptr(v);
         return c->type != wchartype;
     }
     return 0;

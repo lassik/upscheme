@@ -67,7 +67,7 @@ value_t fl_string_width(value_t *args, u_int32_t nargs)
 {
     argcount("string.width", nargs, 1);
     if (iscprim(args[0])) {
-        cprim_t *cp = (cprim_t *)ptr(args[0]);
+        struct cprim *cp = (struct cprim *)ptr(args[0]);
         if (cp_class(cp) == wchartype) {
             int w = wcwidth(*(uint32_t *)cp_data(cp));
             if (w < 0)
@@ -243,7 +243,7 @@ value_t fl_string_char(value_t *args, u_int32_t nargs)
 value_t fl_char_upcase(value_t *args, u_int32_t nargs)
 {
     argcount("char.upcase", nargs, 1);
-    cprim_t *cp = (cprim_t *)ptr(args[0]);
+    struct cprim *cp = (struct cprim *)ptr(args[0]);
     if (!iscprim(args[0]) || cp_class(cp) != wchartype)
         type_error("char.upcase", "wchar", args[0]);
     return mk_wchar(towupper(*(int32_t *)cp_data(cp)));
@@ -251,7 +251,7 @@ value_t fl_char_upcase(value_t *args, u_int32_t nargs)
 value_t fl_char_downcase(value_t *args, u_int32_t nargs)
 {
     argcount("char.downcase", nargs, 1);
-    cprim_t *cp = (cprim_t *)ptr(args[0]);
+    struct cprim *cp = (struct cprim *)ptr(args[0]);
     if (!iscprim(args[0]) || cp_class(cp) != wchartype)
         type_error("char.downcase", "wchar", args[0]);
     return mk_wchar(towlower(*(int32_t *)cp_data(cp)));
@@ -260,7 +260,7 @@ value_t fl_char_downcase(value_t *args, u_int32_t nargs)
 value_t fl_char_alpha(value_t *args, u_int32_t nargs)
 {
     argcount("char-alphabetic?", nargs, 1);
-    cprim_t *cp = (cprim_t *)ptr(args[0]);
+    struct cprim *cp = (struct cprim *)ptr(args[0]);
     if (!iscprim(args[0]) || cp_class(cp) != wchartype)
         type_error("char-alphabetic?", "wchar", args[0]);
     return iswalpha(*(int32_t *)cp_data(cp)) ? FL_T : FL_F;
@@ -290,7 +290,7 @@ value_t fl_string_find(value_t *args, u_int32_t nargs)
     size_t needlesz;
 
     value_t v = args[1];
-    cprim_t *cp = (cprim_t *)ptr(v);
+    struct cprim *cp = (struct cprim *)ptr(v);
     if (iscprim(v) && cp_class(cp) == wchartype) {
         uint32_t c = *(uint32_t *)cp_data(cp);
         if (c <= 0x7f)
@@ -381,8 +381,8 @@ value_t fl_numbertostring(value_t *args, u_int32_t nargs)
     else if (!iscprim(n))
         type_error("number->string", "integer", n);
     else
-        num = conv_to_uint64(cp_data((cprim_t *)ptr(n)),
-                             cp_numtype((cprim_t *)ptr(n)));
+        num = conv_to_uint64(cp_data((struct cprim *)ptr(n)),
+                             cp_numtype((struct cprim *)ptr(n)));
     if (numval(fl_compare(args[0], fixnum(0))) < 0) {
         num = -num;
         neg = 1;

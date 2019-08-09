@@ -109,7 +109,8 @@ static value_t fl_length(value_t *args, u_int32_t nargs)
         if (cp_class(cv) == bytetype)
             return fixnum(1);
         else if (cp_class(cv) == wchartype)
-            return fixnum(u8_charlen(*(uint32_t *)cp_data((cprim_t *)cv)));
+            return fixnum(
+            u8_charlen(*(uint32_t *)cp_data((struct cprim *)cv)));
     } else if (iscvalue(a)) {
         cv = (cvalue_t *)ptr(a);
         if (cv_class(cv)->eltype != NULL)
@@ -215,10 +216,10 @@ static value_t fl_integer_valuedp(value_t *args, u_int32_t nargs)
     if (isfixnum(v)) {
         return FL_T;
     } else if (iscprim(v)) {
-        numerictype_t nt = cp_numtype((cprim_t *)ptr(v));
+        numerictype_t nt = cp_numtype((struct cprim *)ptr(v));
         if (nt < T_FLOAT)
             return FL_T;
-        void *data = cp_data((cprim_t *)ptr(v));
+        void *data = cp_data((struct cprim *)ptr(v));
         if (nt == T_FLOAT) {
             float f = *(float *)data;
             if (f < 0)
@@ -242,7 +243,7 @@ static value_t fl_integerp(value_t *args, u_int32_t nargs)
     argcount("integer?", nargs, 1);
     value_t v = args[0];
     return (isfixnum(v) ||
-            (iscprim(v) && cp_numtype((cprim_t *)ptr(v)) < T_FLOAT))
+            (iscprim(v) && cp_numtype((struct cprim *)ptr(v)) < T_FLOAT))
            ? FL_T
            : FL_F;
 }
@@ -253,7 +254,7 @@ static value_t fl_fixnum(value_t *args, u_int32_t nargs)
     if (isfixnum(args[0])) {
         return args[0];
     } else if (iscprim(args[0])) {
-        cprim_t *cp = (cprim_t *)ptr(args[0]);
+        struct cprim *cp = (struct cprim *)ptr(args[0]);
         return fixnum(conv_to_long(cp_data(cp), cp_numtype(cp)));
     }
     type_error("fixnum", "number", args[0]);
@@ -265,7 +266,7 @@ static value_t fl_truncate(value_t *args, u_int32_t nargs)
     if (isfixnum(args[0]))
         return args[0];
     if (iscprim(args[0])) {
-        cprim_t *cp = (cprim_t *)ptr(args[0]);
+        struct cprim *cp = (struct cprim *)ptr(args[0]);
         void *data = cp_data(cp);
         numerictype_t nt = cp_numtype(cp);
         double d;
@@ -319,7 +320,7 @@ static double todouble(value_t a, char *fname)
     if (isfixnum(a))
         return (double)numval(a);
     if (iscprim(a)) {
-        cprim_t *cp = (cprim_t *)ptr(a);
+        struct cprim *cp = (struct cprim *)ptr(a);
         numerictype_t nt = cp_numtype(cp);
         return conv_to_double(cp_data(cp), nt);
     }
@@ -455,7 +456,7 @@ static value_t fl_randf(value_t *args, u_int32_t nargs)
     {                                                            \
         argcount(#name, nargs, 1);                               \
         if (iscprim(args[0])) {                                  \
-            cprim_t *cp = (cprim_t *)ptr(args[0]);               \
+            struct cprim *cp = (struct cprim *)ptr(args[0]);     \
             numerictype_t nt = cp_numtype(cp);                   \
             if (nt == T_FLOAT)                                   \
                 return mk_float(name##f(*(float *)cp_data(cp))); \

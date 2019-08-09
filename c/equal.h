@@ -70,7 +70,7 @@ compare_top:
             return (numval(a) < numval(b)) ? fixnum(-1) : fixnum(1);
         }
         if (iscprim(b)) {
-            if (cp_class((cprim_t *)ptr(b)) == wchartype)
+            if (cp_class((struct cprim *)ptr(b)) == wchartype)
                 return fixnum(1);
             return fixnum(numeric_compare(a, b, eq, 1, NULL));
         }
@@ -88,10 +88,11 @@ compare_top:
             return bounded_vector_compare(a, b, bound, eq);
         break;
     case TAG_CPRIM:
-        if (cp_class((cprim_t *)ptr(a)) == wchartype) {
-            if (!iscprim(b) || cp_class((cprim_t *)ptr(b)) != wchartype)
+        if (cp_class((struct cprim *)ptr(a)) == wchartype) {
+            if (!iscprim(b) || cp_class((struct cprim *)ptr(b)) != wchartype)
                 return fixnum(-1);
-        } else if (iscprim(b) && cp_class((cprim_t *)ptr(b)) == wchartype) {
+        } else if (iscprim(b) &&
+                   cp_class((struct cprim *)ptr(b)) == wchartype) {
             return fixnum(1);
         }
         c = numeric_compare(a, b, eq, 1, NULL);
@@ -311,7 +312,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
     numerictype_t nt;
     size_t i, len;
     cvalue_t *cv;
-    cprim_t *cp;
+    struct cprim *cp;
     void *data;
     uptrint_t h = 0;
     int oob2, tg = tag(a);
@@ -328,7 +329,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
     case TAG_SYM:
         return ((symbol_t *)ptr(a))->hash;
     case TAG_CPRIM:
-        cp = (cprim_t *)ptr(a);
+        cp = (struct cprim *)ptr(a);
         data = cp_data(cp);
         if (cp_class(cp) == wchartype)
             return inthash(*(int32_t *)data);

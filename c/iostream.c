@@ -174,9 +174,10 @@ value_t fl_ioputc(value_t *args, u_int32_t nargs)
 {
     argcount("io.putc", nargs, 2);
     struct ios *s = toiostream(args[0], "io.putc");
-    if (!iscprim(args[1]) || ((cprim_t *)ptr(args[1]))->type != wchartype)
+    if (!iscprim(args[1]) ||
+        ((struct cprim *)ptr(args[1]))->type != wchartype)
         type_error("io.putc", "wchar", args[1]);
-    uint32_t wc = *(uint32_t *)cp_data((cprim_t *)ptr(args[1]));
+    uint32_t wc = *(uint32_t *)cp_data((struct cprim *)ptr(args[1]));
     return fixnum(ios_pututf8(s, wc));
 }
 
@@ -184,9 +185,10 @@ value_t fl_ioungetc(value_t *args, u_int32_t nargs)
 {
     argcount("io.ungetc", nargs, 2);
     struct ios *s = toiostream(args[0], "io.ungetc");
-    if (!iscprim(args[1]) || ((cprim_t *)ptr(args[1]))->type != wchartype)
+    if (!iscprim(args[1]) ||
+        ((struct cprim *)ptr(args[1]))->type != wchartype)
         type_error("io.ungetc", "wchar", args[1]);
-    uint32_t wc = *(uint32_t *)cp_data((cprim_t *)ptr(args[1]));
+    uint32_t wc = *(uint32_t *)cp_data((struct cprim *)ptr(args[1]));
     if (wc >= 0x80) {
         lerror(ArgError, "io_ungetc: unicode not yet supported");
     }
@@ -281,7 +283,7 @@ value_t fl_ioread(value_t *args, u_int32_t nargs)
     if (iscvalue(cv))
         data = cv_data((cvalue_t *)ptr(cv));
     else
-        data = cp_data((cprim_t *)ptr(cv));
+        data = cp_data((struct cprim *)ptr(cv));
     size_t got = ios_read(value2c(struct ios *, args[0]), data, n);
     if (got < n)
         // lerror(IOError, "io.read: end of input reached");
@@ -309,11 +311,12 @@ value_t fl_iowrite(value_t *args, u_int32_t nargs)
     if (nargs < 2 || nargs > 4)
         argcount("io.write", nargs, 2);
     struct ios *s = toiostream(args[0], "io.write");
-    if (iscprim(args[1]) && ((cprim_t *)ptr(args[1]))->type == wchartype) {
+    if (iscprim(args[1]) &&
+        ((struct cprim *)ptr(args[1]))->type == wchartype) {
         if (nargs > 2)
             lerror(ArgError,
                    "io.write: offset argument not supported for characters");
-        uint32_t wc = *(uint32_t *)cp_data((cprim_t *)ptr(args[1]));
+        uint32_t wc = *(uint32_t *)cp_data((struct cprim *)ptr(args[1]));
         return fixnum(ios_pututf8(s, wc));
     }
     char *data;
@@ -349,7 +352,8 @@ static char get_delim_arg(value_t arg, char *fname)
     size_t uldelim = toulong(arg, fname);
     if (uldelim > 0x7f) {
         // wchars > 0x7f, or anything else > 0xff, are out of range
-        if ((iscprim(arg) && cp_class((cprim_t *)ptr(arg)) == wchartype) ||
+        if ((iscprim(arg) &&
+             cp_class((struct cprim *)ptr(arg)) == wchartype) ||
             uldelim > 0xff)
             lerrorf(ArgError, "%s: delimiter out of range", fname);
     }
