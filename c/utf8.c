@@ -23,16 +23,12 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include "dtypes.h"
-
 #ifdef WIN32
 #include <malloc.h>
 #define snprintf _snprintf
-#else
-#if !defined(__FreeBSD__) && !defined(__OpenBSD__)
-#include <alloca.h>
-#endif /* __FreeBSD__ && __OpenBSD__ */
 #endif
+
+#include "dtypes.h"
 
 #include "utf8.h"
 
@@ -618,26 +614,26 @@ int u8_is_locale_utf8(const char *locale)
 
 size_t u8_vprintf(const char *fmt, va_list ap)
 {
-    size_t cnt, sz = 0, nc, needfree = 0;
+    size_t nc;
     char *buf;
     uint32_t *wcs;
+    int cnt;
 
-    sz = 512;
-    buf = (char *)alloca(sz);
-    cnt = vsnprintf(buf, sz, fmt, ap);
-    if ((ssize_t)cnt < 0)
+    if ((cnt = vsnprintf(0, 0, fmt, ap)) < 0) {
         return 0;
-    if (cnt >= sz) {
-        buf = (char *)malloc(cnt + 1);
-        needfree = 1;
+    }
+    if (!(buf = calloc(cnt + 1, 1))) {
         vsnprintf(buf, cnt + 1, fmt, ap);
     }
-    wcs = (uint32_t *)alloca((cnt + 1) * sizeof(uint32_t));
+    if (!(wcs = calloc(cnt + 1, sizeof(uint32_t)))) {
+        free(buf);
+        return 0;
+    }
     nc = u8_toucs(wcs, cnt + 1, buf, cnt);
     wcs[nc] = 0;
     printf("%ls", (wchar_t *)wcs);
-    if (needfree)
-        free(buf);
+    free(wcs);
+    free(buf);
     return nc;
 }
 

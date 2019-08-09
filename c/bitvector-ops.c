@@ -11,9 +11,6 @@
 #include "dtypes.h"
 #include "bitvector.h"
 
-// greater than this # of words we use malloc instead of alloca
-#define MALLOC_CUTOFF 2000
-
 #ifdef __INTEL_COMPILER
 #define count_bits(b) _popcnt32(b)
 #else
@@ -385,7 +382,7 @@ void bitvector_reverse(uint32_t *b, uint32_t offs, uint32_t nbits)
         return;
 
     nw = (offs + nbits + 31) >> 5;
-    temp = (nw > MALLOC_CUTOFF) ? malloc(nw * 4) : alloca(nw * 4);
+    temp = malloc(nw * 4);
     for (i = 0; i < nw / 2; i++) {
         temp[i] = bitreverse(b[nw - i - 1]);
         temp[nw - i - 1] = bitreverse(b[i]);
@@ -395,8 +392,7 @@ void bitvector_reverse(uint32_t *b, uint32_t offs, uint32_t nbits)
 
     tail = (offs + nbits) & 31;
     bitvector_copy(b, offs, temp, (32 - tail) & 31, nbits);
-    if (nw > MALLOC_CUTOFF)
-        free(temp);
+    free(temp);
 }
 
 uint64_t bitvector_count(uint32_t *b, uint32_t offs, uint64_t nbits)
@@ -527,8 +523,7 @@ static void adjust_offset_to(uint32_t *dest, uint32_t *src, uint32_t nw,
                                  uint32_t boffs, uint32_t nbits)           \
     {                                                                      \
         uint32_t nw = (doffs + nbits + 31) >> 5;                           \
-        uint32_t *temp =                                                   \
-        nw > MALLOC_CUTOFF ? malloc((nw + 1) * 4) : alloca((nw + 1) * 4);  \
+        uint32_t *temp = malloc((nw + 1) * 4);                             \
         uint32_t i, anw, bnw;                                              \
         if (aoffs == boffs) {                                              \
             anw = (aoffs + nbits + 31) >> 5;                               \
@@ -548,8 +543,7 @@ static void adjust_offset_to(uint32_t *dest, uint32_t *src, uint32_t nw,
         for (i = 0; i < anw; i++)                                          \
             temp[i] = OP(a[i], b[i]);                                      \
         bitvector_copy(dest, doffs, temp, aoffs, nbits);                   \
-        if (nw > MALLOC_CUTOFF)                                            \
-            free(temp);                                                    \
+        free(temp);                                                        \
     }
 
 #define BV_AND(a, b) ((a) & (b))
