@@ -38,10 +38,6 @@ void set_nonblock(int socket, int yes)
         fcntl(socket, F_SETFL, flags & ~O_NONBLOCK);
 }
 
-#ifdef WIN32
-void bzero(void *s, size_t n) { memset(s, 0, n); }
-#endif
-
 /* returns a socket on which to accept() connections */
 int open_tcp_port(short portno)
 {
@@ -51,7 +47,7 @@ int open_tcp_port(short portno)
     sockfd = mysocket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0)
         return -1;
-    bzero(&serv_addr, sizeof(serv_addr));
+    memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(portno);
@@ -74,7 +70,7 @@ int open_any_tcp_port(short *portno)
     sockfd = mysocket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0)
         return -1;
-    bzero(&serv_addr, sizeof(serv_addr));
+    memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(*portno);
@@ -98,7 +94,7 @@ int open_any_udp_port(short *portno)
     sockfd = mysocket(PF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0)
         return -1;
-    bzero(&serv_addr, sizeof(serv_addr));
+    memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(*portno);

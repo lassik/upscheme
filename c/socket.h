@@ -18,9 +18,6 @@ int readall(int sockfd, char *buffer, int bufLen, int flags);
 int addr_eq(struct sockaddr_in *a, struct sockaddr_in *b);
 int socket_ready(int sock);
 
-#ifdef WIN32
-void bzero(void *s, size_t n);
-#endif
 #ifndef WIN32
 void closesocket(int fd);
 #endif
