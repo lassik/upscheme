@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-CFLAGS="-Wall -Wextra -Wno-strict-aliasing -std=gnu99"
+CFLAGS="-Wall -Wextra -Wno-strict-aliasing -pedantic -std=gnu99"
 CFLAGS="$CFLAGS -O2" # -falign-functions
 CFLAGS="$CFLAGS -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
 LFLAGS="-lm"
