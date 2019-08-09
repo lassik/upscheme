@@ -11,7 +11,7 @@ char *get_exename(char *buf, size_t size)
     mib[1] = KERN_PROC;
     mib[2] = KERN_PROC_PATHNAME;
     mib[3] = -1;
-    sysctl(mib, 4, buf, &size, NULL, 0);
+    sysctl(mib, 4, buf, &size, 0, 0);
 
     return buf;
 }
