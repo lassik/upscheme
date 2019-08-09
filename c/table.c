@@ -77,8 +77,8 @@ void relocate_htable(value_t oldv, value_t newv)
     }
 }
 
-cvtable_t table_vtable = { print_htable, relocate_htable, free_htable,
-                           print_traverse_htable };
+struct cvtable table_vtable = { print_htable, relocate_htable, free_htable,
+                                print_traverse_htable };
 
 int ishashtable(value_t v)
 {

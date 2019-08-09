@@ -48,8 +48,8 @@ void relocate_iostream(value_t oldv, value_t newv)
     }
 }
 
-cvtable_t iostream_vtable = { print_iostream, relocate_iostream,
-                              free_iostream, NULL };
+struct cvtable iostream_vtable = { print_iostream, relocate_iostream,
+                                   free_iostream, NULL };
 
 int fl_isiostream(value_t v)
 {

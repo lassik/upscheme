@@ -64,7 +64,7 @@ fltype_t *get_array_type(value_t eltype)
     return et->artype;
 }
 
-fltype_t *define_opaque_type(value_t sym, size_t sz, cvtable_t *vtab,
+fltype_t *define_opaque_type(value_t sym, size_t sz, struct cvtable *vtab,
                              cvinitfunc_t init)
 {
     fltype_t *ft = (fltype_t *)malloc(sizeof(fltype_t));

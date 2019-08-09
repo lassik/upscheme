@@ -211,14 +211,14 @@ static inline void argcount(char *fname, uint32_t nargs, uint32_t c)
                 nargs < c ? "few" : "many");
 }
 
-typedef struct {
+struct cvtable {
     void (*print)(value_t self, struct ios *f);
     void (*relocate)(value_t oldv, value_t newv);
     void (*finalize)(value_t self);
     void (*print_traverse)(value_t self);
-} cvtable_t;
+};
 
-/* functions needed to implement the value interface (cvtable_t) */
+/* functions needed to implement the value interface (struct cvtable) */
 typedef enum {
     T_INT8,
     T_UINT8,
@@ -255,7 +255,7 @@ typedef struct _fltype_t {
     numerictype_t numtype;
     size_t size;
     size_t elsz;
-    cvtable_t *vtable;
+    struct cvtable *vtable;
     struct _fltype_t *eltype;  // for arrays
     struct _fltype_t *artype;  // (array this)
     int marked;
@@ -375,7 +375,7 @@ void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz);
 
 fltype_t *get_type(value_t t);
 fltype_t *get_array_type(value_t eltype);
-fltype_t *define_opaque_type(value_t sym, size_t sz, cvtable_t *vtab,
+fltype_t *define_opaque_type(value_t sym, size_t sz, struct cvtable *vtab,
                              cvinitfunc_t init);
 
 value_t mk_double(fl_double_t n);
