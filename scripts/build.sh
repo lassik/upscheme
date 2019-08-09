@@ -20,7 +20,7 @@ haiku)
     ;;
 linux)
     default_cc="gcc"
-    CFLAGS="$CFLAGS -D _XOPEN_SOURCE"
+    CFLAGS="$CFLAGS -D _GNU_SOURCE"
     ;;
 netbsd)
     default_cc="gcc"
