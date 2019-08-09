@@ -1,8 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <math.h>
 #include <locale.h>
+#include <math.h>
+#include <stdarg.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "dtypes.h"
 #include "timefuncs.h"
 #include "ios.h"

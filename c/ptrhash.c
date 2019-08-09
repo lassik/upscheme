@@ -3,14 +3,15 @@
   optimized for storing info about particular values
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "dtypes.h"
-#include "ptrhash.h"
+#include "htable.h"
+#include "htableh_inc.h"
 
 #define OP_EQ(x, y) ((x) == (y))
 

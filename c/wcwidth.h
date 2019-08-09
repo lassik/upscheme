@@ -1,4 +1,3 @@
-#include "dtypes.h"  //for DLLEXPORT
 /*
  * This is an implementation of wcwidth() and wcswidth() (defined in
  * IEEE Std 1002.1-2001) for Unicode.
@@ -62,8 +61,6 @@
  * MODIFIED TO USE uint32_t
  */
 
-#include <stdint.h>
-
 struct interval {
     int first;
     int last;
@@ -121,9 +118,6 @@ static int bisearch(uint32_t ucs, const struct interval *table, int max)
  * This implementation assumes that wchar_t characters are encoded
  * in ISO 10646.
  */
-
-#include <stdint.h>
-#include <stddef.h>
 
 DLLEXPORT int wcwidth(uint32_t ucs)
 {

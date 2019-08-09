@@ -1,5 +1,3 @@
-#include "operators.h"
-
 #ifdef BITS64
 #define NWORDS(sz) (((sz) + 7) >> 3)
 #else

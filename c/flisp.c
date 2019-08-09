@@ -29,21 +29,40 @@
   Distributed under the BSD License
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <setjmp.h>
-#include <stdint.h>
-#include <stdarg.h>
+#include <sys/types.h>
+
 #include <assert.h>
 #include <ctype.h>
-#include <wctype.h>
-#include <sys/types.h>
-#include <locale.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <locale.h>
 #include <math.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wctype.h>
+
+#include "dtypes.h"
+#include "utils.h"
+#include "utf8.h"
+#include "ios.h"
+#include "socket.h"
+#include "timefuncs.h"
+#include "hashing.h"
+#include "htable.h"
+#include "htableh_inc.h"
+#include "bitvector.h"
+#include "dirpath.h"
+#include "random.h"
 #include "llt.h"
+
+#include "utils.h"
+
+#include "ieee754.h"
+
 #include "flisp.h"
 #include "opcodes.h"
 
@@ -394,7 +413,12 @@ value_t alloc_vector(size_t n, int init)
 // cvalues
 // --------------------------------------------------------------------
 
+#include "htable.h"
+#include "htableh_inc.h"
+#include "ptrhash.h"
+#include "operators.h"
 #include "cvalues.h"
+#include "equalhash.h"
 #include "types.h"
 
 // print

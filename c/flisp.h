@@ -1,9 +1,6 @@
 #ifndef FLISP_H
 #define FLISP_H
 
-#include <setjmp.h>
-#include <stdint.h>
-
 typedef uptrint_t value_t;
 typedef int_t fixnum_t;
 typedef uint_t ufixnum_t;
@@ -121,8 +118,6 @@ typedef struct {
 
 void fl_gc_handle(value_t *pv);
 void fl_free_gc_handles(uint32_t n);
-
-#include "opcodes.h"
 
 // utility for iterating over all arguments in a builtin
 // i=index, i0=start index, arg = var for each arg, args = arg array

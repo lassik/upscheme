@@ -12,11 +12,16 @@
   valid.
   A UTF-8 validation routine is included.
 */
+
 #define _XOPEN_SOURCE 700
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+
+#include <assert.h>
 #include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 
@@ -30,7 +35,6 @@
 #include <alloca.h>
 #endif /* __FreeBSD__ && __OpenBSD__ */
 #endif
-#include <assert.h>
 
 #include "utf8.h"
 

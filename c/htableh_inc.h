@@ -1,7 +1,5 @@
 //-*- mode:c -*-
 
-#include "htable.h"
-
 #define HTPROT(HTNAME)                                       \
     void *HTNAME##_get(htable_t *h, void *key);              \
     void HTNAME##_put(htable_t *h, void *key, void *val);    \

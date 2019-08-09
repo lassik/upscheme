@@ -1,9 +1,3 @@
-#include <limits.h>
-#include <assert.h>
-#include "dtypes.h"
-#include "utils.h"
-#include "ieee754.h"
-
 extern double trunc(double x);
 
 STATIC_INLINE double fpart(double arg) { return arg - trunc(arg); }

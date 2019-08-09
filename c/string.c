@@ -1,19 +1,35 @@
 /*
   string functions
 */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <assert.h>
-#include <ctype.h>
-#include <wchar.h>
-#include <wctype.h>
+
 #include <sys/types.h>
 #include <sys/time.h>
+
+#include <assert.h>
+#include <ctype.h>
 #include <errno.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
+#include <wctype.h>
+
+#include "dtypes.h"
+#include "utils.h"
+#include "utf8.h"
+#include "ios.h"
+#include "socket.h"
+#include "timefuncs.h"
+#include "hashing.h"
+#include "htable.h"
+#include "htableh_inc.h"
+#include "bitvector.h"
+#include "dirpath.h"
+#include "random.h"
 #include "llt.h"
+
 #include "flisp.h"
 
 value_t fl_stringp(value_t *args, u_int32_t nargs)

@@ -1,6 +1,3 @@
-#ifndef OPCODES_H
-#define OPCODES_H
-
 enum {
     OP_NOP = 0,
     OP_DUP,
@@ -166,6 +163,4 @@ enum {
 #else
 #define VM_LABELS
 #define VM_APPLY_LABELS
-#endif
-
 #endif

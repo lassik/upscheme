@@ -1,5 +1,3 @@
-#include "equalhash.h"
-
 fltype_t *get_type(value_t t)
 {
     fltype_t *ft;

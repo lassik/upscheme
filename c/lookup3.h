@@ -35,20 +35,6 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 */
 //#define SELF_TEST 1
 
-#include <stdio.h> /* defines printf for tests */
-#include <time.h>  /* defines time_t for timings in the test */
-#ifndef WIN32
-#include <stdint.h>    /* defines uint32_t etc */
-#include <sys/param.h> /* attempt to define endianness */
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-#endif
-#ifdef LINUX
-#include <endian.h> /* attempt to define endianness */
-#endif
-
 /*
  * My best guess at if you are big-endian or little-endian.  This may
  * need adjustment.

@@ -1,7 +1,23 @@
+#include <assert.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+
+#include "dtypes.h"
+#include "utils.h"
+#include "utf8.h"
+#include "ios.h"
+#include "socket.h"
+#include "timefuncs.h"
+#include "hashing.h"
+#include "htable.h"
+#include "htableh_inc.h"
+#include "bitvector.h"
+#include "dirpath.h"
+#include "random.h"
 #include "llt.h"
+
 #include "flisp.h"
 
 static value_t argv_list(int argc, char *argv[])

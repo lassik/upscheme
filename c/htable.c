@@ -2,11 +2,11 @@
   functions common to all hash table instantiations
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "dtypes.h"
 #include "htable.h"
