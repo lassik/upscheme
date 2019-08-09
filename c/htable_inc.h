@@ -13,7 +13,7 @@
 #define HTIMPL(HTNAME, HFUNC, EQFUNC)                                        \
     static void **HTNAME##_lookup_bp(struct htable *h, void *key)            \
     {                                                                        \
-        uint_t hv;                                                           \
+        uintptr_t hv;                                                        \
         size_t i, orig, index, iter;                                         \
         size_t newsz, sz = hash_size(h);                                     \
         size_t maxprobe = max_probe(sz);                                     \

@@ -27,7 +27,7 @@ typedef unsigned short uint16_t;
 #include "ios.h"
 #include "random.h"
 
-uint_t nextipow2(uint_t i)
+uintptr_t nextipow2(uintptr_t i)
 {
     if (i == 0)
         return 1;

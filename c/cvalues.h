@@ -1293,7 +1293,7 @@ static int num_to_ptr(value_t a, fixnum_t *pi, numerictype_t *pt, void **pp)
 */
 int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname)
 {
-    int_t ai, bi;
+    intptr_t ai, bi;
     numerictype_t ta, tb;
     void *aptr, *bptr;
 
@@ -1336,7 +1336,7 @@ static void DivideByZeroError(void)
 static value_t fl_div2(value_t a, value_t b)
 {
     double da, db;
-    int_t ai, bi;
+    intptr_t ai, bi;
     numerictype_t ta, tb;
     void *aptr, *bptr;
 
@@ -1360,7 +1360,7 @@ static value_t fl_div2(value_t a, value_t b)
 
 static value_t fl_idiv2(value_t a, value_t b)
 {
-    int_t ai, bi;
+    intptr_t ai, bi;
     numerictype_t ta, tb;
     void *aptr, *bptr;
     int64_t a64, b64;
@@ -1407,7 +1407,7 @@ div_error:
 
 static value_t fl_bitwise_op(value_t a, value_t b, int opcode, char *fname)
 {
-    int_t ai, bi;
+    intptr_t ai, bi;
     numerictype_t ta, tb, itmp;
     void *aptr = NULL, *bptr = NULL, *ptmp;
     int64_t b64;

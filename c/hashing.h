@@ -1,4 +1,4 @@
-uint_t nextipow2(uint_t i);
+uintptr_t nextipow2(uintptr_t i);
 uint32_t int32hash(uint32_t a);
 uint64_t int64hash(uint64_t key);
 uint32_t int64to32hash(uint64_t key);

@@ -104,8 +104,6 @@ typedef int bool_t;
 #ifdef BITS64
 #define TOP_BIT 0x8000000000000000
 #define NBITS 64
-typedef unsigned long uint_t;  // preferred int type on platform
-typedef long int_t;
 typedef int64_t offset_t;
 typedef uint64_t index_t;
 typedef int64_t ptrint_t;  // pointer-size int
@@ -113,8 +111,6 @@ typedef uint64_t u_ptrint_t;
 #else
 #define TOP_BIT 0x80000000
 #define NBITS 32
-typedef unsigned long uint_t;
-typedef long int_t;
 typedef int32_t offset_t;
 typedef uint32_t index_t;
 typedef int32_t ptrint_t;
