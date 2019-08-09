@@ -8,11 +8,8 @@ AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
-BraceWrapping:
-  AfterFunction: true
-  BeforeElse: true
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Custom
+BreakBeforeBraces: Linux
 ContinuationIndentWidth: 0
 DerivePointerAlignment: true
 MaxEmptyLinesToKeep: 2
