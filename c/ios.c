@@ -1,11 +1,12 @@
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
 #include <assert.h>
-#include <limits.h>
 #include <errno.h>
-#include <wchar.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>  // for printf
+#include <stdlib.h>
+#include <string.h>
+#include <wchar.h>
 
 #include "dtypes.h"
 

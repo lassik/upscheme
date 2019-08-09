@@ -1,6 +1,7 @@
 #include <sys/types.h>
 
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "dtypes.h"
