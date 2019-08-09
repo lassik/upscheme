@@ -111,22 +111,26 @@ size_t u8_toucs(uint32_t *dest, size_t sz, const char *src, size_t srcsz)
             break;
         ch = 0;
         switch (nb) {
-            /* these fall through deliberately */
         case 5:
             ch += (unsigned char)*src++;
             ch <<= 6;
+            // fallthrough
         case 4:
             ch += (unsigned char)*src++;
             ch <<= 6;
+            // fallthrough
         case 3:
             ch += (unsigned char)*src++;
             ch <<= 6;
+            // fallthrough
         case 2:
             ch += (unsigned char)*src++;
             ch <<= 6;
+            // fallthrough
         case 1:
             ch += (unsigned char)*src++;
             ch <<= 6;
+            // fallthrough
         case 0:
             ch += (unsigned char)*src++;
         }
@@ -278,22 +282,26 @@ size_t u8_strwidth(const char *s)
             nb = trailingBytesForUTF8[(unsigned char)sc];
             ch = 0;
             switch (nb) {
-                /* these fall through deliberately */
             case 5:
                 ch += (unsigned char)*s++;
                 ch <<= 6;
+                // fallthrough
             case 4:
                 ch += (unsigned char)*s++;
                 ch <<= 6;
+                // fallthrough
             case 3:
                 ch += (unsigned char)*s++;
                 ch <<= 6;
+                // fallthrough
             case 2:
                 ch += (unsigned char)*s++;
                 ch <<= 6;
+                // fallthrough
             case 1:
                 ch += (unsigned char)*s++;
                 ch <<= 6;
+                // fallthrough
             case 0:
                 ch += (unsigned char)*s++;
             }
