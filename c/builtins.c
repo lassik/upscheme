@@ -376,12 +376,7 @@ static value_t fl_os_setenv(value_t *args, uint32_t nargs)
     char *name = tostring(args[0], "os.setenv");
     int result;
     if (args[1] == FL_F) {
-#ifdef LINUX
         result = unsetenv(name);
-#else
-        (void)unsetenv(name);
-        result = 0;
-#endif
     } else {
         char *val = tostring(args[1], "os.setenv");
         result = setenv(name, val, 1);
