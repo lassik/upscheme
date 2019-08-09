@@ -18,17 +18,17 @@ value_t unionsym;
 
 static struct htable TypeTable;
 static struct htable reverse_dlsym_lookup_table;
-static fltype_t *int8type, *uint8type;
-static fltype_t *int16type, *uint16type;
-static fltype_t *int32type, *uint32type;
-static fltype_t *int64type, *uint64type;
-static fltype_t *longtype, *ulongtype;
-static fltype_t *floattype, *doubletype;
-fltype_t *bytetype, *wchartype;
-fltype_t *stringtype, *wcstringtype;
-fltype_t *builtintype;
+static struct fltype *int8type, *uint8type;
+static struct fltype *int16type, *uint16type;
+static struct fltype *int32type, *uint32type;
+static struct fltype *int64type, *uint64type;
+static struct fltype *longtype, *ulongtype;
+static struct fltype *floattype, *doubletype;
+struct fltype *bytetype, *wchartype;
+struct fltype *stringtype, *wcstringtype;
+struct fltype *builtintype;
 
-static void cvalue_init(fltype_t *type, value_t v, void *dest);
+static void cvalue_init(struct fltype *type, value_t v, void *dest);
 
 // cvalues-specific builtins
 value_t cvalue_new(value_t *args, u_int32_t nargs);
@@ -74,7 +74,7 @@ static void sweep_finalizers(void)
             lst[n] = (cvalue_t *)ptr(forwardloc((value_t)tmp));
             n++;
         } else {
-            fltype_t *t = cv_class(tmp);
+            struct fltype *t = cv_class(tmp);
             if (t->vtable != NULL && t->vtable->finalize != NULL) {
                 t->vtable->finalize(tagptr(tmp, TAG_CVALUE));
             }
@@ -111,13 +111,13 @@ static size_t cv_nwords(cvalue_t *cv)
 
 static void autorelease(cvalue_t *cv)
 {
-    cv->type = (fltype_t *)(((uptrint_t)cv->type) | CV_OWNED_BIT);
+    cv->type = (struct fltype *)(((uptrint_t)cv->type) | CV_OWNED_BIT);
     add_finalizer(cv);
 }
 
 void cv_autorelease(cvalue_t *cv) { autorelease(cv); }
 
-static value_t cprim(fltype_t *type, size_t sz)
+static value_t cprim(struct fltype *type, size_t sz)
 {
     assert(!ismanaged((uptrint_t)type));
     assert(sz == type->size);
@@ -127,7 +127,7 @@ static value_t cprim(fltype_t *type, size_t sz)
     return tagptr(pcp, TAG_CPRIM);
 }
 
-value_t cvalue(fltype_t *type, size_t sz)
+value_t cvalue(struct fltype *type, size_t sz)
 {
     cvalue_t *pcv;
     int str = 0;
@@ -165,7 +165,7 @@ value_t cvalue(fltype_t *type, size_t sz)
     return tagptr(pcv, TAG_CVALUE);
 }
 
-value_t cvalue_from_data(fltype_t *type, void *data, size_t sz)
+value_t cvalue_from_data(struct fltype *type, void *data, size_t sz)
 {
     value_t cv;
     cv = cvalue(type, sz);
@@ -181,7 +181,8 @@ value_t cvalue_from_data(fltype_t *type, void *data, size_t sz)
 // user explicitly calls (autorelease ) on the result of this function.
 // 'parent' is an optional cvalue that this pointer is known to point
 // into; NIL if none.
-value_t cvalue_from_ref(fltype_t *type, void *ptr, size_t sz, value_t parent)
+value_t cvalue_from_ref(struct fltype *type, void *ptr, size_t sz,
+                        value_t parent)
 {
     cvalue_t *pcv;
     value_t cv;
@@ -191,7 +192,7 @@ value_t cvalue_from_ref(fltype_t *type, void *ptr, size_t sz, value_t parent)
     pcv->len = sz;
     pcv->type = type;
     if (parent != NIL) {
-        pcv->type = (fltype_t *)(((uptrint_t)pcv->type) | CV_PARENT_BIT);
+        pcv->type = (struct fltype *)(((uptrint_t)pcv->type) | CV_PARENT_BIT);
         pcv->parent = parent;
     }
     cv = tagptr(pcv, TAG_CVALUE);
@@ -236,23 +237,23 @@ void cv_pin(cvalue_t *cv)
     autorelease(cv);
 }
 
-#define num_init(ctype, cnvt, tag)                                 \
-    static int cvalue_##ctype##_init(fltype_t *type, value_t arg,  \
-                                     void *dest)                   \
-    {                                                              \
-        fl_##ctype##_t n = 0;                                      \
-        (void)type;                                                \
-        if (isfixnum(arg)) {                                       \
-            n = numval(arg);                                       \
-        } else if (iscprim(arg)) {                                 \
-            struct cprim *cp = (struct cprim *)ptr(arg);           \
-            void *p = cp_data(cp);                                 \
-            n = (fl_##ctype##_t)conv_to_##cnvt(p, cp_numtype(cp)); \
-        } else {                                                   \
-            return 1;                                              \
-        }                                                          \
-        *((fl_##ctype##_t *)dest) = n;                             \
-        return 0;                                                  \
+#define num_init(ctype, cnvt, tag)                                     \
+    static int cvalue_##ctype##_init(struct fltype *type, value_t arg, \
+                                     void *dest)                       \
+    {                                                                  \
+        fl_##ctype##_t n = 0;                                          \
+        (void)type;                                                    \
+        if (isfixnum(arg)) {                                           \
+            n = numval(arg);                                           \
+        } else if (iscprim(arg)) {                                     \
+            struct cprim *cp = (struct cprim *)ptr(arg);               \
+            void *p = cp_data(cp);                                     \
+            n = (fl_##ctype##_t)conv_to_##cnvt(p, cp_numtype(cp));     \
+        } else {                                                       \
+            return 1;                                                  \
+        }                                                              \
+        *((fl_##ctype##_t *)dest) = n;                                 \
+        return 0;                                                      \
     }
 num_init(int8, int32, T_INT8) num_init(uint8, uint32, T_UINT8)
 num_init(int16, int32, T_INT16) num_init(uint16, uint32, T_UINT16)
@@ -317,7 +318,7 @@ size_t toulong(value_t n, char *fname)
     return 0;
 }
 
-static int cvalue_enum_init(fltype_t *ft, value_t arg, void *dest)
+static int cvalue_enum_init(struct fltype *ft, value_t arg, void *dest)
 {
     int n = 0;
     value_t syms;
@@ -353,7 +354,7 @@ value_t cvalue_enum(value_t *args, u_int32_t nargs)
 {
     argcount("enum", nargs, 2);
     value_t type = fl_list2(enumsym, args[0]);
-    fltype_t *ft = get_type(type);
+    struct fltype *ft = get_type(type);
     value_t cv = cvalue(ft, sizeof(int32_t));
     cvalue_enum_init(ft, args[1], cp_data((struct cprim *)ptr(cv)));
     return cv;
@@ -377,11 +378,11 @@ static size_t predict_arraylen(value_t arg)
     return 1;
 }
 
-static int cvalue_array_init(fltype_t *ft, value_t arg, void *dest)
+static int cvalue_array_init(struct fltype *ft, value_t arg, void *dest)
 {
     value_t type = ft->type;
     size_t elsize, i, cnt, sz;
-    fltype_t *eltype = ft->eltype;
+    struct fltype *eltype = ft->eltype;
 
     elsize = ft->elsz;
     cnt = predict_arraylen(arg);
@@ -419,7 +420,7 @@ static int cvalue_array_init(fltype_t *ft, value_t arg, void *dest)
     } else if (iscvalue(arg)) {
         cvalue_t *cv = (cvalue_t *)ptr(arg);
         if (isarray(arg)) {
-            fltype_t *aet = cv_class(cv)->eltype;
+            struct fltype *aet = cv_class(cv)->eltype;
             if (aet == eltype) {
                 if (cv_len(cv) == sz)
                     memcpy(dest, cv_data(cv), sz);
@@ -448,7 +449,7 @@ value_t cvalue_array(value_t *args, u_int32_t nargs)
         argcount("array", nargs, 1);
 
     cnt = nargs - 1;
-    fltype_t *type = get_array_type(args[0]);
+    struct fltype *type = get_array_type(args[0]);
     elsize = type->elsz;
     sz = elsize * cnt;
 
@@ -568,7 +569,7 @@ size_t ctype_sizeof(value_t type, int *palign)
     return 0;
 }
 
-extern fltype_t *iostreamtype;
+extern struct fltype *iostreamtype;
 
 // get pointer and size for any plain-old-data value
 void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
@@ -647,7 +648,7 @@ static value_t cvalue_relocate(value_t v)
     if (isinlined(cv))
         nv->data = &nv->_space[0];
     ncv = tagptr(nv, TAG_CVALUE);
-    fltype_t *t = cv_class(cv);
+    struct fltype *t = cv_class(cv);
     if (t->vtable != NULL && t->vtable->relocate != NULL)
         t->vtable->relocate(v, ncv);
     forward(v, ncv);
@@ -672,7 +673,8 @@ value_t cvalue_copy(value_t v)
         memcpy(ncv->data, cv_data(cv), len);
         autorelease(ncv);
         if (hasparent(cv)) {
-            ncv->type = (fltype_t *)(((uptrint_t)ncv->type) & ~CV_PARENT_BIT);
+            ncv->type =
+            (struct fltype *)(((uptrint_t)ncv->type) & ~CV_PARENT_BIT);
             ncv->parent = NIL;
         }
     } else {
@@ -703,7 +705,7 @@ value_t fl_podp(value_t *args, u_int32_t nargs)
            : FL_F;
 }
 
-static void cvalue_init(fltype_t *type, value_t v, void *dest)
+static void cvalue_init(struct fltype *type, value_t v, void *dest)
 {
     cvinitfunc_t f = type->init;
 
@@ -763,7 +765,7 @@ value_t cvalue_new(value_t *args, u_int32_t nargs)
     if (nargs < 1 || nargs > 2)
         argcount("c-value", nargs, 2);
     value_t type = args[0];
-    fltype_t *ft = get_type(type);
+    struct fltype *ft = get_type(type);
     value_t cv;
     if (ft->eltype != NULL) {
         // special case to handle incomplete array types bla[]
@@ -823,7 +825,7 @@ static value_t cvalue_array_aref(value_t *args)
 {
     char *data;
     ulong_t index;
-    fltype_t *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
+    struct fltype *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
     value_t el = 0;
     numerictype_t nt = eltype->numtype;
     if (nt >= T_INT32)
@@ -857,7 +859,7 @@ static value_t cvalue_array_aset(value_t *args)
 {
     char *data;
     ulong_t index;
-    fltype_t *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
+    struct fltype *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
     check_addr_args("aset!", args[0], args[1], &data, &index);
     char *dest = data + index * eltype->size;
     cvalue_init(eltype, args[2], dest);

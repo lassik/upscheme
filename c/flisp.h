@@ -18,7 +18,7 @@ struct cons {
 struct symbol {
     uptrint_t flags;
     value_t binding;  // global value binding
-    struct _fltype_t *type;
+    struct fltype *type;
     uint32_t hash;
     void *dlcache;  // dlsym address
     // below fields are private
@@ -33,7 +33,7 @@ struct symbol {
 struct gensym {
     value_t isconst;
     value_t binding;  // global value binding
-    struct _fltype_t *type;
+    struct fltype *type;
     uint32_t id;
 };
 
@@ -248,22 +248,22 @@ void fl_print_chr(char c, struct ios *f);
 void fl_print_str(char *s, struct ios *f);
 void fl_print_child(struct ios *f, value_t v);
 
-typedef int (*cvinitfunc_t)(struct _fltype_t *, value_t, void *);
+typedef int (*cvinitfunc_t)(struct fltype *, value_t, void *);
 
-typedef struct _fltype_t {
+struct fltype {
     value_t type;
     numerictype_t numtype;
     size_t size;
     size_t elsz;
     struct cvtable *vtable;
-    struct _fltype_t *eltype;  // for arrays
-    struct _fltype_t *artype;  // (array this)
+    struct fltype *eltype;  // for arrays
+    struct fltype *artype;  // (array this)
     int marked;
     cvinitfunc_t init;
-} fltype_t;
+};
 
 typedef struct {
-    fltype_t *type;
+    struct fltype *type;
     void *data;
     size_t len;  // length of *data in bytes
     union {
@@ -275,7 +275,7 @@ typedef struct {
 #define CVALUE_NWORDS 4
 
 struct cprim {
-    fltype_t *type;
+    struct fltype *type;
     char _space[1];
 };
 
@@ -294,7 +294,7 @@ struct function {
 #define owned(cv) ((uptrint_t)(cv)->type & CV_OWNED_BIT)
 #define hasparent(cv) ((uptrint_t)(cv)->type & CV_PARENT_BIT)
 #define isinlined(cv) ((cv)->data == &(cv)->_space[0])
-#define cv_class(cv) ((fltype_t *)(((uptrint_t)(cv)->type) & ~3))
+#define cv_class(cv) ((struct fltype *)(((uptrint_t)(cv)->type) & ~3))
 #define cv_len(cv) ((cv)->len)
 #define cv_type(cv) (cv_class(cv)->type)
 #define cv_data(cv) ((cv)->data)
@@ -344,18 +344,19 @@ extern value_t structsym, arraysym, enumsym, cfunctionsym, voidsym,
 pointersym;
 extern value_t stringtypesym, wcstringtypesym, emptystringsym;
 extern value_t unionsym, floatsym, doublesym;
-extern fltype_t *bytetype, *wchartype;
-extern fltype_t *stringtype, *wcstringtype;
-extern fltype_t *builtintype;
+extern struct fltype *bytetype, *wchartype;
+extern struct fltype *stringtype, *wcstringtype;
+extern struct fltype *builtintype;
 
-value_t cvalue(fltype_t *type, size_t sz);
+value_t cvalue(struct fltype *type, size_t sz);
 void add_finalizer(cvalue_t *cv);
 void cv_autorelease(cvalue_t *cv);
 void cv_pin(cvalue_t *cv);
 size_t ctype_sizeof(value_t type, int *palign);
 value_t cvalue_copy(value_t v);
-value_t cvalue_from_data(fltype_t *type, void *data, size_t sz);
-value_t cvalue_from_ref(fltype_t *type, void *ptr, size_t sz, value_t parent);
+value_t cvalue_from_data(struct fltype *type, void *data, size_t sz);
+value_t cvalue_from_ref(struct fltype *type, void *ptr, size_t sz,
+                        value_t parent);
 value_t cbuiltin(char *name, builtin_t f);
 size_t cvalue_arraylen(value_t v);
 value_t size_wrap(size_t sz);
@@ -374,10 +375,10 @@ int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname);
 
 void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz);
 
-fltype_t *get_type(value_t t);
-fltype_t *get_array_type(value_t eltype);
-fltype_t *define_opaque_type(value_t sym, size_t sz, struct cvtable *vtab,
-                             cvinitfunc_t init);
+struct fltype *get_type(value_t t);
+struct fltype *get_array_type(value_t eltype);
+struct fltype *define_opaque_type(value_t sym, size_t sz,
+                                  struct cvtable *vtab, cvinitfunc_t init);
 
 value_t mk_double(fl_double_t n);
 value_t mk_float(fl_float_t n);

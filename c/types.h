@@ -1,6 +1,6 @@
-fltype_t *get_type(value_t t)
+struct fltype *get_type(value_t t)
 {
-    fltype_t *ft;
+    struct fltype *ft;
     if (issymbol(t)) {
         ft = ((struct symbol *)ptr(t))->type;
         if (ft != NULL)
@@ -20,7 +20,7 @@ fltype_t *get_type(value_t t)
         sz = ctype_sizeof(t, &align);
     }
 
-    ft = (fltype_t *)malloc(sizeof(fltype_t));
+    ft = (struct fltype *)malloc(sizeof(struct fltype));
     ft->type = t;
     if (issymbol(t)) {
         ft->numtype = sym_to_numtype(t);
@@ -37,7 +37,7 @@ fltype_t *get_type(value_t t)
     ft->init = NULL;
     if (iscons(t)) {
         if (isarray) {
-            fltype_t *eltype = get_type(car_(cdr_(t)));
+            struct fltype *eltype = get_type(car_(cdr_(t)));
             if (eltype->size == 0) {
                 free(ft);
                 lerror(ArgError, "invalid array element type");
@@ -56,18 +56,18 @@ fltype_t *get_type(value_t t)
     return ft;
 }
 
-fltype_t *get_array_type(value_t eltype)
+struct fltype *get_array_type(value_t eltype)
 {
-    fltype_t *et = get_type(eltype);
+    struct fltype *et = get_type(eltype);
     if (et->artype == NULL)
         et->artype = get_type(fl_list2(arraysym, eltype));
     return et->artype;
 }
 
-fltype_t *define_opaque_type(value_t sym, size_t sz, struct cvtable *vtab,
-                             cvinitfunc_t init)
+struct fltype *define_opaque_type(value_t sym, size_t sz,
+                                  struct cvtable *vtab, cvinitfunc_t init)
 {
-    fltype_t *ft = (fltype_t *)malloc(sizeof(fltype_t));
+    struct fltype *ft = (struct fltype *)malloc(sizeof(struct fltype));
     ft->type = sym;
     ft->size = sz;
     ft->numtype = N_NUMTYPES;
@@ -90,7 +90,7 @@ void relocate_typetable(void)
             nv = (void *)relocate((value_t)h->table[i]);
             h->table[i] = nv;
             if (h->table[i + 1] != HT_NOTFOUND)
-                ((fltype_t *)h->table[i + 1])->type = (value_t)nv;
+                ((struct fltype *)h->table[i + 1])->type = (value_t)nv;
         }
     }
 }

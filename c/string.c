@@ -95,7 +95,7 @@ value_t fl_string_encode(value_t *args, u_int32_t nargs)
     argcount("string.encode", nargs, 1);
     if (iscvalue(args[0])) {
         cvalue_t *cv = (cvalue_t *)ptr(args[0]);
-        fltype_t *t = cv_class(cv);
+        struct fltype *t = cv_class(cv);
         if (t->eltype == wchartype) {
             size_t nc = cv_len(cv) / sizeof(uint32_t);
             uint32_t *ptr = (uint32_t *)cv_data(cv);

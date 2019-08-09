@@ -25,7 +25,7 @@
 
 static value_t iostreamsym, rdsym, wrsym, apsym, crsym, truncsym;
 static value_t instrsym, outstrsym;
-fltype_t *iostreamtype;
+struct fltype *iostreamtype;
 
 void print_iostream(value_t v, struct ios *f)
 {
@@ -267,7 +267,7 @@ value_t fl_ioread(value_t *args, u_int32_t nargs)
         argcount("io.read", nargs, 2);
     (void)toiostream(args[0], "io.read");
     size_t n;
-    fltype_t *ft;
+    struct fltype *ft;
     if (nargs == 3) {
         // form (io.read s type count)
         ft = get_array_type(args[1]);

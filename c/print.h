@@ -90,7 +90,7 @@ void print_traverse(value_t v)
         // don't consider shared references to ""
         if (!cv_isstr(cv) || cv_len(cv) != 0)
             mark_cons(v);
-        fltype_t *t = cv_class(cv);
+        struct fltype *t = cv_class(cv);
         if (t->vtable != NULL && t->vtable->print_traverse != NULL)
             t->vtable->print_traverse(v);
     }

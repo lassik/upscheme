@@ -25,7 +25,7 @@
 #include "equalhash.h"
 
 static value_t tablesym;
-static fltype_t *tabletype;
+static struct fltype *tabletype;
 
 void print_htable(value_t v, struct ios *f)
 {
