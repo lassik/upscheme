@@ -13,6 +13,8 @@
   A UTF-8 validation routine is included.
 */
 
+#define _XOPEN_SOURCE
+
 #include <assert.h>
 #include <stdarg.h>
 #include <stddef.h>
