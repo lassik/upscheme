@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -100,6 +101,8 @@ char *get_exename(char *buf, size_t size)
     char **argv, **argv2;
     char *p, *path, *pathcpy, filename[PATH_MAX];
     struct stat sbuf;
+
+    (void)size;
 
     pid = getpid();
 
