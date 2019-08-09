@@ -59,19 +59,9 @@ typedef int bool_t;
 #define S64_MAX 9223372036854775807LL
 #define S64_MIN (-S64_MAX - 1LL)
 #define BIT63 0x8000000000000000LL
-#define U32_MAX 4294967295L
-#define S32_MAX 2147483647L
-#define S32_MIN (-S32_MAX - 1L)
 #define BIT31 0x80000000
 
-#define DBL_EPSILON 2.2204460492503131e-16
-#define FLT_EPSILON 1.192092896e-7
-#define DBL_MAX 1.7976931348623157e+308
-#define DBL_MIN 2.2250738585072014e-308
-#define FLT_MAX 3.402823466e+38
-#define FLT_MIN 1.175494351e-38
 #define LOG2_10 3.3219280948873626
-#define rel_zero(a, b) (fabs((a) / (b)) < DBL_EPSILON)
 #define sign_bit(r) ((*(int64_t *)&(r)) & BIT63)
 #define LABS(n) (((n) ^ ((n) >> (NBITS - 1))) - ((n) >> (NBITS - 1)))
 #define NBABS(n, nb) (((n) ^ ((n) >> ((nb)-1))) - ((n) >> ((nb)-1)))
