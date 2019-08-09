@@ -1,8 +1,2 @@
-/*.o
-/*.do
-/*.a
-/*.da
-/flisp
-/llt/*.o
-/llt/*.a
+/build-*/
 /flisp.boot.bak
