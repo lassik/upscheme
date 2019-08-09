@@ -212,7 +212,7 @@
 (define (fib n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))
 (assert (equal? (fib 20) 6765))
 
-(load "color.lsp")
+(load "color.scm")
 (assert (equal? (color-pairs (generate-5x5-pairs) '(a b c d e))
 		'((23 . a) (9 . a) (22 . b) (17 . d) (14 . d) (8 . b) (21 . e)
 		  (19 . b) (16 . c) (13 . c) (11 . b) (7 . e) (24 . c) (20 . d)

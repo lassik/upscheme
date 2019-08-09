@@ -296,9 +296,9 @@
 ;;; should remove the association between the given symbol and key.
 
 ;;; When porting to a new Scheme implementation, you should define the
-;;; procedures listed above, load the expanded version of psyntax.ss
+;;; procedures listed above, load the expanded version of psyntax.scm
 ;;; (psyntax.pp, which should be available whereever you found
-;;; psyntax.ss), and register sc-expand as the current expander (how
+;;; psyntax.scm), and register sc-expand as the current expander (how
 ;;; you do this depends upon your implementation of Scheme).  You may
 ;;; change the hooks and constructors defined toward the beginning of
 ;;; the code below, but to avoid bootstrapping problems, do so only

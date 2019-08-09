@@ -1,5 +1,5 @@
 ; -*- scheme -*-
 
-(load "system.lsp")
-(load "compiler.lsp")
+(load "system.scm")
+(load "compiler.scm")
 (make-system-image "flisp.boot")

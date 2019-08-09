@@ -1,6 +1,6 @@
 ; -*- scheme -*-
-(load "match.lsp")
-(load "asttools.lsp")
+(load "match-lsp.scm")
+(load "asttools.scm")
 
 (define missing-arg-tag '*r-missing*)
 

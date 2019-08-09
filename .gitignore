@@ -1,2 +1,3 @@
 /build-*/
-/flisp.boot.bak
+/scheme-core/flisp.boot.bak
+/scheme-core/flisp.boot.new

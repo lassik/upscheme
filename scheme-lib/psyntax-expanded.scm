@@ -1,7 +1,7 @@
 ;;; psyntax.pp
-;;; automatically generated from psyntax.ss
+;;; automatically generated from psyntax.scm
 ;;; Mon Feb 26 23:22:05 EST 2007
-;;; see copyright notice in psyntax.ss
+;;; see copyright notice in psyntax.scm
 
 ((lambda ()
    (letrec ((noexpand62 '"noexpand")

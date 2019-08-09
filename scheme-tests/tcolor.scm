@@ -1,7 +1,7 @@
 ; -*- scheme -*-
 ; color for performance
 
-(load "color.lsp")
+(load "color.scm")
 
 ; 100x color 5 queens
 (define Q (generate-5x5-pairs))

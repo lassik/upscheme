@@ -4,7 +4,7 @@
 (if (not (bound? 'set-top-level-value!)) (set! set-top-level-value! set))
 (if (not (bound? 'eof-object?)) (set! eof-object? (lambda (x) #f)))
 
-;(load "compiler.lsp")
+;(load "compiler.scm")
 
 (define (compile-file inf)
   (let ((in  (file inf :read)))

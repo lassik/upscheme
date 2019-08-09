@@ -1,7 +1,7 @@
-(load "test.lsp")
+(load "test.scm")
 
 (princ "colorgraph: ")
-(load "tcolor.lsp")
+(load "tcolor.scm")
 
 (princ "fib(34): ")
 (assert (equal? (time (fib 34)) 5702887))
@@ -30,8 +30,8 @@
 
 (path.cwd "ast")
 (princ "p-lambda: ")
-(load "rpasses.lsp")
-(define *input* (load "datetimeR.lsp"))
+(load "rpasses.scm")
+(define *input* (load "datetimeR.scm"))
 (time (set! *output* (compile-ish *input*)))
-(assert (equal? *output* (load "rpasses-out.lsp")))
+(assert (equal? *output* (load "rpasses-out.scm")))
 (path.cwd "..")

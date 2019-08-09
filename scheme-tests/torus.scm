@@ -38,7 +38,7 @@
     l))
 
 (time (begin (print (torus 100 100)) ()))
-;(time (dotimes (i 1) (load "100x100.lsp")))
+;(time (dotimes (i 1) (load "100x100.scm")))
 ; with ltable
 ; printing time: 0.415sec
 ; reading time: 0.165sec
