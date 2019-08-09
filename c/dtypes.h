@@ -27,26 +27,8 @@
 #error "unknown platform"
 #endif
 
-#if defined(OPENBSD) || defined(FREEBSD)
-#if defined(__x86_64__)
-#define __SIZEOF_POINTER__ 8
-#else
-#define __SIZEOF_POINTER__ 4
-#endif
-#endif
-
-#if !defined(BITS32) && !defined(BITS64)
-#ifndef __SIZEOF_POINTER__
-#error "__SIZEOF_POINTER__ undefined"
-#endif
-#if (8 == __SIZEOF_POINTER__)
-#define BITS64
-#elif (4 == __SIZEOF_POINTER__)
-#define BITS32
-#else
-#error "this is one weird machine"
-#endif
-#endif
+#undef BITS32   // TODO
+#define BITS64  // TODO
 
 #if defined(WIN32)
 #define STDCALL __stdcall
