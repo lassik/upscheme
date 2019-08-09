@@ -2587,13 +2587,7 @@ value_t fl_toplevel_eval(value_t expr)
     return fl_applyn(1, symbol_value(evalsym), expr);
 }
 
-void fl_init(size_t initial_heapsize)
-{
-#ifdef BOEHM_GC
-    GC_init();
-#endif
-    lisp_init(initial_heapsize);
-}
+void fl_init(size_t initial_heapsize) { lisp_init(initial_heapsize); }
 
 int fl_load_system_image(value_t sys_image_iostream)
 {

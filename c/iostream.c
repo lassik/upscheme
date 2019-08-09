@@ -376,9 +376,7 @@ value_t fl_ioreaduntil(value_t *args, u_int32_t nargs)
     if (dest.buf != data) {
         // outgrew initial space
         cv->data = dest.buf;
-#ifndef BOEHM_GC
         cv_autorelease(cv);
-#endif
     }
     ((char *)cv->data)[n] = '\0';
     if (n == 0 && ios_eof(src))
@@ -423,9 +421,7 @@ value_t stream_to_string(value_t *ps)
         n--;
         b[n] = '\0';
         str = cvalue_from_ref(stringtype, b, n, FL_NIL);
-#ifndef BOEHM_GC
         cv_autorelease((struct cvalue *)ptr(str));
-#endif
     }
     return str;
 }
