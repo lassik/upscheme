@@ -1,4 +1,4 @@
-u_int64_t i64time();
+uint64_t i64time();
 double clock_now();
 void timestring(double seconds, char *buffer, size_t len);
 double parsetime(const char *str);

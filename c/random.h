@@ -6,4 +6,4 @@ double randn();
 void randomize();
 uint32_t genrand_int32();
 void init_genrand(uint32_t s);
-u_int64_t i64time();
+uint64_t i64time();

@@ -333,7 +333,7 @@ value_t fl_gensym(value_t *args, uint32_t nargs)
 
 int fl_isgensym(value_t v) { return isgensym(v); }
 
-static value_t fl_gensymp(value_t *args, u_int32_t nargs)
+static value_t fl_gensymp(value_t *args, uint32_t nargs)
 {
     argcount("gensym?", nargs, 1);
     return isgensym(args[0]) ? FL_T : FL_F;
@@ -2307,13 +2307,13 @@ static value_t fl_function_name(value_t *args, uint32_t nargs)
     return fn_name(v);
 }
 
-value_t fl_copylist(value_t *args, u_int32_t nargs)
+value_t fl_copylist(value_t *args, uint32_t nargs)
 {
     argcount("copy-list", nargs, 1);
     return copy_list(args[0]);
 }
 
-value_t fl_append(value_t *args, u_int32_t nargs)
+value_t fl_append(value_t *args, uint32_t nargs)
 {
     if (nargs == 0)
         return NIL;
@@ -2344,7 +2344,7 @@ value_t fl_append(value_t *args, u_int32_t nargs)
     return first;
 }
 
-value_t fl_liststar(value_t *args, u_int32_t nargs)
+value_t fl_liststar(value_t *args, uint32_t nargs)
 {
     if (nargs == 1)
         return args[0];
@@ -2353,14 +2353,14 @@ value_t fl_liststar(value_t *args, u_int32_t nargs)
     return _list(args, nargs, 1);
 }
 
-value_t fl_stacktrace(value_t *args, u_int32_t nargs)
+value_t fl_stacktrace(value_t *args, uint32_t nargs)
 {
     (void)args;
     argcount("stacktrace", nargs, 0);
     return _stacktrace(fl_throwing_frame ? fl_throwing_frame : curr_frame);
 }
 
-value_t fl_map1(value_t *args, u_int32_t nargs)
+value_t fl_map1(value_t *args, uint32_t nargs)
 {
     if (nargs < 2)
         lerror(ArgError, "map: too few arguments");

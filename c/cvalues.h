@@ -31,9 +31,9 @@ struct fltype *builtintype;
 static void cvalue_init(struct fltype *type, value_t v, void *dest);
 
 // cvalues-specific builtins
-value_t cvalue_new(value_t *args, u_int32_t nargs);
-value_t cvalue_sizeof(value_t *args, u_int32_t nargs);
-value_t cvalue_typeof(value_t *args, u_int32_t nargs);
+value_t cvalue_new(value_t *args, uint32_t nargs);
+value_t cvalue_sizeof(value_t *args, uint32_t nargs);
+value_t cvalue_typeof(value_t *args, uint32_t nargs);
 
 // trigger unconditional GC after this many bytes are allocated
 #define ALLOC_LIMIT_TRIGGER 67108864
@@ -241,18 +241,18 @@ void cv_pin(struct cvalue *cv)
     static int cvalue_##ctype##_init(struct fltype *type, value_t arg, \
                                      void *dest)                       \
     {                                                                  \
-        fl_##ctype##_t n = 0;                                          \
+        ctype##_t n = 0;                                               \
         (void)type;                                                    \
         if (isfixnum(arg)) {                                           \
             n = numval(arg);                                           \
         } else if (iscprim(arg)) {                                     \
             struct cprim *cp = (struct cprim *)ptr(arg);               \
             void *p = cp_data(cp);                                     \
-            n = (fl_##ctype##_t)conv_to_##cnvt(p, cp_numtype(cp));     \
+            n = (ctype##_t)conv_to_##cnvt(p, cp_numtype(cp));          \
         } else {                                                       \
             return 1;                                                  \
         }                                                              \
-        *((fl_##ctype##_t *)dest) = n;                                 \
+        *((ctype##_t *)dest) = n;                                      \
         return 0;                                                      \
     }
 num_init(int8, int32, T_INT8) num_init(uint8, uint32, T_UINT8)
@@ -262,25 +262,25 @@ num_init(int64, int64, T_INT64) num_init(uint64, uint64, T_UINT64)
 num_init(float, double, T_FLOAT) num_init(double, double, T_DOUBLE)
 
 #define num_ctor_init(typenam, ctype, tag)                           \
-    value_t cvalue_##typenam(value_t *args, u_int32_t nargs)         \
+    value_t cvalue_##typenam(value_t *args, uint32_t nargs)          \
     {                                                                \
         if (nargs == 0) {                                            \
             PUSH(fixnum(0));                                         \
             args = &Stack[SP - 1];                                   \
         }                                                            \
-        value_t cp = cprim(typenam##type, sizeof(fl_##ctype##_t));   \
+        value_t cp = cprim(typenam##type, sizeof(ctype##_t));        \
         if (cvalue_##ctype##_init(typenam##type, args[0],            \
                                   cp_data((struct cprim *)ptr(cp)))) \
             type_error(#typenam, "number", args[0]);                 \
         return cp;                                                   \
     }
 
-#define num_ctor_ctor(typenam, ctype, tag)                         \
-    value_t mk_##typenam(fl_##ctype##_t n)                         \
-    {                                                              \
-        value_t cp = cprim(typenam##type, sizeof(fl_##ctype##_t)); \
-        *(fl_##ctype##_t *)cp_data((struct cprim *)ptr(cp)) = n;   \
-        return cp;                                                 \
+#define num_ctor_ctor(typenam, ctype, tag)                    \
+    value_t mk_##typenam(ctype##_t n)                         \
+    {                                                         \
+        value_t cp = cprim(typenam##type, sizeof(ctype##_t)); \
+        *(ctype##_t *)cp_data((struct cprim *)ptr(cp)) = n;   \
+        return cp;                                            \
     }
 
 #define num_ctor(typenam, ctype, tag) \
@@ -350,7 +350,7 @@ static int cvalue_enum_init(struct fltype *ft, value_t arg, void *dest)
     return 0;
 }
 
-value_t cvalue_enum(value_t *args, u_int32_t nargs)
+value_t cvalue_enum(value_t *args, uint32_t nargs)
 {
     argcount("enum", nargs, 2);
     value_t type = fl_list2(enumsym, args[0]);
@@ -440,7 +440,7 @@ static int cvalue_array_init(struct fltype *ft, value_t arg, void *dest)
     return 0;
 }
 
-value_t cvalue_array(value_t *args, u_int32_t nargs)
+value_t cvalue_array(value_t *args, uint32_t nargs)
 {
     size_t elsize, cnt, sz, i;
     value_t arg;
@@ -595,7 +595,7 @@ void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
     type_error(fname, "plain-old-data", v);
 }
 
-value_t cvalue_sizeof(value_t *args, u_int32_t nargs)
+value_t cvalue_sizeof(value_t *args, uint32_t nargs)
 {
     argcount("sizeof", nargs, 1);
     if (issymbol(args[0]) || iscons(args[0])) {
@@ -608,7 +608,7 @@ value_t cvalue_sizeof(value_t *args, u_int32_t nargs)
     return size_wrap(n);
 }
 
-value_t cvalue_typeof(value_t *args, u_int32_t nargs)
+value_t cvalue_typeof(value_t *args, uint32_t nargs)
 {
     argcount("typeof", nargs, 1);
     switch (tag(args[0])) {
@@ -684,7 +684,7 @@ value_t cvalue_copy(value_t v)
     return tagptr(ncv, TAG_CVALUE);
 }
 
-value_t fl_copy(value_t *args, u_int32_t nargs)
+value_t fl_copy(value_t *args, uint32_t nargs)
 {
     argcount("copy", nargs, 1);
     if (iscons(args[0]) || isvector(args[0]))
@@ -696,7 +696,7 @@ value_t fl_copy(value_t *args, u_int32_t nargs)
     return cvalue_copy(args[0]);
 }
 
-value_t fl_podp(value_t *args, u_int32_t nargs)
+value_t fl_podp(value_t *args, uint32_t nargs)
 {
     argcount("plain-old-data?", nargs, 1);
     return (iscprim(args[0]) ||
@@ -760,7 +760,7 @@ static numerictype_t sym_to_numtype(value_t type)
 // this provides (1) a way to allocate values with a shared type for
 // efficiency, (2) a uniform interface for allocating cvalues of any
 // type, including user-defined.
-value_t cvalue_new(value_t *args, u_int32_t nargs)
+value_t cvalue_new(value_t *args, uint32_t nargs)
 {
     if (nargs < 1 || nargs > 2)
         argcount("c-value", nargs, 2);
@@ -810,7 +810,7 @@ value_t cvalue_compare(value_t a, value_t b)
 }
 
 static void check_addr_args(char *fname, value_t arr, value_t ind,
-                            char **data, ulong_t *index)
+                            char **data, unsigned long *index)
 {
     size_t numel;
     struct cvalue *cv = (struct cvalue *)ptr(arr);
@@ -824,7 +824,7 @@ static void check_addr_args(char *fname, value_t arr, value_t ind,
 static value_t cvalue_array_aref(value_t *args)
 {
     char *data;
-    ulong_t index;
+    unsigned long index;
     struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     value_t el = 0;
     numerictype_t nt = eltype->numtype;
@@ -858,7 +858,7 @@ static value_t cvalue_array_aref(value_t *args)
 static value_t cvalue_array_aset(value_t *args)
 {
     char *data;
-    ulong_t index;
+    unsigned long index;
     struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     check_addr_args("aset!", args[0], args[1], &data, &index);
     char *dest = data + index * eltype->size;
@@ -866,7 +866,7 @@ static value_t cvalue_array_aset(value_t *args)
     return args[2];
 }
 
-value_t fl_builtin(value_t *args, u_int32_t nargs)
+value_t fl_builtin(value_t *args, uint32_t nargs)
 {
     argcount("builtin", nargs, 1);
     struct symbol *name = tosymbol(args[0], "builtin");
@@ -893,11 +893,11 @@ value_t cbuiltin(char *name, builtin_t f)
     return tagptr(cv, TAG_CVALUE);
 }
 
-static value_t fl_logand(value_t *args, u_int32_t nargs);
-static value_t fl_logior(value_t *args, u_int32_t nargs);
-static value_t fl_logxor(value_t *args, u_int32_t nargs);
-static value_t fl_lognot(value_t *args, u_int32_t nargs);
-static value_t fl_ash(value_t *args, u_int32_t nargs);
+static value_t fl_logand(value_t *args, uint32_t nargs);
+static value_t fl_logior(value_t *args, uint32_t nargs);
+static value_t fl_logxor(value_t *args, uint32_t nargs);
+static value_t fl_lognot(value_t *args, uint32_t nargs);
+static value_t fl_ash(value_t *args, uint32_t nargs);
 
 static struct builtinspec cvalues_builtin_info[] = {
     { "c-value", cvalue_new },
@@ -1017,7 +1017,7 @@ static void cvalues_init(void)
     setc(emptystringsym, cvalue_static_cstring(""));
 }
 
-#define RETURN_NUM_AS(var, type) return (mk_##type((fl_##type##_t)var))
+#define RETURN_NUM_AS(var, type) return (mk_##type((type##_t)var))
 
 value_t return_from_uint64(uint64_t Uaccum)
 {
@@ -1047,7 +1047,7 @@ value_t return_from_int64(int64_t Saccum)
     RETURN_NUM_AS(Saccum, int32);
 }
 
-static value_t fl_add_any(value_t *args, u_int32_t nargs, fixnum_t carryIn)
+static value_t fl_add_any(value_t *args, uint32_t nargs, fixnum_t carryIn)
 {
     uint64_t Uaccum = 0;
     int64_t Saccum = carryIn;
@@ -1185,7 +1185,7 @@ static value_t fl_neg(value_t n)
     type_error("-", "number", n);
 }
 
-static value_t fl_mul_any(value_t *args, u_int32_t nargs, int64_t Saccum)
+static value_t fl_mul_any(value_t *args, uint32_t nargs, int64_t Saccum)
 {
     uint64_t Uaccum = 1;
     double Faccum = 1;
@@ -1501,7 +1501,7 @@ static value_t fl_bitwise_op(value_t a, value_t b, int opcode, char *fname)
     return NIL;
 }
 
-static value_t fl_logand(value_t *args, u_int32_t nargs)
+static value_t fl_logand(value_t *args, uint32_t nargs)
 {
     value_t v, e;
     int i;
@@ -1518,7 +1518,7 @@ static value_t fl_logand(value_t *args, u_int32_t nargs)
     return v;
 }
 
-static value_t fl_logior(value_t *args, u_int32_t nargs)
+static value_t fl_logior(value_t *args, uint32_t nargs)
 {
     value_t v, e;
     int i;
@@ -1535,7 +1535,7 @@ static value_t fl_logior(value_t *args, u_int32_t nargs)
     return v;
 }
 
-static value_t fl_logxor(value_t *args, u_int32_t nargs)
+static value_t fl_logxor(value_t *args, uint32_t nargs)
 {
     value_t v, e;
     int i;
@@ -1552,7 +1552,7 @@ static value_t fl_logxor(value_t *args, u_int32_t nargs)
     return v;
 }
 
-static value_t fl_lognot(value_t *args, u_int32_t nargs)
+static value_t fl_lognot(value_t *args, uint32_t nargs)
 {
     argcount("lognot", nargs, 1);
     value_t a = args[0];
@@ -1588,7 +1588,7 @@ static value_t fl_lognot(value_t *args, u_int32_t nargs)
     type_error("lognot", "integer", a);
 }
 
-static value_t fl_ash(value_t *args, u_int32_t nargs)
+static value_t fl_ash(value_t *args, uint32_t nargs)
 {
     fixnum_t n;
     int64_t accum;

@@ -119,7 +119,7 @@ value_t fl_file(value_t *args, uint32_t nargs)
     return f;
 }
 
-value_t fl_buffer(value_t *args, u_int32_t nargs)
+value_t fl_buffer(value_t *args, uint32_t nargs)
 {
     argcount("buffer", nargs, 0);
     (void)args;
@@ -130,7 +130,7 @@ value_t fl_buffer(value_t *args, u_int32_t nargs)
     return f;
 }
 
-value_t fl_read(value_t *args, u_int32_t nargs)
+value_t fl_read(value_t *args, uint32_t nargs)
 {
     value_t arg = 0;
     if (nargs > 1) {
@@ -149,7 +149,7 @@ value_t fl_read(value_t *args, u_int32_t nargs)
     return v;
 }
 
-value_t fl_iogetc(value_t *args, u_int32_t nargs)
+value_t fl_iogetc(value_t *args, uint32_t nargs)
 {
     argcount("io.getc", nargs, 1);
     struct ios *s = toiostream(args[0], "io.getc");
@@ -160,7 +160,7 @@ value_t fl_iogetc(value_t *args, u_int32_t nargs)
     return mk_wchar(wc);
 }
 
-value_t fl_iopeekc(value_t *args, u_int32_t nargs)
+value_t fl_iopeekc(value_t *args, uint32_t nargs)
 {
     argcount("io.peekc", nargs, 1);
     struct ios *s = toiostream(args[0], "io.peekc");
@@ -170,7 +170,7 @@ value_t fl_iopeekc(value_t *args, u_int32_t nargs)
     return mk_wchar(wc);
 }
 
-value_t fl_ioputc(value_t *args, u_int32_t nargs)
+value_t fl_ioputc(value_t *args, uint32_t nargs)
 {
     argcount("io.putc", nargs, 2);
     struct ios *s = toiostream(args[0], "io.putc");
@@ -181,7 +181,7 @@ value_t fl_ioputc(value_t *args, u_int32_t nargs)
     return fixnum(ios_pututf8(s, wc));
 }
 
-value_t fl_ioungetc(value_t *args, u_int32_t nargs)
+value_t fl_ioungetc(value_t *args, uint32_t nargs)
 {
     argcount("io.ungetc", nargs, 2);
     struct ios *s = toiostream(args[0], "io.ungetc");
@@ -195,7 +195,7 @@ value_t fl_ioungetc(value_t *args, u_int32_t nargs)
     return fixnum(ios_ungetc((int)wc, s));
 }
 
-value_t fl_ioflush(value_t *args, u_int32_t nargs)
+value_t fl_ioflush(value_t *args, uint32_t nargs)
 {
     argcount("io.flush", nargs, 1);
     struct ios *s = toiostream(args[0], "io.flush");
@@ -204,7 +204,7 @@ value_t fl_ioflush(value_t *args, u_int32_t nargs)
     return FL_T;
 }
 
-value_t fl_ioclose(value_t *args, u_int32_t nargs)
+value_t fl_ioclose(value_t *args, uint32_t nargs)
 {
     argcount("io.close", nargs, 1);
     struct ios *s = toiostream(args[0], "io.close");
@@ -212,7 +212,7 @@ value_t fl_ioclose(value_t *args, u_int32_t nargs)
     return FL_T;
 }
 
-value_t fl_iopurge(value_t *args, u_int32_t nargs)
+value_t fl_iopurge(value_t *args, uint32_t nargs)
 {
     argcount("io.discardbuffer", nargs, 1);
     struct ios *s = toiostream(args[0], "io.discardbuffer");
@@ -220,14 +220,14 @@ value_t fl_iopurge(value_t *args, u_int32_t nargs)
     return FL_T;
 }
 
-value_t fl_ioeof(value_t *args, u_int32_t nargs)
+value_t fl_ioeof(value_t *args, uint32_t nargs)
 {
     argcount("io.eof?", nargs, 1);
     struct ios *s = toiostream(args[0], "io.eof?");
     return (ios_eof(s) ? FL_T : FL_F);
 }
 
-value_t fl_ioseek(value_t *args, u_int32_t nargs)
+value_t fl_ioseek(value_t *args, uint32_t nargs)
 {
     argcount("io.seek", nargs, 2);
     struct ios *s = toiostream(args[0], "io.seek");
@@ -238,7 +238,7 @@ value_t fl_ioseek(value_t *args, u_int32_t nargs)
     return FL_T;
 }
 
-value_t fl_iopos(value_t *args, u_int32_t nargs)
+value_t fl_iopos(value_t *args, uint32_t nargs)
 {
     argcount("io.pos", nargs, 1);
     struct ios *s = toiostream(args[0], "io.pos");
@@ -248,7 +248,7 @@ value_t fl_iopos(value_t *args, u_int32_t nargs)
     return size_wrap((size_t)res);
 }
 
-value_t fl_write(value_t *args, u_int32_t nargs)
+value_t fl_write(value_t *args, uint32_t nargs)
 {
     if (nargs < 1 || nargs > 2)
         argcount("write", nargs, 1);
@@ -261,7 +261,7 @@ value_t fl_write(value_t *args, u_int32_t nargs)
     return args[0];
 }
 
-value_t fl_ioread(value_t *args, u_int32_t nargs)
+value_t fl_ioread(value_t *args, uint32_t nargs)
 {
     if (nargs != 3)
         argcount("io.read", nargs, 2);
@@ -306,7 +306,7 @@ static void get_start_count_args(value_t *args, uint32_t nargs, size_t sz,
     }
 }
 
-value_t fl_iowrite(value_t *args, u_int32_t nargs)
+value_t fl_iowrite(value_t *args, uint32_t nargs)
 {
     if (nargs < 2 || nargs > 4)
         argcount("io.write", nargs, 2);
@@ -330,7 +330,7 @@ value_t fl_iowrite(value_t *args, u_int32_t nargs)
     return size_wrap(ios_write(s, data, nb));
 }
 
-value_t fl_dump(value_t *args, u_int32_t nargs)
+value_t fl_dump(value_t *args, uint32_t nargs)
 {
     if (nargs < 1 || nargs > 3)
         argcount("dump", nargs, 1);
@@ -360,7 +360,7 @@ static char get_delim_arg(value_t arg, char *fname)
     return (char)uldelim;
 }
 
-value_t fl_ioreaduntil(value_t *args, u_int32_t nargs)
+value_t fl_ioreaduntil(value_t *args, uint32_t nargs)
 {
     argcount("io.readuntil", nargs, 2);
     value_t str = cvalue_string(80);
@@ -384,7 +384,7 @@ value_t fl_ioreaduntil(value_t *args, u_int32_t nargs)
     return str;
 }
 
-value_t fl_iocopyuntil(value_t *args, u_int32_t nargs)
+value_t fl_iocopyuntil(value_t *args, uint32_t nargs)
 {
     argcount("io.copyuntil", nargs, 3);
     struct ios *dest = toiostream(args[0], "io.copyuntil");
@@ -393,7 +393,7 @@ value_t fl_iocopyuntil(value_t *args, u_int32_t nargs)
     return size_wrap(ios_copyuntil(dest, src, delim));
 }
 
-value_t fl_iocopy(value_t *args, u_int32_t nargs)
+value_t fl_iocopy(value_t *args, uint32_t nargs)
 {
     if (nargs < 2 || nargs > 3)
         argcount("io.copy", nargs, 2);
@@ -426,7 +426,7 @@ value_t stream_to_string(value_t *ps)
     return str;
 }
 
-value_t fl_iotostring(value_t *args, u_int32_t nargs)
+value_t fl_iotostring(value_t *args, uint32_t nargs)
 {
     argcount("io.tostring!", nargs, 1);
     struct ios *src = toiostream(args[0], "io.tostring!");

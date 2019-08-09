@@ -395,7 +395,7 @@ uptrint_t hash_lispvalue(value_t a)
     return n;
 }
 
-value_t fl_hash(value_t *args, u_int32_t nargs)
+value_t fl_hash(value_t *args, uint32_t nargs)
 {
     argcount("hash", nargs, 1);
     return fixnum(hash_lispvalue(args[0]));

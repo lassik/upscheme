@@ -113,7 +113,7 @@ static int read_numtok(char *tok, value_t *pval, int base)
     return result;
 }
 
-static u_int32_t toktype = TOK_NONE;
+static uint32_t toktype = TOK_NONE;
 static value_t tokval;
 static char buf[256];
 
@@ -190,7 +190,7 @@ terminate:
 
 static value_t do_read_sexpr(value_t label);
 
-static u_int32_t peek(void)
+static uint32_t peek(void)
 {
     char c, *end;
     fixnum_t x;
@@ -405,10 +405,10 @@ static value_t vector_grow(value_t v)
     return POP();
 }
 
-static value_t read_vector(value_t label, u_int32_t closer)
+static value_t read_vector(value_t label, uint32_t closer)
 {
     value_t v = the_empty_vector, elt;
-    u_int32_t i = 0;
+    uint32_t i = 0;
     PUSH(v);
     if (label != UNBOUND)
         ptrhash_put(&readstate->backrefs, (void *)label, (void *)v);
@@ -439,7 +439,7 @@ static value_t read_string(void)
     size_t i = 0, j, sz = 64, ndig;
     int c;
     value_t s;
-    u_int32_t wc = 0;
+    uint32_t wc = 0;
 
     buf = malloc(sz);
     while (1) {
@@ -516,7 +516,7 @@ static value_t read_string(void)
 static void read_list(value_t *pval, value_t label)
 {
     value_t c, *pc;
-    u_int32_t t;
+    uint32_t t;
 
     PUSH(NIL);
     pc = &Stack[SP - 1];  // to keep track of current cons cell
@@ -560,7 +560,7 @@ static value_t do_read_sexpr(value_t label)
 {
     value_t v, sym, oldtokval, *head;
     value_t *pv;
-    u_int32_t t;
+    uint32_t t;
     char c;
 
     t = peek();

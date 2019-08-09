@@ -29,8 +29,8 @@
   and_to, or_to, and xor_to allow overlap.
 */
 
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "dtypes.h"
@@ -40,10 +40,10 @@
 #include <malloc.h>
 #endif
 
-u_int32_t *bitvector_resize(u_int32_t *b, uint64_t oldsz, uint64_t newsz,
-                            int initzero)
+uint32_t *bitvector_resize(uint32_t *b, uint64_t oldsz, uint64_t newsz,
+                           int initzero)
 {
-    u_int32_t *p;
+    uint32_t *p;
     size_t sz = ((newsz + 31) >> 5) * sizeof(uint32_t);
     p = LLT_REALLOC(b, sz);
     if (p == NULL)
@@ -55,14 +55,14 @@ u_int32_t *bitvector_resize(u_int32_t *b, uint64_t oldsz, uint64_t newsz,
     return p;
 }
 
-u_int32_t *bitvector_new(u_int64_t n, int initzero)
+uint32_t *bitvector_new(uint64_t n, int initzero)
 {
     return bitvector_resize(NULL, 0, n, initzero);
 }
 
-size_t bitvector_nwords(u_int64_t nbits) { return ((nbits + 31) >> 5); }
+size_t bitvector_nwords(uint64_t nbits) { return ((nbits + 31) >> 5); }
 
-void bitvector_set(u_int32_t *b, u_int64_t n, u_int32_t c)
+void bitvector_set(uint32_t *b, uint64_t n, uint32_t c)
 {
     if (c)
         b[n >> 5] |= (1 << (n & 31));
@@ -70,7 +70,7 @@ void bitvector_set(u_int32_t *b, u_int64_t n, u_int32_t c)
         b[n >> 5] &= ~(1 << (n & 31));
 }
 
-u_int32_t bitvector_get(u_int32_t *b, u_int64_t n)
+uint32_t bitvector_get(uint32_t *b, uint64_t n)
 {
     return b[n >> 5] & (1 << (n & 31));
 }

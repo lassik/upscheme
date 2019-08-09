@@ -96,36 +96,9 @@ typedef int bool_t;
 #if defined(__INTEL_COMPILER) && defined(WIN32)
 #define STATIC_INLINE static
 #define INLINE
-#ifdef BITS64
-typedef unsigned long size_t;
-#else
-typedef unsigned int size_t;
-#endif
 #else
 #define STATIC_INLINE static inline
 #define INLINE inline
-#endif
-
-typedef unsigned char byte_t; /* 1 byte */
-#if defined(WIN32)
-typedef short int16_t;
-typedef int int32_t;
-typedef long long int64_t;
-typedef unsigned char u_int8_t;
-typedef unsigned short u_int16_t;
-typedef unsigned int u_int32_t;
-#ifdef BITS64
-typedef unsigned long u_int64_t;
-#else
-typedef unsigned long long u_int64_t;
-#endif
-#ifdef __INTEL_COMPILER
-typedef signed char int8_t;
-typedef short int16_t;
-typedef int int32_t;
-#endif
-#else
-#include <sys/types.h>
 #endif
 
 #ifdef BITS64
@@ -134,24 +107,24 @@ typedef int int32_t;
 typedef unsigned long uint_t;  // preferred int type on platform
 typedef long int_t;
 typedef int64_t offset_t;
-typedef u_int64_t index_t;
+typedef uint64_t index_t;
 typedef int64_t ptrint_t;  // pointer-size int
-typedef u_int64_t u_ptrint_t;
+typedef uint64_t u_ptrint_t;
 #else
 #define TOP_BIT 0x80000000
 #define NBITS 32
 typedef unsigned long uint_t;
 typedef long int_t;
 typedef int32_t offset_t;
-typedef u_int32_t index_t;
+typedef uint32_t index_t;
 typedef int32_t ptrint_t;
-typedef u_int32_t u_ptrint_t;
+typedef uint32_t u_ptrint_t;
 #endif
 
-typedef u_int8_t uint8_t;
-typedef u_int16_t uint16_t;
-typedef u_int32_t uint32_t;
-typedef u_int64_t uint64_t;
+typedef uint8_t uint8_t;
+typedef uint16_t uint16_t;
+typedef uint32_t uint32_t;
+typedef uint64_t uint64_t;
 typedef u_ptrint_t uptrint_t;
 
 #define LLT_ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))

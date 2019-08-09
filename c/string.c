@@ -32,13 +32,13 @@
 
 #include "flisp.h"
 
-value_t fl_stringp(value_t *args, u_int32_t nargs)
+value_t fl_stringp(value_t *args, uint32_t nargs)
 {
     argcount("string?", nargs, 1);
     return fl_isstring(args[0]) ? FL_T : FL_F;
 }
 
-value_t fl_string_count(value_t *args, u_int32_t nargs)
+value_t fl_string_count(value_t *args, uint32_t nargs)
 {
     size_t start = 0;
     if (nargs < 1 || nargs > 3)
@@ -63,7 +63,7 @@ value_t fl_string_count(value_t *args, u_int32_t nargs)
     return size_wrap(u8_charnum(str + start, stop - start));
 }
 
-value_t fl_string_width(value_t *args, u_int32_t nargs)
+value_t fl_string_width(value_t *args, uint32_t nargs)
 {
     argcount("string.width", nargs, 1);
     if (iscprim(args[0])) {
@@ -79,7 +79,7 @@ value_t fl_string_width(value_t *args, u_int32_t nargs)
     return size_wrap(u8_strwidth(s));
 }
 
-value_t fl_string_reverse(value_t *args, u_int32_t nargs)
+value_t fl_string_reverse(value_t *args, uint32_t nargs)
 {
     argcount("string.reverse", nargs, 1);
     if (!fl_isstring(args[0]))
@@ -90,7 +90,7 @@ value_t fl_string_reverse(value_t *args, u_int32_t nargs)
     return ns;
 }
 
-value_t fl_string_encode(value_t *args, u_int32_t nargs)
+value_t fl_string_encode(value_t *args, uint32_t nargs)
 {
     argcount("string.encode", nargs, 1);
     if (iscvalue(args[0])) {
@@ -110,7 +110,7 @@ value_t fl_string_encode(value_t *args, u_int32_t nargs)
     type_error("string.encode", "wchar array", args[0]);
 }
 
-value_t fl_string_decode(value_t *args, u_int32_t nargs)
+value_t fl_string_decode(value_t *args, uint32_t nargs)
 {
     int term = 0;
     if (nargs == 2) {
@@ -136,10 +136,10 @@ value_t fl_string_decode(value_t *args, u_int32_t nargs)
     return wcstr;
 }
 
-extern value_t fl_buffer(value_t *args, u_int32_t nargs);
+extern value_t fl_buffer(value_t *args, uint32_t nargs);
 extern value_t stream_to_string(value_t *ps);
 
-value_t fl_string(value_t *args, u_int32_t nargs)
+value_t fl_string(value_t *args, uint32_t nargs)
 {
     if (nargs == 1 && fl_isstring(args[0]))
         return args[0];
@@ -159,7 +159,7 @@ value_t fl_string(value_t *args, u_int32_t nargs)
     return outp;
 }
 
-value_t fl_string_split(value_t *args, u_int32_t nargs)
+value_t fl_string_split(value_t *args, uint32_t nargs)
 {
     argcount("string.split", nargs, 2);
     char *s = tostring(args[0], "string.split");
@@ -203,7 +203,7 @@ value_t fl_string_split(value_t *args, u_int32_t nargs)
     return first;
 }
 
-value_t fl_string_sub(value_t *args, u_int32_t nargs)
+value_t fl_string_sub(value_t *args, uint32_t nargs)
 {
     if (nargs != 2)
         argcount("string.sub", nargs, 3);
@@ -227,7 +227,7 @@ value_t fl_string_sub(value_t *args, u_int32_t nargs)
     return ns;
 }
 
-value_t fl_string_char(value_t *args, u_int32_t nargs)
+value_t fl_string_char(value_t *args, uint32_t nargs)
 {
     argcount("string.char", nargs, 2);
     char *s = tostring(args[0], "string.char");
@@ -241,7 +241,7 @@ value_t fl_string_char(value_t *args, u_int32_t nargs)
     return mk_wchar(u8_nextchar(s, &i));
 }
 
-value_t fl_char_upcase(value_t *args, u_int32_t nargs)
+value_t fl_char_upcase(value_t *args, uint32_t nargs)
 {
     argcount("char.upcase", nargs, 1);
     struct cprim *cp = (struct cprim *)ptr(args[0]);
@@ -249,7 +249,7 @@ value_t fl_char_upcase(value_t *args, u_int32_t nargs)
         type_error("char.upcase", "wchar", args[0]);
     return mk_wchar(towupper(*(int32_t *)cp_data(cp)));
 }
-value_t fl_char_downcase(value_t *args, u_int32_t nargs)
+value_t fl_char_downcase(value_t *args, uint32_t nargs)
 {
     argcount("char.downcase", nargs, 1);
     struct cprim *cp = (struct cprim *)ptr(args[0]);
@@ -258,7 +258,7 @@ value_t fl_char_downcase(value_t *args, u_int32_t nargs)
     return mk_wchar(towlower(*(int32_t *)cp_data(cp)));
 }
 
-value_t fl_char_alpha(value_t *args, u_int32_t nargs)
+value_t fl_char_alpha(value_t *args, uint32_t nargs)
 {
     argcount("char-alphabetic?", nargs, 1);
     struct cprim *cp = (struct cprim *)ptr(args[0]);
@@ -275,7 +275,7 @@ static value_t mem_find_byte(char *s, char c, size_t start, size_t len)
     return size_wrap((size_t)(p - s));
 }
 
-value_t fl_string_find(value_t *args, u_int32_t nargs)
+value_t fl_string_find(value_t *args, uint32_t nargs)
 {
     char cbuf[8];
     size_t start = 0;
@@ -323,7 +323,7 @@ value_t fl_string_find(value_t *args, u_int32_t nargs)
     return FL_F;
 }
 
-value_t fl_string_inc(value_t *args, u_int32_t nargs)
+value_t fl_string_inc(value_t *args, uint32_t nargs)
 {
     if (nargs < 2 || nargs > 3)
         argcount("string.inc", nargs, 2);
@@ -341,7 +341,7 @@ value_t fl_string_inc(value_t *args, u_int32_t nargs)
     return size_wrap(i);
 }
 
-value_t fl_string_dec(value_t *args, u_int32_t nargs)
+value_t fl_string_dec(value_t *args, uint32_t nargs)
 {
     if (nargs < 2 || nargs > 3)
         argcount("string.dec", nargs, 2);
@@ -370,7 +370,7 @@ static unsigned long get_radix_arg(value_t arg, char *fname)
     return radix;
 }
 
-value_t fl_numbertostring(value_t *args, u_int32_t nargs)
+value_t fl_numbertostring(value_t *args, uint32_t nargs)
 {
     if (nargs < 1 || nargs > 2)
         argcount("number->string", nargs, 2);
@@ -412,7 +412,7 @@ value_t fl_stringtonumber(value_t *args, uint32_t nargs)
     return n;
 }
 
-value_t fl_string_isutf8(value_t *args, u_int32_t nargs)
+value_t fl_string_isutf8(value_t *args, uint32_t nargs)
 {
     argcount("string.isutf8", nargs, 1);
     char *s = tostring(args[0], "string.isutf8");

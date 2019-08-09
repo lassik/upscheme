@@ -1,21 +1,21 @@
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
-
-#include "dtypes.h"
-#include "bitvector.h"
 
 #ifdef WIN32
 #include <malloc.h>
 #define alloca _alloca
 #endif
 
+#include "dtypes.h"
+#include "bitvector.h"
+
 // greater than this # of words we use malloc instead of alloca
 #define MALLOC_CUTOFF 2000
 
-u_int32_t bitreverse(u_int32_t x)
+uint32_t bitreverse(uint32_t x)
 {
-    u_int32_t m;
+    uint32_t m;
 
 #ifdef __INTEL_COMPILER
     x = _bswap(x);
@@ -38,9 +38,9 @@ u_int32_t bitreverse(u_int32_t x)
 // n is # of int32s to consider, s is shift distance
 // lowest bit-index is bit 0 of word 0
 // TODO: handle boundary case of shift distance >= data size?
-void bitvector_shr(u_int32_t *b, size_t n, u_int32_t s)
+void bitvector_shr(uint32_t *b, size_t n, uint32_t s)
 {
-    u_int32_t i;
+    uint32_t i;
     if (s == 0 || n == 0)
         return;
     i = (s >> 5);
@@ -60,9 +60,9 @@ void bitvector_shr(u_int32_t *b, size_t n, u_int32_t s)
 // linear representation when a copy is needed
 // assumes that dest has the same amount of space as source, even if it
 // wouldn't have been necessary to hold the shifted bits
-void bitvector_shr_to(u_int32_t *dest, u_int32_t *b, size_t n, u_int32_t s)
+void bitvector_shr_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s)
 {
-    u_int32_t i, j;
+    uint32_t i, j;
     if (n == 0)
         return;
     if (s == 0) {
@@ -82,9 +82,9 @@ void bitvector_shr_to(u_int32_t *dest, u_int32_t *b, size_t n, u_int32_t s)
     dest[i] = b[i] >> s;
 }
 
-void bitvector_shl(u_int32_t *b, size_t n, u_int32_t s)
+void bitvector_shl(uint32_t *b, size_t n, uint32_t s)
 {
-    u_int32_t i, scrap = 0, temp;
+    uint32_t i, scrap = 0, temp;
     if (s == 0 || n == 0)
         return;
     i = (s >> 5);
@@ -104,10 +104,10 @@ void bitvector_shl(u_int32_t *b, size_t n, u_int32_t s)
 
 // if dest has more space than source, set scrap to true to keep the
 // top bits that would otherwise be shifted out
-void bitvector_shl_to(u_int32_t *dest, u_int32_t *b, size_t n, u_int32_t s,
+void bitvector_shl_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s,
                       bool_t scrap)
 {
-    u_int32_t i, j, sc = 0;
+    uint32_t i, j, sc = 0;
     if (n == 0)
         return;
     if (s == 0) {
@@ -131,12 +131,11 @@ void bitvector_shl_to(u_int32_t *dest, u_int32_t *b, size_t n, u_int32_t s,
 
 // set nbits to c, starting at given bit offset
 // assumes offs < 32
-void bitvector_fill(u_int32_t *b, u_int32_t offs, u_int32_t c,
-                    u_int32_t nbits)
+void bitvector_fill(uint32_t *b, uint32_t offs, uint32_t c, uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
-    u_int32_t mask;
+    uint32_t nw, tail;
+    uint32_t mask;
 
     if (nbits == 0)
         return;
@@ -176,11 +175,11 @@ void bitvector_fill(u_int32_t *b, u_int32_t offs, u_int32_t c,
     }
 }
 
-void bitvector_not(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
+void bitvector_not(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
-    u_int32_t mask;
+    uint32_t nw, tail;
+    uint32_t mask;
 
     if (nbits == 0)
         return;
@@ -210,12 +209,12 @@ void bitvector_not(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
 // constant-space bit vector copy in a single pass, with arbitrary
 // offsets and lengths. to get this right, there are 16 cases to handle!
 #define BITVECTOR_COPY_OP(name, OP)                                          \
-    void bitvector_##name(u_int32_t *dest, u_int32_t doffs, u_int32_t *src,  \
-                          u_int32_t soffs, u_int32_t nbits)                  \
+    void bitvector_##name(uint32_t *dest, uint32_t doffs, uint32_t *src,     \
+                          uint32_t soffs, uint32_t nbits)                    \
     {                                                                        \
         index_t i;                                                           \
-        u_int32_t s, nw, tail, snw;                                          \
-        u_int32_t mask, scrap;                                               \
+        uint32_t s, nw, tail, snw;                                           \
+        uint32_t mask, scrap;                                                \
                                                                              \
         if (nbits == 0)                                                      \
             return;                                                          \
@@ -319,7 +318,7 @@ BITVECTOR_COPY_OP(not_to, BV_NOT)
 
 // right-shift the bits in one logical "row" of a long 2d bit vector
 /*
-void bitvector_shr_row(u_int32_t *b, u_int32_t offs, size_t nbits, u_int32_t
+void bitvector_shr_row(uint32_t *b, uint32_t offs, size_t nbits, uint32_t
 s)
 {
 }
@@ -329,11 +328,11 @@ s)
 // assumes dest offset == 0
 // assumes source and dest don't overlap
 // assumes offset < 32
-void bitvector_reverse_to(u_int32_t *dest, u_int32_t *src, u_int32_t soffs,
-                          u_int32_t nbits)
+void bitvector_reverse_to(uint32_t *dest, uint32_t *src, uint32_t soffs,
+                          uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
+    uint32_t nw, tail;
 
     if (nbits == 0)
         return;
@@ -352,11 +351,11 @@ void bitvector_reverse_to(u_int32_t *dest, u_int32_t *src, u_int32_t soffs,
         bitvector_shr(dest, nw, 32 - tail);
 }
 
-void bitvector_reverse(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
+void bitvector_reverse(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
-    u_int32_t *temp;
+    uint32_t nw, tail;
+    uint32_t *temp;
 
     if (nbits == 0)
         return;
@@ -376,15 +375,15 @@ void bitvector_reverse(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
         free(temp);
 }
 
-u_int64_t bitvector_count(u_int32_t *b, u_int32_t offs, u_int64_t nbits)
+uint64_t bitvector_count(uint32_t *b, uint32_t offs, uint64_t nbits)
 {
     size_t i, nw;
-    u_int32_t ntail;
-    u_int64_t ans;
+    uint32_t ntail;
+    uint64_t ans;
 
     if (nbits == 0)
         return 0;
-    nw = ((u_int64_t)offs + nbits + 31) >> 5;
+    nw = ((uint64_t)offs + nbits + 31) >> 5;
 
     if (nw == 1) {
         return count_bits(b[0] & (lomask(nbits) << offs));
@@ -406,18 +405,18 @@ u_int64_t bitvector_count(u_int32_t *b, u_int32_t offs, u_int64_t nbits)
         ans += count_bits(b[i]);
     }
 
-    ntail = (offs + (u_int32_t)nbits) & 31;
+    ntail = (offs + (uint32_t)nbits) & 31;
     ans +=
     count_bits(b[i] & (ntail > 0 ? lomask(ntail) : ONES32));  // last end cap
 
     return ans;
 }
 
-u_int32_t bitvector_any0(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
+uint32_t bitvector_any0(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
-    u_int32_t mask;
+    uint32_t nw, tail;
+    uint32_t mask;
 
     if (nbits == 0)
         return 0;
@@ -451,11 +450,11 @@ u_int32_t bitvector_any0(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
     return 0;
 }
 
-u_int32_t bitvector_any1(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
+uint32_t bitvector_any1(uint32_t *b, uint32_t offs, uint32_t nbits)
 {
     index_t i;
-    u_int32_t nw, tail;
-    u_int32_t mask;
+    uint32_t nw, tail;
+    uint32_t mask;
 
     if (nbits == 0)
         return 0;
@@ -489,8 +488,8 @@ u_int32_t bitvector_any1(u_int32_t *b, u_int32_t offs, u_int32_t nbits)
     return 0;
 }
 
-static void adjust_offset_to(u_int32_t *dest, u_int32_t *src, u_int32_t nw,
-                             u_int32_t soffs, u_int32_t newoffs)
+static void adjust_offset_to(uint32_t *dest, uint32_t *src, uint32_t nw,
+                             uint32_t soffs, uint32_t newoffs)
 {
     if (newoffs > soffs)
         bitvector_shl_to(dest, src, nw, newoffs - soffs, 1);
@@ -498,35 +497,35 @@ static void adjust_offset_to(u_int32_t *dest, u_int32_t *src, u_int32_t nw,
         bitvector_shr_to(dest, src, nw, soffs - newoffs);
 }
 
-#define BITVECTOR_BINARY_OP_TO(opname, OP)                                \
-    void bitvector_##opname##_to(                                         \
-    u_int32_t *dest, u_int32_t doffs, u_int32_t *a, u_int32_t aoffs,      \
-    u_int32_t *b, u_int32_t boffs, u_int32_t nbits)                       \
-    {                                                                     \
-        u_int32_t nw = (doffs + nbits + 31) >> 5;                         \
-        u_int32_t *temp =                                                 \
-        nw > MALLOC_CUTOFF ? malloc((nw + 1) * 4) : alloca((nw + 1) * 4); \
-        u_int32_t i, anw, bnw;                                            \
-        if (aoffs == boffs) {                                             \
-            anw = (aoffs + nbits + 31) >> 5;                              \
-        } else if (aoffs == doffs) {                                      \
-            bnw = (boffs + nbits + 31) >> 5;                              \
-            adjust_offset_to(temp, b, bnw, boffs, aoffs);                 \
-            b = temp;                                                     \
-            anw = nw;                                                     \
-        } else {                                                          \
-            anw = (aoffs + nbits + 31) >> 5;                              \
-            bnw = (boffs + nbits + 31) >> 5;                              \
-            adjust_offset_to(temp, a, anw, aoffs, boffs);                 \
-            a = temp;                                                     \
-            aoffs = boffs;                                                \
-            anw = bnw;                                                    \
-        }                                                                 \
-        for (i = 0; i < anw; i++)                                         \
-            temp[i] = OP(a[i], b[i]);                                     \
-        bitvector_copy(dest, doffs, temp, aoffs, nbits);                  \
-        if (nw > MALLOC_CUTOFF)                                           \
-            free(temp);                                                   \
+#define BITVECTOR_BINARY_OP_TO(opname, OP)                                 \
+    void bitvector_##opname##_to(uint32_t *dest, uint32_t doffs,           \
+                                 uint32_t *a, uint32_t aoffs, uint32_t *b, \
+                                 uint32_t boffs, uint32_t nbits)           \
+    {                                                                      \
+        uint32_t nw = (doffs + nbits + 31) >> 5;                           \
+        uint32_t *temp =                                                   \
+        nw > MALLOC_CUTOFF ? malloc((nw + 1) * 4) : alloca((nw + 1) * 4);  \
+        uint32_t i, anw, bnw;                                              \
+        if (aoffs == boffs) {                                              \
+            anw = (aoffs + nbits + 31) >> 5;                               \
+        } else if (aoffs == doffs) {                                       \
+            bnw = (boffs + nbits + 31) >> 5;                               \
+            adjust_offset_to(temp, b, bnw, boffs, aoffs);                  \
+            b = temp;                                                      \
+            anw = nw;                                                      \
+        } else {                                                           \
+            anw = (aoffs + nbits + 31) >> 5;                               \
+            bnw = (boffs + nbits + 31) >> 5;                               \
+            adjust_offset_to(temp, a, anw, aoffs, boffs);                  \
+            a = temp;                                                      \
+            aoffs = boffs;                                                 \
+            anw = bnw;                                                     \
+        }                                                                  \
+        for (i = 0; i < anw; i++)                                          \
+            temp[i] = OP(a[i], b[i]);                                      \
+        bitvector_copy(dest, doffs, temp, aoffs, nbits);                   \
+        if (nw > MALLOC_CUTOFF)                                            \
+            free(temp);                                                    \
     }
 
 #define BV_AND(a, b) ((a) & (b))

@@ -50,17 +50,17 @@ double diff_time(struct timeval *tv1, struct timeval *tv2)
 #endif
 
 // return as many bits of system randomness as we can get our hands on
-u_int64_t i64time()
+uint64_t i64time()
 {
-    u_int64_t a;
+    uint64_t a;
 #ifdef WIN32
     struct timeb tstruct;
     ftime(&tstruct);
-    a = (((u_int64_t)tstruct.time) << 32) + (u_int64_t)tstruct.millitm;
+    a = (((uint64_t)tstruct.time) << 32) + (uint64_t)tstruct.millitm;
 #else
     struct timeval now;
     gettimeofday(&now, NULL);
-    a = (((u_int64_t)now.tv_sec) << 32) + (u_int64_t)now.tv_usec;
+    a = (((uint64_t)now.tv_sec) << 32) + (uint64_t)now.tv_usec;
 #endif
 
     return a;

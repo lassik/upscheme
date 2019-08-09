@@ -313,24 +313,6 @@ struct function {
     (iscprim(v) ? cp_data((struct cprim *)ptr(v)) \
                 : cv_data((struct cvalue *)ptr(v)))
 
-/* C type names corresponding to cvalues type names */
-typedef int8_t fl_int8_t;
-typedef uint8_t fl_uint8_t;
-typedef int16_t fl_int16_t;
-typedef uint16_t fl_uint16_t;
-typedef int32_t fl_int32_t;
-typedef uint32_t fl_uint32_t;
-typedef int64_t fl_int64_t;
-typedef uint64_t fl_uint64_t;
-typedef char fl_char_t;
-typedef char char_t;
-typedef long fl_long_t;
-typedef long long_t;
-typedef unsigned long fl_ulong_t;
-typedef unsigned long ulong_t;
-typedef double fl_double_t;
-typedef float fl_float_t;
-
 typedef value_t (*builtin_t)(value_t *, uint32_t);
 
 extern value_t QUOTE;
@@ -377,8 +359,8 @@ struct fltype *get_array_type(value_t eltype);
 struct fltype *define_opaque_type(value_t sym, size_t sz,
                                   struct cvtable *vtab, cvinitfunc_t init);
 
-value_t mk_double(fl_double_t n);
-value_t mk_float(fl_float_t n);
+value_t mk_double(double n);
+value_t mk_float(float n);
 value_t mk_uint32(uint32_t n);
 value_t mk_uint64(uint64_t n);
 value_t mk_wchar(int32_t n);
@@ -408,7 +390,7 @@ struct builtinspec {
 void assign_global_builtins(struct builtinspec *b);
 
 /* builtins */
-value_t fl_hash(value_t *args, u_int32_t nargs);
+value_t fl_hash(value_t *args, uint32_t nargs);
 value_t cvalue_byte(value_t *args, uint32_t nargs);
 value_t cvalue_wchar(value_t *args, uint32_t nargs);
 

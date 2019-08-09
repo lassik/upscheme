@@ -59,6 +59,6 @@ double randn()
 
 void randomize()
 {
-    u_int64_t tm = i64time();
+    uint64_t tm = i64time();
     init_by_array((uint32_t *)&tm, 2);
 }

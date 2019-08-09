@@ -34,14 +34,14 @@ int isdigit_base(char c, int base);
 #endif
 
 #if !defined(__INTEL_COMPILER) && (defined(ARCH_X86) || defined(ARCH_X86_64))
-STATIC_INLINE u_int16_t ByteSwap16(u_int16_t x)
+STATIC_INLINE uint16_t ByteSwap16(uint16_t x)
 {
     __asm("xchgb %b0,%h0" : LEGACY_REGS(x) : "0"(x));
     return x;
 }
 #define bswap_16(x) ByteSwap16(x)
 
-STATIC_INLINE u_int32_t ByteSwap32(u_int32_t x)
+STATIC_INLINE uint32_t ByteSwap32(uint32_t x)
 {
 #if __CPU__ > 386
     __asm("bswap        %0"
@@ -60,15 +60,15 @@ STATIC_INLINE u_int32_t ByteSwap32(u_int32_t x)
 
 #define bswap_32(x) ByteSwap32(x)
 
-STATIC_INLINE u_int64_t ByteSwap64(u_int64_t x)
+STATIC_INLINE uint64_t ByteSwap64(uint64_t x)
 {
 #ifdef ARCH_X86_64
     __asm("bswap        %0" : "=r"(x) : "0"(x));
     return x;
 #else
     register union {
-        __extension__ u_int64_t __ll;
-        u_int32_t __l[2];
+        __extension__ uint64_t __ll;
+        uint32_t __l[2];
     } __x;
     asm("xchgl  %0,%1"
         : "=r"(__x.__l[0]), "=r"(__x.__l[1])
@@ -91,11 +91,11 @@ STATIC_INLINE u_int64_t ByteSwap64(u_int64_t x)
      (((x)&0x0000ff00) << 8) | (((x)&0x000000ff) << 24))
 #endif
 
-STATIC_INLINE u_int64_t ByteSwap64(u_int64_t x)
+STATIC_INLINE uint64_t ByteSwap64(uint64_t x)
 {
     union {
-        u_int64_t ll;
-        u_int32_t l[2];
+        uint64_t ll;
+        uint32_t l[2];
     } w, r;
     w.ll = x;
     r.l[0] = bswap_32(w.l[1]);

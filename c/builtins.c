@@ -43,7 +43,7 @@ size_t llength(value_t v)
     return n;
 }
 
-static value_t fl_nconc(value_t *args, u_int32_t nargs)
+static value_t fl_nconc(value_t *args, uint32_t nargs)
 {
     if (nargs == 0)
         return FL_NIL;
@@ -69,7 +69,7 @@ static value_t fl_nconc(value_t *args, u_int32_t nargs)
     return first;
 }
 
-static value_t fl_assq(value_t *args, u_int32_t nargs)
+static value_t fl_assq(value_t *args, uint32_t nargs)
 {
     argcount("assq", nargs, 2);
     value_t item = args[0];
@@ -85,7 +85,7 @@ static value_t fl_assq(value_t *args, u_int32_t nargs)
     return FL_F;
 }
 
-static value_t fl_memq(value_t *args, u_int32_t nargs)
+static value_t fl_memq(value_t *args, uint32_t nargs)
 {
     argcount("memq", nargs, 2);
     while (iscons(args[1])) {
@@ -97,7 +97,7 @@ static value_t fl_memq(value_t *args, u_int32_t nargs)
     return FL_F;
 }
 
-static value_t fl_length(value_t *args, u_int32_t nargs)
+static value_t fl_length(value_t *args, uint32_t nargs)
 {
     argcount("length", nargs, 1);
     value_t a = args[0];
@@ -123,13 +123,13 @@ static value_t fl_length(value_t *args, u_int32_t nargs)
     type_error("length", "sequence", a);
 }
 
-static value_t fl_f_raise(value_t *args, u_int32_t nargs)
+static value_t fl_f_raise(value_t *args, uint32_t nargs)
 {
     argcount("raise", nargs, 1);
     fl_raise(args[0]);
 }
 
-static value_t fl_exit(value_t *args, u_int32_t nargs)
+static value_t fl_exit(value_t *args, uint32_t nargs)
 {
     if (nargs > 0)
         exit(tofixnum(args[0], "exit"));
@@ -137,7 +137,7 @@ static value_t fl_exit(value_t *args, u_int32_t nargs)
     return FL_NIL;
 }
 
-static value_t fl_symbol(value_t *args, u_int32_t nargs)
+static value_t fl_symbol(value_t *args, uint32_t nargs)
 {
     argcount("symbol", nargs, 1);
     if (!fl_isstring(args[0]))
@@ -145,7 +145,7 @@ static value_t fl_symbol(value_t *args, u_int32_t nargs)
     return symbol(cvalue_data(args[0]));
 }
 
-static value_t fl_keywordp(value_t *args, u_int32_t nargs)
+static value_t fl_keywordp(value_t *args, uint32_t nargs)
 {
     argcount("keyword?", nargs, 1);
     return (issymbol(args[0]) && iskeyword((struct symbol *)ptr(args[0])))
@@ -153,7 +153,7 @@ static value_t fl_keywordp(value_t *args, u_int32_t nargs)
            : FL_F;
 }
 
-static value_t fl_top_level_value(value_t *args, u_int32_t nargs)
+static value_t fl_top_level_value(value_t *args, uint32_t nargs)
 {
     argcount("top-level-value", nargs, 1);
     struct symbol *sym = tosymbol(args[0], "top-level-value");
@@ -162,7 +162,7 @@ static value_t fl_top_level_value(value_t *args, u_int32_t nargs)
     return sym->binding;
 }
 
-static value_t fl_set_top_level_value(value_t *args, u_int32_t nargs)
+static value_t fl_set_top_level_value(value_t *args, uint32_t nargs)
 {
     argcount("set-top-level-value!", nargs, 2);
     struct symbol *sym = tosymbol(args[0], "set-top-level-value!");
@@ -184,7 +184,7 @@ static void global_env_list(struct symbol *root, value_t *pv)
 
 extern struct symbol *symtab;
 
-value_t fl_global_env(value_t *args, u_int32_t nargs)
+value_t fl_global_env(value_t *args, uint32_t nargs)
 {
     (void)args;
     argcount("environment", nargs, 0);
@@ -197,7 +197,7 @@ value_t fl_global_env(value_t *args, u_int32_t nargs)
 
 extern value_t QUOTE;
 
-static value_t fl_constantp(value_t *args, u_int32_t nargs)
+static value_t fl_constantp(value_t *args, uint32_t nargs)
 {
     argcount("constant?", nargs, 1);
     if (issymbol(args[0]))
@@ -210,7 +210,7 @@ static value_t fl_constantp(value_t *args, u_int32_t nargs)
     return FL_T;
 }
 
-static value_t fl_integer_valuedp(value_t *args, u_int32_t nargs)
+static value_t fl_integer_valuedp(value_t *args, uint32_t nargs)
 {
     argcount("integer-valued?", nargs, 1);
     value_t v = args[0];
@@ -239,7 +239,7 @@ static value_t fl_integer_valuedp(value_t *args, u_int32_t nargs)
     return FL_F;
 }
 
-static value_t fl_integerp(value_t *args, u_int32_t nargs)
+static value_t fl_integerp(value_t *args, uint32_t nargs)
 {
     argcount("integer?", nargs, 1);
     value_t v = args[0];
@@ -249,7 +249,7 @@ static value_t fl_integerp(value_t *args, u_int32_t nargs)
            : FL_F;
 }
 
-static value_t fl_fixnum(value_t *args, u_int32_t nargs)
+static value_t fl_fixnum(value_t *args, uint32_t nargs)
 {
     argcount("fixnum", nargs, 1);
     if (isfixnum(args[0])) {
@@ -261,7 +261,7 @@ static value_t fl_fixnum(value_t *args, u_int32_t nargs)
     type_error("fixnum", "number", args[0]);
 }
 
-static value_t fl_truncate(value_t *args, u_int32_t nargs)
+static value_t fl_truncate(value_t *args, uint32_t nargs)
 {
     argcount("truncate", nargs, 1);
     if (isfixnum(args[0]))
@@ -289,7 +289,7 @@ static value_t fl_truncate(value_t *args, u_int32_t nargs)
     type_error("truncate", "number", args[0]);
 }
 
-static value_t fl_vector_alloc(value_t *args, u_int32_t nargs)
+static value_t fl_vector_alloc(value_t *args, uint32_t nargs)
 {
     fixnum_t i;
     value_t f, v;
@@ -309,7 +309,7 @@ static value_t fl_vector_alloc(value_t *args, u_int32_t nargs)
     return v;
 }
 
-static value_t fl_time_now(value_t *args, u_int32_t nargs)
+static value_t fl_time_now(value_t *args, uint32_t nargs)
 {
     argcount("time.now", nargs, 0);
     (void)args;
@@ -409,7 +409,7 @@ static value_t fl_os_setenv(value_t *args, uint32_t nargs)
     return FL_T;
 }
 
-static value_t fl_rand(value_t *args, u_int32_t nargs)
+static value_t fl_rand(value_t *args, uint32_t nargs)
 {
     (void)args;
     (void)nargs;
@@ -421,7 +421,7 @@ static value_t fl_rand(value_t *args, u_int32_t nargs)
 #endif
     return fixnum(r);
 }
-static value_t fl_rand32(value_t *args, u_int32_t nargs)
+static value_t fl_rand32(value_t *args, uint32_t nargs)
 {
     (void)args;
     (void)nargs;
@@ -432,20 +432,20 @@ static value_t fl_rand32(value_t *args, u_int32_t nargs)
     return mk_uint32(r);
 #endif
 }
-static value_t fl_rand64(value_t *args, u_int32_t nargs)
+static value_t fl_rand64(value_t *args, uint32_t nargs)
 {
     (void)args;
     (void)nargs;
     uint64_t r = (((uint64_t)random()) << 32) | random();
     return mk_uint64(r);
 }
-static value_t fl_randd(value_t *args, u_int32_t nargs)
+static value_t fl_randd(value_t *args, uint32_t nargs)
 {
     (void)args;
     (void)nargs;
     return mk_double(rand_double());
 }
-static value_t fl_randf(value_t *args, u_int32_t nargs)
+static value_t fl_randf(value_t *args, uint32_t nargs)
 {
     (void)args;
     (void)nargs;
@@ -453,7 +453,7 @@ static value_t fl_randf(value_t *args, u_int32_t nargs)
 }
 
 #define MATH_FUNC_1ARG(name)                                     \
-    static value_t fl_##name(value_t *args, u_int32_t nargs)     \
+    static value_t fl_##name(value_t *args, uint32_t nargs)      \
     {                                                            \
         argcount(#name, nargs, 1);                               \
         if (iscprim(args[0])) {                                  \
