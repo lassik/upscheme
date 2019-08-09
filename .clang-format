@@ -1,7 +1,7 @@
 ---
 BasedOnStyle: WebKit
 AlignAfterOpenBracket: Align
-AlignEscapedNewlines: DontAlign
+AlignEscapedNewlines: Left
 AlignOperands: true
 AlignTrailingComments: true
 AllowShortBlocksOnASingleLine: true
