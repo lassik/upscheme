@@ -6,7 +6,7 @@
 #ifdef __INTEL_COMPILER
 #define count_bits(b) _popcnt32(b)
 #else
-static inline uint32_t count_bits(uint32_t b)
+static uint32_t count_bits(uint32_t b)
 {
     b = b - ((b >> 1) & 0x55555555);
     b = ((b >> 2) & 0x33333333) + (b & 0x33333333);

@@ -66,14 +66,6 @@
 
 typedef int bool_t;
 
-#if defined(__INTEL_COMPILER) && defined(WIN32)
-#define STATIC_INLINE static
-#define INLINE
-#else
-#define STATIC_INLINE static inline
-#define INLINE inline
-#endif
-
 #ifdef BITS64
 #define TOP_BIT 0x8000000000000000
 #define NBITS 64

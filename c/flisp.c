@@ -423,7 +423,7 @@ value_t alloc_vector(size_t n, int init)
 // ----------------------------------------------------------------------
 
 static int isnumtok(char *tok, value_t *pval);
-static inline int symchar(char c);
+static int symchar(char c);
 
 #include "print.h"
 

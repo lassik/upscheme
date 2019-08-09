@@ -447,7 +447,7 @@ size_t u8_unescape(char *buf, size_t sz, const char *src)
     return c;
 }
 
-static inline int buf_put2c(char *buf, const char *src)
+static int buf_put2c(char *buf, const char *src)
 {
     buf[0] = src[0];
     buf[1] = src[1];

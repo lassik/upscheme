@@ -145,7 +145,7 @@ static void print_symbol_name(struct ios *f, char *name)
   to print anyway.
 */
 #define SMALL_STR_LEN 20
-static inline int tinyp(value_t v)
+static int tinyp(value_t v)
 {
     if (issymbol(v))
         return (u8_strwidth(symbol_name(v)) < SMALL_STR_LEN);
