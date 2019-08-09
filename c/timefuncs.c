@@ -78,38 +78,6 @@ double clock_now()
 #endif
 }
 
-void timestring(double seconds, char *buffer, size_t len)
-{
-    time_t tme = (time_t)seconds;
-
-#if defined(LINUX) || defined(MACOSX) || defined(OPENBSD) || defined(FREEBSD)
-    char *fmt = "%c"; /* needed to suppress GCC warning */
-    struct tm tm;
-
-    localtime_r(&tme, &tm);
-    strftime(buffer, len, fmt, &tm);
-#else
-    static char *wdaystr[] = {
-        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-    };
-    static char *monthstr[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    struct tm *tm;
-    int hr;
-
-    tm = localtime(&tme);
-    hr = tm->tm_hour;
-    if (hr > 12)
-        hr -= 12;
-    if (hr == 0)
-        hr = 12;
-    snprintf(buffer, len, "%s %02d %s %d %02d:%02d:%02d %s %s",
-             wdaystr[tm->tm_wday], tm->tm_mday, monthstr[tm->tm_mon],
-             tm->tm_year + 1900, hr, tm->tm_min, tm->tm_sec,
-             tm->tm_hour > 11 ? "PM" : "AM", "");
-#endif
-}
-
 #if defined(LINUX) || defined(MACOSX) || defined(OPENBSD) || defined(FREEBSD)
 extern char *strptime(const char *s, const char *format, struct tm *tm);
 double parsetime(const char *str)

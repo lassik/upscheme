@@ -287,10 +287,6 @@
 (assert (not (equal? (hash (iota 41))
                      (hash (iota 42)))))
 
-(if (top-level-bound? 'time.fromstring)
-    (assert (let ((ts (time.string (time.now))))
-                (eqv? ts (time.string (time.fromstring ts))))))
-
 (assert (equal? 0.0 (+ 0.0 0))) ; tests that + no longer does inexact->exact
 
 (assert (equal? 1.0 (* 1.0 1))) ; tests that * no longer does inexact->exact
