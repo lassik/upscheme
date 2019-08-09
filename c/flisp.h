@@ -162,19 +162,19 @@ fixnum_t tofixnum(value_t v, char *fname);
 char *tostring(value_t v, char *fname);
 
 /* error handling */
-typedef struct _fl_readstate_t {
+struct fl_readstate {
     struct htable backrefs;
     struct htable gensyms;
     value_t source;
-    struct _fl_readstate_t *prev;
-} fl_readstate_t;
+    struct fl_readstate *prev;
+};
 
 typedef struct _ectx_t {
     jmp_buf buf;
     uint32_t sp;
     uint32_t frame;
     uint32_t ngchnd;
-    fl_readstate_t *rdst;
+    struct fl_readstate *rdst;
     struct _ectx_t *prev;
 } fl_exception_context_t;
 

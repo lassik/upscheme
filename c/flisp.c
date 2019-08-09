@@ -127,9 +127,9 @@ static value_t apply_cl(uint32_t nargs);
 static value_t *alloc_words(int n);
 static value_t relocate(value_t v);
 
-static fl_readstate_t *readstate = NULL;
+static struct fl_readstate *readstate = NULL;
 
-static void free_readstate(fl_readstate_t *rs)
+static void free_readstate(struct fl_readstate *rs)
 {
     htable_free(&rs->backrefs);
     htable_free(&rs->gensyms);
@@ -557,7 +557,7 @@ void gc(int mustgrow)
     static int grew = 0;
     void *temp;
     uint32_t i, f, top;
-    fl_readstate_t *rs;
+    struct fl_readstate *rs;
 
     curheap = tospace;
     if (grew)

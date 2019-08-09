@@ -678,7 +678,7 @@ static value_t do_read_sexpr(value_t label)
 value_t fl_read_sexpr(value_t f)
 {
     value_t v;
-    fl_readstate_t state;
+    struct fl_readstate state;
     state.prev = readstate;
     htable_new(&state.backrefs, 8);
     htable_new(&state.gensyms, 8);
