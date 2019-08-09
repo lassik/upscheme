@@ -39,6 +39,6 @@ static u_int32_t _pinthash(u_int32_t a)
 }
 #endif
 
-#include "htable.inc"
+#include "htable_inc.h"
 
 HTIMPL(ptrhash, _pinthash, OP_EQ)
