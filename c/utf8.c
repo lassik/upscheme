@@ -23,7 +23,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <malloc.h>
 #define snprintf _snprintf
 #endif
@@ -253,7 +253,7 @@ size_t u8_strlen(const char *s)
     return count;
 }
 
-#if defined(__WIN32__)
+#ifdef _WIN32
 #include "wcwidth.h"
 #endif
 

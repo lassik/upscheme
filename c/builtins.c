@@ -345,7 +345,7 @@ static value_t fl_path_cwd(value_t *args, uint32_t nargs)
     return FL_T;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 #define stat _stat
 #endif
 static value_t fl_path_exists(value_t *args, uint32_t nargs)

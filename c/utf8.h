@@ -1,6 +1,6 @@
 extern int locale_is_utf8;
 
-#if defined(__WIN32__)
+#ifdef _WIN32
 extern int wcwidth(uint32_t);
 #endif
 

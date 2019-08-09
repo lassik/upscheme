@@ -2624,7 +2624,7 @@ static void lisp_init(size_t initial_heapsize)
 
 #ifdef LINUX
     set(symbol("*os-name*"), symbol("linux"));
-#elif defined(WIN32) || defined(WIN64)
+#elif defined(_WIN32)
     set(symbol("*os-name*"), symbol("win32"));
 #elif defined(MACOSX)
     set(symbol("*os-name*"), symbol("macos"));

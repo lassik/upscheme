@@ -107,7 +107,7 @@ int open_any_udp_port(short *portno)
     return sockfd;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 void closesocket(int fd) { close(fd); }
 #endif
 

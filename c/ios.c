@@ -9,7 +9,7 @@
 
 #include "dtypes.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <malloc.h>
 #include <io.h>
 #include <fcntl.h>
@@ -43,7 +43,7 @@ static void *our_memrchr(const void *s, int c, size_t n)
 // poll for read, unless forwrite!=0
 static void _fd_poll(long fd, int forwrite)
 {
-#ifndef WIN32
+#ifndef _WIN32
     fd_set set;
 
     FD_ZERO(&set);

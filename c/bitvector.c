@@ -34,12 +34,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dtypes.h"
-#include "bitvector.h"
-
-#ifdef WIN32
+#ifdef _WIN32
 #include <malloc.h>
 #endif
+
+#include "dtypes.h"
+#include "bitvector.h"
 
 uint32_t *bitvector_resize(uint32_t *b, uint64_t oldsz, uint64_t newsz,
                            int initzero)

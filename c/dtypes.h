@@ -13,24 +13,10 @@
   We assume the LP64 convention for 64-bit platforms.
 */
 
-#if defined(__gnu_linux__)
-#define LINUX
-#elif defined(__APPLE__) && defined(__MACH__)
-#define MACOSX
-#elif defined(__OpenBSD__)
-#define OPENBSD
-#elif defined(__FreeBSD__)
-#define FREEBSD
-#elif defined(_WIN32)
-#define WIN32
-#else
-#error "unknown platform"
-#endif
-
 #undef BITS32   // TODO
 #define BITS64  // TODO
 
-#if defined(WIN32)
+#ifdef _WIN32
 #define STDCALL __stdcall
 #if defined(IMPORT_EXPORTS)
 #define DLLEXPORT __declspec(dllimport)
