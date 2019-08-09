@@ -163,8 +163,8 @@ char *tostring(value_t v, char *fname);
 
 /* error handling */
 typedef struct _fl_readstate_t {
-    htable_t backrefs;
-    htable_t gensyms;
+    struct htable backrefs;
+    struct htable gensyms;
     value_t source;
     struct _fl_readstate_t *prev;
 } fl_readstate_t;

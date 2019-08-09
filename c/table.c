@@ -29,7 +29,7 @@ static fltype_t *tabletype;
 
 void print_htable(value_t v, ios_t *f)
 {
-    htable_t *h = (htable_t *)cv_data((cvalue_t *)ptr(v));
+    struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(v));
     size_t i;
     int first = 1;
     fl_print_str("#table(", f);
@@ -48,7 +48,7 @@ void print_htable(value_t v, ios_t *f)
 
 void print_traverse_htable(value_t self)
 {
-    htable_t *h = (htable_t *)cv_data((cvalue_t *)ptr(self));
+    struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(self));
     size_t i;
     for (i = 0; i < h->size; i += 2) {
         if (h->table[i + 1] != HT_NOTFOUND) {
@@ -60,14 +60,14 @@ void print_traverse_htable(value_t self)
 
 void free_htable(value_t self)
 {
-    htable_t *h = (htable_t *)cv_data((cvalue_t *)ptr(self));
+    struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(self));
     htable_free(h);
 }
 
 void relocate_htable(value_t oldv, value_t newv)
 {
-    htable_t *oldh = (htable_t *)cv_data((cvalue_t *)ptr(oldv));
-    htable_t *h = (htable_t *)cv_data((cvalue_t *)ptr(newv));
+    struct htable *oldh = (struct htable *)cv_data((cvalue_t *)ptr(oldv));
+    struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(newv));
     if (oldh->table == &oldh->_space[0])
         h->table = &h->_space[0];
     size_t i;
@@ -91,11 +91,11 @@ value_t fl_tablep(value_t *args, uint32_t nargs)
     return ishashtable(args[0]) ? FL_T : FL_F;
 }
 
-static htable_t *totable(value_t v, char *fname)
+static struct htable *totable(value_t v, char *fname)
 {
     if (!ishashtable(v))
         type_error(fname, "table", v);
-    return (htable_t *)cv_data((cvalue_t *)ptr(v));
+    return (struct htable *)cv_data((cvalue_t *)ptr(v));
 }
 
 value_t fl_table(value_t *args, uint32_t nargs)
@@ -107,12 +107,12 @@ value_t fl_table(value_t *args, uint32_t nargs)
     // prevent small tables from being added to finalizer list
     if (cnt <= HT_N_INLINE) {
         tabletype->vtable->finalize = NULL;
-        nt = cvalue(tabletype, sizeof(htable_t));
+        nt = cvalue(tabletype, sizeof(struct htable));
         tabletype->vtable->finalize = free_htable;
     } else {
         nt = cvalue(tabletype, 2 * sizeof(void *));
     }
-    htable_t *h = (htable_t *)cv_data((cvalue_t *)ptr(nt));
+    struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(nt));
     htable_new(h, cnt / 2);
     uint32_t i;
     value_t k = FL_NIL, arg = FL_NIL;
@@ -130,7 +130,7 @@ value_t fl_table(value_t *args, uint32_t nargs)
 value_t fl_table_put(value_t *args, uint32_t nargs)
 {
     argcount("put!", nargs, 3);
-    htable_t *h = totable(args[0], "put!");
+    struct htable *h = totable(args[0], "put!");
     void **table0 = h->table;
     equalhash_put(h, (void *)args[1], (void *)args[2]);
     // register finalizer if we outgrew inline space
@@ -152,7 +152,7 @@ value_t fl_table_get(value_t *args, uint32_t nargs)
 {
     if (nargs != 3)
         argcount("get", nargs, 2);
-    htable_t *h = totable(args[0], "get");
+    struct htable *h = totable(args[0], "get");
     value_t v = (value_t)equalhash_get(h, (void *)args[1]);
     if (v == (value_t)HT_NOTFOUND) {
         if (nargs == 3)
@@ -166,7 +166,7 @@ value_t fl_table_get(value_t *args, uint32_t nargs)
 value_t fl_table_has(value_t *args, uint32_t nargs)
 {
     argcount("has", nargs, 2);
-    htable_t *h = totable(args[0], "has");
+    struct htable *h = totable(args[0], "has");
     return equalhash_has(h, (void *)args[1]) ? FL_T : FL_F;
 }
 
@@ -174,7 +174,7 @@ value_t fl_table_has(value_t *args, uint32_t nargs)
 value_t fl_table_del(value_t *args, uint32_t nargs)
 {
     argcount("del!", nargs, 2);
-    htable_t *h = totable(args[0], "del!");
+    struct htable *h = totable(args[0], "del!");
     if (!equalhash_remove(h, (void *)args[1]))
         key_error("del!", args[1]);
     return args[0];
@@ -184,7 +184,7 @@ value_t fl_table_foldl(value_t *args, uint32_t nargs)
 {
     argcount("table.foldl", nargs, 3);
     value_t f = args[0], zero = args[1], t = args[2];
-    htable_t *h = totable(t, "table.foldl");
+    struct htable *h = totable(t, "table.foldl");
     size_t i, n = h->size;
     void **table = h->table;
     fl_gc_handle(&f);
@@ -195,7 +195,7 @@ value_t fl_table_foldl(value_t *args, uint32_t nargs)
             zero =
             fl_applyn(3, f, (value_t)table[i], (value_t)table[i + 1], zero);
             // reload pointer
-            h = (htable_t *)cv_data((cvalue_t *)ptr(t));
+            h = (struct htable *)cv_data((cvalue_t *)ptr(t));
             if (h->size != n)
                 lerror(EnumerationError, "table.foldl: table modified");
             table = h->table;
@@ -218,6 +218,6 @@ void table_init(void)
 {
     tablesym = symbol("table");
     tabletype =
-    define_opaque_type(tablesym, sizeof(htable_t), &table_vtable, NULL);
+    define_opaque_type(tablesym, sizeof(struct htable), &table_vtable, NULL);
     assign_global_builtins(tablefunc_info);
 }

@@ -4,7 +4,7 @@
 // comparable tag
 #define cmptag(v) (isfixnum(v) ? TAG_NUM : tag(v))
 
-static value_t eq_class(htable_t *table, value_t key)
+static value_t eq_class(struct htable *table, value_t key)
 {
     value_t c = (value_t)ptrhash_get(table, (void *)key);
     if (c == (value_t)HT_NOTFOUND)
@@ -14,7 +14,7 @@ static value_t eq_class(htable_t *table, value_t key)
     return eq_class(table, c);
 }
 
-static void eq_union(htable_t *table, value_t a, value_t b, value_t c,
+static void eq_union(struct htable *table, value_t a, value_t b, value_t c,
                      value_t cb)
 {
     value_t ca = (c == NIL ? a : c);
@@ -25,7 +25,8 @@ static void eq_union(htable_t *table, value_t a, value_t b, value_t c,
 }
 
 static value_t bounded_compare(value_t a, value_t b, int bound, int eq);
-static value_t cyc_compare(value_t a, value_t b, htable_t *table, int eq);
+static value_t cyc_compare(value_t a, value_t b, struct htable *table,
+                           int eq);
 
 static value_t bounded_vector_compare(value_t a, value_t b, int bound, int eq)
 {
@@ -137,7 +138,7 @@ compare_top:
     return (taga < tagb) ? fixnum(-1) : fixnum(1);
 }
 
-static value_t cyc_vector_compare(value_t a, value_t b, htable_t *table,
+static value_t cyc_vector_compare(value_t a, value_t b, struct htable *table,
                                   int eq)
 {
     size_t la = vector_size(a);
@@ -187,7 +188,7 @@ static value_t cyc_vector_compare(value_t a, value_t b, htable_t *table,
     return fixnum(0);
 }
 
-static value_t cyc_compare(value_t a, value_t b, htable_t *table, int eq)
+static value_t cyc_compare(value_t a, value_t b, struct htable *table, int eq)
 {
     value_t d, ca, cb;
 cyc_compare_top:
@@ -260,7 +261,7 @@ cyc_compare_top:
     return bounded_compare(a, b, 1, eq);
 }
 
-static htable_t equal_eq_hashtable;
+static struct htable equal_eq_hashtable;
 void comparehash_init(void) { htable_new(&equal_eq_hashtable, 512); }
 
 // 'eq' means unordered comparison is sufficient

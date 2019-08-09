@@ -11,7 +11,7 @@
     ((size) <= (HT_N_INLINE * 2) ? (HT_N_INLINE / 2) : (size) >> 3)
 
 #define HTIMPL(HTNAME, HFUNC, EQFUNC)                                        \
-    static void **HTNAME##_lookup_bp(htable_t *h, void *key)                 \
+    static void **HTNAME##_lookup_bp(struct htable *h, void *key)            \
     {                                                                        \
         uint_t hv;                                                           \
         size_t i, orig, index, iter;                                         \
@@ -80,21 +80,21 @@
         return NULL;                                                         \
     }                                                                        \
                                                                              \
-    void HTNAME##_put(htable_t *h, void *key, void *val)                     \
+    void HTNAME##_put(struct htable *h, void *key, void *val)                \
     {                                                                        \
         void **bp = HTNAME##_lookup_bp(h, key);                              \
                                                                              \
         *bp = val;                                                           \
     }                                                                        \
                                                                              \
-    void **HTNAME##_bp(htable_t *h, void *key)                               \
+    void **HTNAME##_bp(struct htable *h, void *key)                          \
     {                                                                        \
         return HTNAME##_lookup_bp(h, key);                                   \
     }                                                                        \
                                                                              \
     /* returns bp if key is in hash, otherwise NULL */                       \
     /* if return is non-NULL and *bp == HT_NOTFOUND then key was deleted */  \
-    static void **HTNAME##_peek_bp(htable_t *h, void *key)                   \
+    static void **HTNAME##_peek_bp(struct htable *h, void *key)              \
     {                                                                        \
         size_t sz = hash_size(h);                                            \
         size_t maxprobe = max_probe(sz);                                     \
@@ -119,7 +119,7 @@
         return NULL;                                                         \
     }                                                                        \
                                                                              \
-    void *HTNAME##_get(htable_t *h, void *key)                               \
+    void *HTNAME##_get(struct htable *h, void *key)                          \
     {                                                                        \
         void **bp = HTNAME##_peek_bp(h, key);                                \
         if (bp == NULL)                                                      \
@@ -127,12 +127,12 @@
         return *bp;                                                          \
     }                                                                        \
                                                                              \
-    int HTNAME##_has(htable_t *h, void *key)                                 \
+    int HTNAME##_has(struct htable *h, void *key)                            \
     {                                                                        \
         return (HTNAME##_get(h, key) != HT_NOTFOUND);                        \
     }                                                                        \
                                                                              \
-    int HTNAME##_remove(htable_t *h, void *key)                              \
+    int HTNAME##_remove(struct htable *h, void *key)                         \
     {                                                                        \
         void **bp = HTNAME##_peek_bp(h, key);                                \
         if (bp != NULL) {                                                    \
@@ -142,7 +142,7 @@
         return 0;                                                            \
     }                                                                        \
                                                                              \
-    void HTNAME##_adjoin(htable_t *h, void *key, void *val)                  \
+    void HTNAME##_adjoin(struct htable *h, void *key, void *val)             \
     {                                                                        \
         void **bp = HTNAME##_lookup_bp(h, key);                              \
         if (*bp == HT_NOTFOUND)                                              \

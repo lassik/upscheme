@@ -1,6 +1,6 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
-static htable_t printconses;
+static struct htable printconses;
 static u_int32_t printlabel;
 static int print_pretty;
 static int print_princ;

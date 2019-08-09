@@ -16,8 +16,8 @@ value_t emptystringsym;
 value_t structsym, arraysym, enumsym, cfunctionsym, voidsym, pointersym;
 value_t unionsym;
 
-static htable_t TypeTable;
-static htable_t reverse_dlsym_lookup_table;
+static struct htable TypeTable;
+static struct htable reverse_dlsym_lookup_table;
 static fltype_t *int8type, *uint8type;
 static fltype_t *int16type, *uint16type;
 static fltype_t *int32type, *uint32type;

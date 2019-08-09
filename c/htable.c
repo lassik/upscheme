@@ -12,7 +12,7 @@
 #include "htable.h"
 #include "hashing.h"
 
-htable_t *htable_new(htable_t *h, size_t size)
+struct htable *htable_new(struct htable *h, size_t size)
 {
     if (size <= HT_N_INLINE / 2) {
         h->size = size = HT_N_INLINE;
@@ -32,14 +32,14 @@ htable_t *htable_new(htable_t *h, size_t size)
     return h;
 }
 
-void htable_free(htable_t *h)
+void htable_free(struct htable *h)
 {
     if (h->table != &h->_space[0])
         LLT_FREE(h->table);
 }
 
 // empty and reduce size
-void htable_reset(htable_t *h, size_t sz)
+void htable_reset(struct htable *h, size_t sz)
 {
     sz = nextipow2(sz);
     if (h->size > sz * 4 && h->size > HT_N_INLINE) {
