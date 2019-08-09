@@ -249,7 +249,7 @@ void bounds_error(char *fname, value_t arr, value_t ind)
             return (ctype)cnvt(v);         \
         type_error(fname, #type, v);       \
     }
-SAFECAST_OP(cons, cons_t *, ptr)
+SAFECAST_OP(cons, struct cons *, ptr)
 SAFECAST_OP(symbol, symbol_t *, ptr)
 SAFECAST_OP(fixnum, fixnum_t, numval)
 SAFECAST_OP(cvalue, cvalue_t *, ptr)
@@ -360,12 +360,12 @@ void gc(int mustgrow);
 
 static value_t mk_cons(void)
 {
-    cons_t *c;
+    struct cons *c;
 
     if (__unlikely(curheap > lim))
         gc(0);
-    c = (cons_t *)curheap;
-    curheap += sizeof(cons_t);
+    c = (struct cons *)curheap;
+    curheap += sizeof(struct cons);
     return tagptr(c, TAG_CONS);
 }
 
@@ -389,7 +389,7 @@ static value_t *alloc_words(int n)
 // allocate n consecutive conses
 #define cons_reserve(n) tagptr(alloc_words((n)*2), TAG_CONS)
 
-#define cons_index(c) (((cons_t *)ptr(c)) - ((cons_t *)fromspace))
+#define cons_index(c) (((struct cons *)ptr(c)) - ((struct cons *)fromspace))
 #define ismarked(c) bitvector_get(consflags, cons_index(c))
 #define mark_cons(c) bitvector_set(consflags, cons_index(c), 1)
 #define unmark_cons(c) bitvector_set(consflags, cons_index(c), 0)
@@ -459,8 +459,8 @@ static value_t relocate(value_t v)
                 *pcdr = cdr_(v);
                 return first;
             }
-            *pcdr = nc = tagptr((cons_t *)curheap, TAG_CONS);
-            curheap += sizeof(cons_t);
+            *pcdr = nc = tagptr((struct cons *)curheap, TAG_CONS);
+            curheap += sizeof(struct cons);
             d = cdr_(v);
             car_(v) = TAG_FWD;
             cdr_(v) = nc;
@@ -561,9 +561,9 @@ void gc(int mustgrow)
 
     curheap = tospace;
     if (grew)
-        lim = curheap + heapsize * 2 - sizeof(cons_t);
+        lim = curheap + heapsize * 2 - sizeof(struct cons);
     else
-        lim = curheap + heapsize - sizeof(cons_t);
+        lim = curheap + heapsize - sizeof(struct cons);
 
     if (fl_throwing_frame > curr_frame) {
         top = fl_throwing_frame - 4;
@@ -608,7 +608,8 @@ void gc(int mustgrow)
 
 #ifdef VERBOSEGC
     printf("GC: found %d/%d live conses\n",
-           (curheap - tospace) / sizeof(cons_t), heapsize / sizeof(cons_t));
+           (curheap - tospace) / sizeof(struct cons),
+           heapsize / sizeof(struct cons));
 #endif
     temp = tospace;
     tospace = fromspace;
@@ -625,7 +626,7 @@ void gc(int mustgrow)
         if (grew) {
             heapsize *= 2;
             temp =
-            bitvector_resize(consflags, 0, heapsize / sizeof(cons_t), 1);
+            bitvector_resize(consflags, 0, heapsize / sizeof(struct cons), 1);
             if (temp == NULL)
                 fl_raise(memory_exception_value);
             consflags = (uint32_t *)temp;
@@ -720,8 +721,8 @@ value_t fl_listn(size_t n, ...)
         value_t a = va_arg(ap, value_t);
         PUSH(a);
     }
-    cons_t *c = (cons_t *)alloc_words(n * 2);
-    cons_t *l = c;
+    struct cons *c = (struct cons *)alloc_words(n * 2);
+    struct cons *l = c;
     for (i = 0; i < n; i++) {
         c->car = Stack[si++];
         c->cdr = tagptr(c + 1, TAG_CONS);
@@ -738,7 +739,7 @@ value_t fl_list2(value_t a, value_t b)
 {
     PUSH(a);
     PUSH(b);
-    cons_t *c = (cons_t *)alloc_words(4);
+    struct cons *c = (struct cons *)alloc_words(4);
     b = POP();
     a = POP();
     c[0].car = a;
@@ -786,11 +787,11 @@ int fl_isnumber(value_t v)
 
 static value_t _list(value_t *args, uint32_t nargs, int star)
 {
-    cons_t *c;
+    struct cons *c;
     uint32_t i;
     value_t v;
     v = cons_reserve(nargs);
-    c = (cons_t *)ptr(v);
+    c = (struct cons *)ptr(v);
     for (i = 0; i < nargs; i++) {
         c->car = args[i];
         c->cdr = tagptr(c + 1, TAG_CONS);
@@ -979,7 +980,7 @@ static value_t apply_cl(uint32_t nargs)
 #endif
     uint32_t i;
     symbol_t *sym;
-    static cons_t *c;
+    static struct cons *c;
     static value_t *pv;
     static int64_t accum;
     static value_t func, v, e;
@@ -1359,8 +1360,8 @@ apply_cl_top:
             OP(OP_CONS)
             if (curheap > lim)
                 gc(0);
-            c = (cons_t *)curheap;
-            curheap += sizeof(cons_t);
+            c = (struct cons *)curheap;
+            curheap += sizeof(struct cons);
             c->car = Stack[SP - 2];
             c->cdr = Stack[SP - 1];
             Stack[SP - 2] = tagptr(c, TAG_CONS);
@@ -2333,7 +2334,7 @@ value_t fl_append(value_t *args, u_int32_t nargs)
                 first = lst;
             else
                 cdr_(lastcons) = lst;
-            lastcons = tagptr((((cons_t *)curheap) - 1), TAG_CONS);
+            lastcons = tagptr((((struct cons *)curheap) - 1), TAG_CONS);
         } else if (lst != NIL) {
             type_error("append", "cons", lst);
         }
@@ -2472,8 +2473,8 @@ static void lisp_init(size_t initial_heapsize)
     fromspace = LLT_ALLOC(heapsize);
     tospace = LLT_ALLOC(heapsize);
     curheap = fromspace;
-    lim = curheap + heapsize - sizeof(cons_t);
-    consflags = bitvector_new(heapsize / sizeof(cons_t), 1);
+    lim = curheap + heapsize - sizeof(struct cons);
+    consflags = bitvector_new(heapsize / sizeof(struct cons), 1);
     htable_new(&printconses, 32);
     comparehash_init();
     N_STACK = 262144;

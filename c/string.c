@@ -192,7 +192,7 @@ value_t fl_string_split(value_t *args, u_int32_t nargs)
         if (last == FL_NIL)
             first = c;  // first time, save first cons
         else
-            ((cons_t *)ptr(last))->cdr = c;
+            ((struct cons *)ptr(last))->cdr = c;
 
         // note this tricky condition: if the string ends with a
         // delimiter, we need to go around one more time to add an

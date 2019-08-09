@@ -592,7 +592,7 @@ static value_t do_read_sexpr(value_t label)
     listwith:
         v = cons_reserve(2);
         car_(v) = *head;
-        cdr_(v) = tagptr(((cons_t *)ptr(v)) + 1, TAG_CONS);
+        cdr_(v) = tagptr(((struct cons *)ptr(v)) + 1, TAG_CONS);
         car_(cdr_(v)) = cdr_(cdr_(v)) = NIL;
         PUSH(v);
         if (label != UNBOUND)

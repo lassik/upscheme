@@ -10,10 +10,10 @@ typedef uint_t ufixnum_t;
 #define T_FIXNUM T_INT32
 #endif
 
-typedef struct {
+struct cons {
     value_t car;
     value_t cdr;
-} cons_t;
+};
 
 typedef struct _symbol_t {
     uptrint_t flags;
@@ -88,8 +88,8 @@ struct gensym {
 #define vector_elt(v, i) (((value_t *)ptr(v))[1 + (i)])
 #define vector_grow_amt(x) ((x) < 8 ? 5 : 6 * ((x) >> 3))
 // functions ending in _ are unsafe, faster versions
-#define car_(v) (((cons_t *)ptr(v))->car)
-#define cdr_(v) (((cons_t *)ptr(v))->cdr)
+#define car_(v) (((struct cons *)ptr(v))->car)
+#define cdr_(v) (((struct cons *)ptr(v))->cdr)
 #define car(v) (tocons((v), "car")->car)
 #define cdr(v) (tocons((v), "cdr")->cdr)
 #define fn_bcode(f) (((value_t *)ptr(f))[0])
@@ -156,7 +156,7 @@ uptrint_t hash_lispvalue(value_t a);
 int isnumtok_base(char *tok, value_t *pval, int base);
 
 /* safe casts */
-cons_t *tocons(value_t v, char *fname);
+struct cons *tocons(value_t v, char *fname);
 symbol_t *tosymbol(value_t v, char *fname);
 fixnum_t tofixnum(value_t v, char *fname);
 char *tostring(value_t v, char *fname);

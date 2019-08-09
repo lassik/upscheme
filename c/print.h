@@ -844,7 +844,8 @@ void fl_print(struct ios *f, value_t v)
     fl_print_child(f, v);
 
     if (print_level >= 0 || print_length >= 0) {
-        memset(consflags, 0, 4 * bitvector_nwords(heapsize / sizeof(cons_t)));
+        memset(consflags, 0,
+               4 * bitvector_nwords(heapsize / sizeof(struct cons)));
     }
 
     if ((iscons(v) || isvector(v) || isfunction(v) || iscvalue(v)) &&

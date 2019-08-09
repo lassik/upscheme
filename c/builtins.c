@@ -49,7 +49,7 @@ static value_t fl_nconc(value_t *args, u_int32_t nargs)
         return FL_NIL;
     value_t lst, first = FL_NIL;
     value_t *pcdr = &first;
-    cons_t *c;
+    struct cons *c;
     uint32_t i = 0;
     while (1) {
         lst = args[i++];
@@ -57,9 +57,9 @@ static value_t fl_nconc(value_t *args, u_int32_t nargs)
             break;
         if (iscons(lst)) {
             *pcdr = lst;
-            c = (cons_t *)ptr(lst);
+            c = (struct cons *)ptr(lst);
             while (iscons(c->cdr))
-                c = (cons_t *)ptr(c->cdr);
+                c = (struct cons *)ptr(c->cdr);
             pcdr = &c->cdr;
         } else if (lst != FL_NIL) {
             type_error("nconc", "cons", lst);
@@ -89,7 +89,7 @@ static value_t fl_memq(value_t *args, u_int32_t nargs)
 {
     argcount("memq", nargs, 2);
     while (iscons(args[1])) {
-        cons_t *c = (cons_t *)ptr(args[1]);
+        struct cons *c = (struct cons *)ptr(args[1]);
         if (c->car == args[0])
             return args[1];
         args[1] = c->cdr;
