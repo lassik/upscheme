@@ -1,4 +1,4 @@
-typedef uptrint_t value_t;
+typedef uintptr_t value_t;
 typedef intptr_t fixnum_t;
 typedef uintptr_t ufixnum_t;
 #ifdef BITS64
@@ -13,7 +13,7 @@ struct cons {
 };
 
 struct symbol {
-    uptrint_t flags;
+    uintptr_t flags;
     value_t binding;  // global value binding
     struct fltype *type;
     uint32_t hash;
@@ -149,7 +149,7 @@ size_t llength(value_t v);
 value_t fl_compare(value_t a, value_t b);  // -1, 0, or 1
 value_t fl_equal(value_t a, value_t b);    // T or nil
 int equal_lispvalue(value_t a, value_t b);
-uptrint_t hash_lispvalue(value_t a);
+uintptr_t hash_lispvalue(value_t a);
 int isnumtok_base(char *tok, value_t *pval, int base);
 
 /* safe casts */
@@ -288,10 +288,10 @@ struct function {
 
 #define CV_OWNED_BIT 0x1
 #define CV_PARENT_BIT 0x2
-#define owned(cv) ((uptrint_t)(cv)->type & CV_OWNED_BIT)
-#define hasparent(cv) ((uptrint_t)(cv)->type & CV_PARENT_BIT)
+#define owned(cv) ((uintptr_t)(cv)->type & CV_OWNED_BIT)
+#define hasparent(cv) ((uintptr_t)(cv)->type & CV_PARENT_BIT)
 #define isinlined(cv) ((cv)->data == &(cv)->_space[0])
-#define cv_class(cv) ((struct fltype *)(((uptrint_t)(cv)->type) & ~3))
+#define cv_class(cv) ((struct fltype *)(((uintptr_t)(cv)->type) & ~3))
 #define cv_len(cv) ((cv)->len)
 #define cv_type(cv) (cv_class(cv)->type)
 #define cv_data(cv) ((cv)->data)

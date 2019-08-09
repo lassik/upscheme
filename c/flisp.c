@@ -271,7 +271,7 @@ static struct symbol *mk_symbol(char *str)
 
     sym =
     (struct symbol *)malloc(sizeof(struct symbol) - sizeof(void *) + len + 1);
-    assert(((uptrint_t)sym & 0x7) == 0);  // make sure malloc aligns 8
+    assert(((uintptr_t)sym & 0x7) == 0);  // make sure malloc aligns 8
     sym->left = sym->right = NULL;
     sym->flags = 0;
     if (fl_is_keyword_name(str, len)) {
@@ -446,7 +446,7 @@ void fl_free_gc_handles(uint32_t n)
 static value_t relocate(value_t v)
 {
     value_t a, d, nc, first, *pcdr;
-    uptrint_t t = tag(v);
+    uintptr_t t = tag(v);
 
     if (t == TAG_CONS) {
         // iterative implementation allows arbitrarily long cons chains
@@ -880,16 +880,16 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
     if (i >= nargs)
         goto no_kw;
     // now process keywords
-    uptrint_t n = vector_size(kwtable) / 2;
+    uintptr_t n = vector_size(kwtable) / 2;
     do {
         i++;
         if (i >= nargs)
             lerrorf(ArgError, "keyword %s requires an argument",
                     symbol_name(v));
         value_t hv = fixnum(((struct symbol *)ptr(v))->hash);
-        uptrint_t x = 2 * (labs(numval(hv)) % n);
+        uintptr_t x = 2 * (labs(numval(hv)) % n);
         if (vector_elt(kwtable, x) == v) {
-            uptrint_t idx = numval(vector_elt(kwtable, x + 1));
+            uintptr_t idx = numval(vector_elt(kwtable, x + 1));
             assert(idx < nkw);
             idx += nopt;
             if (args[idx] == UNBOUND) {
@@ -986,7 +986,7 @@ apply_cl_top:
     captured = 0;
     func = Stack[SP - nargs - 1];
     ip = cv_data((struct cvalue *)ptr(fn_bcode(func)));
-    assert(!ismanaged((uptrint_t)ip));
+    assert(!ismanaged((uintptr_t)ip));
     while (SP + GET_INT32(ip) > N_STACK) {
         grow_stack();
     }
@@ -1139,7 +1139,7 @@ apply_cl_top:
             func = Stack[SP - n - 1];
             if (tag(func) == TAG_FUNCTION) {
                 if (func > (N_BUILTINS << 3)) {
-                    Stack[curr_frame - 2] = (uptrint_t)ip;
+                    Stack[curr_frame - 2] = (uintptr_t)ip;
                     nargs = n;
                     goto apply_cl_top;
                 } else {
@@ -1193,48 +1193,48 @@ apply_cl_top:
             OP(OP_CALLL) n = GET_INT32(ip);
             ip += 4;
             goto do_call;
-            OP(OP_JMP) ip += (ptrint_t)GET_INT16(ip);
+            OP(OP_JMP) ip += (intptr_t)GET_INT16(ip);
             NEXT_OP;
             OP(OP_BRF)
             v = POP();
             if (v == FL_F)
-                ip += (ptrint_t)GET_INT16(ip);
+                ip += (intptr_t)GET_INT16(ip);
             else
                 ip += 2;
             NEXT_OP;
             OP(OP_BRT)
             v = POP();
             if (v != FL_F)
-                ip += (ptrint_t)GET_INT16(ip);
+                ip += (intptr_t)GET_INT16(ip);
             else
                 ip += 2;
             NEXT_OP;
-            OP(OP_JMPL) ip += (ptrint_t)GET_INT32(ip);
+            OP(OP_JMPL) ip += (intptr_t)GET_INT32(ip);
             NEXT_OP;
             OP(OP_BRFL)
             v = POP();
             if (v == FL_F)
-                ip += (ptrint_t)GET_INT32(ip);
+                ip += (intptr_t)GET_INT32(ip);
             else
                 ip += 4;
             NEXT_OP;
             OP(OP_BRTL)
             v = POP();
             if (v != FL_F)
-                ip += (ptrint_t)GET_INT32(ip);
+                ip += (intptr_t)GET_INT32(ip);
             else
                 ip += 4;
             NEXT_OP;
             OP(OP_BRNE)
             if (Stack[SP - 2] != Stack[SP - 1])
-                ip += (ptrint_t)GET_INT16(ip);
+                ip += (intptr_t)GET_INT16(ip);
             else
                 ip += 2;
             POPN(2);
             NEXT_OP;
             OP(OP_BRNEL)
             if (Stack[SP - 2] != Stack[SP - 1])
-                ip += (ptrint_t)GET_INT32(ip);
+                ip += (intptr_t)GET_INT32(ip);
             else
                 ip += 4;
             POPN(2);
@@ -1242,28 +1242,28 @@ apply_cl_top:
             OP(OP_BRNN)
             v = POP();
             if (v != NIL)
-                ip += (ptrint_t)GET_INT16(ip);
+                ip += (intptr_t)GET_INT16(ip);
             else
                 ip += 2;
             NEXT_OP;
             OP(OP_BRNNL)
             v = POP();
             if (v != NIL)
-                ip += (ptrint_t)GET_INT32(ip);
+                ip += (intptr_t)GET_INT32(ip);
             else
                 ip += 4;
             NEXT_OP;
             OP(OP_BRN)
             v = POP();
             if (v == NIL)
-                ip += (ptrint_t)GET_INT16(ip);
+                ip += (intptr_t)GET_INT16(ip);
             else
                 ip += 2;
             NEXT_OP;
             OP(OP_BRNL)
             v = POP();
             if (v == NIL)
-                ip += (ptrint_t)GET_INT32(ip);
+                ip += (intptr_t)GET_INT32(ip);
             else
                 ip += 4;
             NEXT_OP;

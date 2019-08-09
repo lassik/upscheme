@@ -111,7 +111,7 @@ static size_t cv_nwords(struct cvalue *cv)
 
 static void autorelease(struct cvalue *cv)
 {
-    cv->type = (struct fltype *)(((uptrint_t)cv->type) | CV_OWNED_BIT);
+    cv->type = (struct fltype *)(((uintptr_t)cv->type) | CV_OWNED_BIT);
     add_finalizer(cv);
 }
 
@@ -119,7 +119,7 @@ void cv_autorelease(struct cvalue *cv) { autorelease(cv); }
 
 static value_t cprim(struct fltype *type, size_t sz)
 {
-    assert(!ismanaged((uptrint_t)type));
+    assert(!ismanaged((uintptr_t)type));
     assert(sz == type->size);
     struct cprim *pcp =
     (struct cprim *)alloc_words(CPRIM_NWORDS - 1 + NWORDS(sz));
@@ -192,7 +192,7 @@ value_t cvalue_from_ref(struct fltype *type, void *ptr, size_t sz,
     pcv->len = sz;
     pcv->type = type;
     if (parent != NIL) {
-        pcv->type = (struct fltype *)(((uptrint_t)pcv->type) | CV_PARENT_BIT);
+        pcv->type = (struct fltype *)(((uintptr_t)pcv->type) | CV_PARENT_BIT);
         pcv->parent = parent;
     }
     cv = tagptr(pcv, TAG_CVALUE);
@@ -674,7 +674,7 @@ value_t cvalue_copy(value_t v)
         autorelease(ncv);
         if (hasparent(cv)) {
             ncv->type =
-            (struct fltype *)(((uptrint_t)ncv->type) & ~CV_PARENT_BIT);
+            (struct fltype *)(((uintptr_t)ncv->type) & ~CV_PARENT_BIT);
             ncv->parent = NIL;
         }
     } else {

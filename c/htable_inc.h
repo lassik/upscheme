@@ -20,7 +20,7 @@
         void **tab = h->table;                                               \
         void **ol;                                                           \
                                                                              \
-        hv = HFUNC((uptrint_t)key);                                          \
+        hv = HFUNC((uintptr_t)key);                                          \
     retry_bp:                                                                \
         iter = 0;                                                            \
         index = (index_t)(hv & (sz - 1)) * 2;                                \
@@ -99,7 +99,7 @@
         size_t sz = hash_size(h);                                            \
         size_t maxprobe = max_probe(sz);                                     \
         void **tab = h->table;                                               \
-        size_t index = (index_t)(HFUNC((uptrint_t)key) & (sz - 1)) * 2;      \
+        size_t index = (index_t)(HFUNC((uintptr_t)key) & (sz - 1)) * 2;      \
         sz *= 2;                                                             \
         size_t orig = index;                                                 \
         size_t iter = 0;                                                     \

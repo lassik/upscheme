@@ -303,7 +303,7 @@ value_t fl_equal(value_t a, value_t b)
 #endif
 
 // *oob: output argument, means we hit the limit specified by 'bound'
-static uptrint_t bounded_hash(value_t a, int bound, int *oob)
+static uintptr_t bounded_hash(value_t a, int bound, int *oob)
 {
     *oob = 0;
     union {
@@ -315,7 +315,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
     struct cvalue *cv;
     struct cprim *cp;
     void *data;
-    uptrint_t h = 0;
+    uintptr_t h = 0;
     int oob2, tg = tag(a);
     switch (tg) {
     case TAG_NUM:
@@ -388,10 +388,10 @@ int equal_lispvalue(value_t a, value_t b)
     return (numval(compare_(a, b, 1)) == 0);
 }
 
-uptrint_t hash_lispvalue(value_t a)
+uintptr_t hash_lispvalue(value_t a)
 {
     int oob = 0;
-    uptrint_t n = bounded_hash(a, BOUNDED_HASH_BOUND, &oob);
+    uintptr_t n = bounded_hash(a, BOUNDED_HASH_BOUND, &oob);
     return n;
 }
 

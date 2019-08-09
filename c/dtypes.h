@@ -106,22 +106,17 @@ typedef int bool_t;
 #define NBITS 64
 typedef int64_t offset_t;
 typedef uint64_t index_t;
-typedef int64_t ptrint_t;  // pointer-size int
-typedef uint64_t u_ptrint_t;
 #else
 #define TOP_BIT 0x80000000
 #define NBITS 32
 typedef int32_t offset_t;
 typedef uint32_t index_t;
-typedef int32_t ptrint_t;
-typedef uint32_t u_ptrint_t;
 #endif
 
 typedef uint8_t uint8_t;
 typedef uint16_t uint16_t;
 typedef uint32_t uint32_t;
 typedef uint64_t uint64_t;
-typedef u_ptrint_t uptrint_t;
 
 #define LLT_ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
 
