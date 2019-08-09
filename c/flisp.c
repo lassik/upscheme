@@ -323,7 +323,8 @@ value_t fl_gensym(value_t *args, uint32_t nargs)
 {
     argcount("gensym", nargs, 0);
     (void)args;
-    gensym_t *gs = (gensym_t *)alloc_words(sizeof(gensym_t) / sizeof(void *));
+    struct gensym *gs =
+    (struct gensym *)alloc_words(sizeof(struct gensym) / sizeof(void *));
     gs->id = _gensym_ctr++;
     gs->binding = UNBOUND;
     gs->isconst = 0;
@@ -342,7 +343,7 @@ static value_t fl_gensymp(value_t *args, u_int32_t nargs)
 char *symbol_name(value_t v)
 {
     if (ismanaged(v)) {
-        gensym_t *gs = (gensym_t *)ptr(v);
+        struct gensym *gs = (struct gensym *)ptr(v);
         gsnameno = 1 - gsnameno;
         char *n =
         uint2str(gsname[gsnameno] + 1, sizeof(gsname[0]) - 1, gs->id, 10);
@@ -522,9 +523,9 @@ static value_t relocate(value_t v)
         nfn->name = fn->name;
         return nc;
     } else if (t == TAG_SYM) {
-        gensym_t *gs = (gensym_t *)ptr(v);
-        gensym_t *ng =
-        (gensym_t *)alloc_words(sizeof(gensym_t) / sizeof(void *));
+        struct gensym *gs = (struct gensym *)ptr(v);
+        struct gensym *ng =
+        (struct gensym *)alloc_words(sizeof(struct gensym) / sizeof(void *));
         ng->id = gs->id;
         ng->binding = gs->binding;
         ng->isconst = 0;

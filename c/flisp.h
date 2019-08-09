@@ -30,12 +30,12 @@ typedef struct _symbol_t {
     };
 } symbol_t;
 
-typedef struct {
+struct gensym {
     value_t isconst;
     value_t binding;  // global value binding
     struct _fltype_t *type;
     uint32_t id;
-} gensym_t;
+};
 
 #define TAG_NUM 0x0
 #define TAG_CPRIM 0x1
