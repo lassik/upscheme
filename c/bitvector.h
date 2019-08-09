@@ -3,29 +3,6 @@
 #define himask(n) (~lomask(32 - n))
 #define ONES32 ((uint32_t)0xffffffff)
 
-#ifdef __INTEL_COMPILER
-#define count_bits(b) _popcnt32(b)
-#else
-static uint32_t count_bits(uint32_t b)
-{
-    b = b - ((b >> 1) & 0x55555555);
-    b = ((b >> 2) & 0x33333333) + (b & 0x33333333);
-    b = ((b >> 4) + b) & 0x0f0f0f0f;
-    b += (b >> 8);
-    b += (b >> 16);
-    return b & 0x3f;
-    // here is the non-optimized version, for clarity:
-    /*
-    b = ((b>> 1)&0x55555555) + (b&0x55555555);
-    b = ((b>> 2)&0x33333333) + (b&0x33333333);
-    b = ((b>> 4)&0x0f0f0f0f) + (b&0x0f0f0f0f);
-    b = ((b>> 8)&0x00ff00ff) + (b&0x00ff00ff);
-    b = ((b>>16)&0x0000ffff) + (b&0x0000ffff);
-    return b & 0x3f;
-    */
-}
-#endif
-
 uint32_t bitreverse(uint32_t x);
 
 uint32_t *bitvector_new(uint64_t n, int initzero);
