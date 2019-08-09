@@ -1490,7 +1490,7 @@ apply_cl_top:
         do_neg:
             if (isfixnum(Stack[SP - 1])) {
                 s = fixnum(-numval(Stack[SP - 1]));
-                if (__unlikely(s == Stack[SP - 1]))
+                if (__unlikely(Stack[SP - 1] == (ufixnum_t)s))
                     Stack[SP - 1] =
                     mk_long(-numval(Stack[SP - 1]));  // negate overflows
                 else

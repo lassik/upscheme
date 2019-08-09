@@ -970,7 +970,7 @@ int ios_vprintf(struct ios *s, const char *format, va_list args)
             va_end(al);
             return c;
         }
-        if (c < avail) {
+        if (avail > (size_t)c) {
             s->bpos += (size_t)c;
             _write_update_pos(s);
             // TODO: only works right if newline is at end

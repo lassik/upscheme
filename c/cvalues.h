@@ -1139,7 +1139,7 @@ static value_t fl_neg(value_t n)
 {
     if (isfixnum(n)) {
         fixnum_t s = fixnum(-numval(n));
-        if (__unlikely(s == n))
+        if (__unlikely(n == (ufixnum_t)s))
             return mk_long(-numval(n));  // negate overflows
         else
             return s;
