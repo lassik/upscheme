@@ -1,0 +1,20 @@
+---
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: Align
+AlignEscapedNewlines: DontAlign
+AlignOperands: true
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+BraceWrapping:
+  AfterFunction: true
+  BeforeElse: true
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+ContinuationIndentWidth: 0
+DerivePointerAlignment: true
+MaxEmptyLinesToKeep: 2
+SortIncludes: false
+SpacesBeforeTrailingComments: 2
