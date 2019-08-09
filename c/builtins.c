@@ -148,14 +148,15 @@ static value_t fl_symbol(value_t *args, u_int32_t nargs)
 static value_t fl_keywordp(value_t *args, u_int32_t nargs)
 {
     argcount("keyword?", nargs, 1);
-    return (issymbol(args[0]) && iskeyword((symbol_t *)ptr(args[0]))) ? FL_T
-                                                                      : FL_F;
+    return (issymbol(args[0]) && iskeyword((struct symbol *)ptr(args[0])))
+           ? FL_T
+           : FL_F;
 }
 
 static value_t fl_top_level_value(value_t *args, u_int32_t nargs)
 {
     argcount("top-level-value", nargs, 1);
-    symbol_t *sym = tosymbol(args[0], "top-level-value");
+    struct symbol *sym = tosymbol(args[0], "top-level-value");
     if (sym->binding == UNBOUND)
         fl_raise(fl_list2(UnboundError, args[0]));
     return sym->binding;
@@ -164,13 +165,13 @@ static value_t fl_top_level_value(value_t *args, u_int32_t nargs)
 static value_t fl_set_top_level_value(value_t *args, u_int32_t nargs)
 {
     argcount("set-top-level-value!", nargs, 2);
-    symbol_t *sym = tosymbol(args[0], "set-top-level-value!");
+    struct symbol *sym = tosymbol(args[0], "set-top-level-value!");
     if (!isconstant(sym))
         sym->binding = args[1];
     return args[1];
 }
 
-static void global_env_list(symbol_t *root, value_t *pv)
+static void global_env_list(struct symbol *root, value_t *pv)
 {
     while (root != NULL) {
         if (root->name[0] != ':' && (root->binding != UNBOUND)) {
@@ -181,7 +182,7 @@ static void global_env_list(symbol_t *root, value_t *pv)
     }
 }
 
-extern symbol_t *symtab;
+extern struct symbol *symtab;
 
 value_t fl_global_env(value_t *args, u_int32_t nargs)
 {
@@ -200,7 +201,7 @@ static value_t fl_constantp(value_t *args, u_int32_t nargs)
 {
     argcount("constant?", nargs, 1);
     if (issymbol(args[0]))
-        return (isconstant((symbol_t *)ptr(args[0])) ? FL_T : FL_F);
+        return (isconstant((struct symbol *)ptr(args[0])) ? FL_T : FL_F);
     if (iscons(args[0])) {
         if (car_(args[0]) == QUOTE)
             return FL_T;

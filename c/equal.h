@@ -327,7 +327,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
                                 oob);
         return inthash(a);
     case TAG_SYM:
-        return ((symbol_t *)ptr(a))->hash;
+        return ((struct symbol *)ptr(a))->hash;
     case TAG_CPRIM:
         cp = (struct cprim *)ptr(a);
         data = cp_data(cp);

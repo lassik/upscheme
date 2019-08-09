@@ -15,20 +15,20 @@ struct cons {
     value_t cdr;
 };
 
-typedef struct _symbol_t {
+struct symbol {
     uptrint_t flags;
     value_t binding;  // global value binding
     struct _fltype_t *type;
     uint32_t hash;
     void *dlcache;  // dlsym address
     // below fields are private
-    struct _symbol_t *left;
-    struct _symbol_t *right;
+    struct symbol *left;
+    struct symbol *right;
     union {
         char name[1];
         void *_pad;  // ensure field aligned to pointer size
     };
-} symbol_t;
+};
 
 struct gensym {
     value_t isconst;
@@ -97,15 +97,15 @@ struct gensym {
 #define fn_env(f) (((value_t *)ptr(f))[2])
 #define fn_name(f) (((value_t *)ptr(f))[3])
 
-#define set(s, v) (((symbol_t *)ptr(s))->binding = (v))
-#define setc(s, v)                           \
-    do {                                     \
-        ((symbol_t *)ptr(s))->flags |= 1;    \
-        ((symbol_t *)ptr(s))->binding = (v); \
+#define set(s, v) (((struct symbol *)ptr(s))->binding = (v))
+#define setc(s, v)                                \
+    do {                                          \
+        ((struct symbol *)ptr(s))->flags |= 1;    \
+        ((struct symbol *)ptr(s))->binding = (v); \
     } while (0)
 #define isconstant(s) ((s)->flags & 0x1)
 #define iskeyword(s) ((s)->flags & 0x2)
-#define symbol_value(s) (((symbol_t *)ptr(s))->binding)
+#define symbol_value(s) (((struct symbol *)ptr(s))->binding)
 #define ismanaged(v)                             \
     ((((unsigned char *)ptr(v)) >= fromspace) && \
      (((unsigned char *)ptr(v)) < fromspace + heapsize))
@@ -157,7 +157,7 @@ int isnumtok_base(char *tok, value_t *pval, int base);
 
 /* safe casts */
 struct cons *tocons(value_t v, char *fname);
-symbol_t *tosymbol(value_t v, char *fname);
+struct symbol *tosymbol(value_t v, char *fname);
 fixnum_t tofixnum(value_t v, char *fname);
 char *tostring(value_t v, char *fname);
 

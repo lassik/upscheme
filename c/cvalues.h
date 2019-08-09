@@ -867,7 +867,7 @@ static value_t cvalue_array_aset(value_t *args)
 value_t fl_builtin(value_t *args, u_int32_t nargs)
 {
     argcount("builtin", nargs, 1);
-    symbol_t *name = tosymbol(args[0], "builtin");
+    struct symbol *name = tosymbol(args[0], "builtin");
     cvalue_t *cv;
     if (ismanaged(args[0]) || (cv = name->dlcache) == NULL) {
         lerrorf(ArgError, "builtin: function %s not found", name->name);
@@ -884,7 +884,7 @@ value_t cbuiltin(char *name, builtin_t f)
     *(void **)cv->data = f;
 
     value_t sym = symbol(name);
-    ((symbol_t *)ptr(sym))->dlcache = cv;
+    ((struct symbol *)ptr(sym))->dlcache = cv;
     ptrhash_put(&reverse_dlsym_lookup_table, cv, (void *)sym);
 
     return tagptr(cv, TAG_CVALUE);

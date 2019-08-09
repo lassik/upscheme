@@ -2,7 +2,7 @@ fltype_t *get_type(value_t t)
 {
     fltype_t *ft;
     if (issymbol(t)) {
-        ft = ((symbol_t *)ptr(t))->type;
+        ft = ((struct symbol *)ptr(t))->type;
         if (ft != NULL)
             return ft;
     }
@@ -24,7 +24,7 @@ fltype_t *get_type(value_t t)
     ft->type = t;
     if (issymbol(t)) {
         ft->numtype = sym_to_numtype(t);
-        ((symbol_t *)ptr(t))->type = ft;
+        ((struct symbol *)ptr(t))->type = ft;
     } else {
         ft->numtype = N_NUMTYPES;
     }

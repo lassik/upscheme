@@ -250,7 +250,7 @@ void bounds_error(char *fname, value_t arr, value_t ind)
         type_error(fname, #type, v);       \
     }
 SAFECAST_OP(cons, struct cons *, ptr)
-SAFECAST_OP(symbol, symbol_t *, ptr)
+SAFECAST_OP(symbol, struct symbol *, ptr)
 SAFECAST_OP(fixnum, fixnum_t, numval)
 SAFECAST_OP(cvalue, cvalue_t *, ptr)
 SAFECAST_OP(string, char *, cvalue_data)
@@ -259,19 +259,20 @@ SAFECAST_OP(string, char *, cvalue_data)
 // symbol table
 // ---------------------------------------------------------------
 
-symbol_t *symtab = NULL;
+struct symbol *symtab = NULL;
 
 int fl_is_keyword_name(char *str, size_t len)
 {
     return ((str[0] == ':' || str[len - 1] == ':') && str[1] != '\0');
 }
 
-static symbol_t *mk_symbol(char *str)
+static struct symbol *mk_symbol(char *str)
 {
-    symbol_t *sym;
+    struct symbol *sym;
     size_t len = strlen(str);
 
-    sym = (symbol_t *)malloc(sizeof(symbol_t) - sizeof(void *) + len + 1);
+    sym =
+    (struct symbol *)malloc(sizeof(struct symbol) - sizeof(void *) + len + 1);
     assert(((uptrint_t)sym & 0x7) == 0);  // make sure malloc aligns 8
     sym->left = sym->right = NULL;
     sym->flags = 0;
@@ -288,7 +289,7 @@ static symbol_t *mk_symbol(char *str)
     return sym;
 }
 
-static symbol_t **symtab_lookup(symbol_t **ptree, char *str)
+static struct symbol **symtab_lookup(struct symbol **ptree, char *str)
 {
     int x;
 
@@ -306,7 +307,7 @@ static symbol_t **symtab_lookup(symbol_t **ptree, char *str)
 
 value_t symbol(char *str)
 {
-    symbol_t **pnode;
+    struct symbol **pnode;
 
     pnode = symtab_lookup(&symtab, str);
     if (*pnode == NULL)
@@ -350,7 +351,7 @@ char *symbol_name(value_t v)
         *(--n) = 'g';
         return n;
     }
-    return ((symbol_t *)ptr(v))->name;
+    return ((struct symbol *)ptr(v))->name;
 }
 
 // conses
@@ -540,7 +541,7 @@ static value_t relocate(value_t v)
 
 value_t relocate_lispvalue(value_t v) { return relocate(v); }
 
-static void trace_globals(symbol_t *root)
+static void trace_globals(struct symbol *root)
 {
     while (root != NULL) {
         if (root->binding != UNBOUND)
@@ -874,7 +875,7 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
         args[i] = UNBOUND;
     for (i = nreq; i < nargs; i++) {
         v = Stack[bp + i];
-        if (issymbol(v) && iskeyword((symbol_t *)ptr(v)))
+        if (issymbol(v) && iskeyword((struct symbol *)ptr(v)))
             break;
         if (a >= nopt)
             goto no_kw;
@@ -889,7 +890,7 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
         if (i >= nargs)
             lerrorf(ArgError, "keyword %s requires an argument",
                     symbol_name(v));
-        value_t hv = fixnum(((symbol_t *)ptr(v))->hash);
+        value_t hv = fixnum(((struct symbol *)ptr(v))->hash);
         uptrint_t x = 2 * (labs(numval(hv)) % n);
         if (vector_elt(kwtable, x) == v) {
             uptrint_t idx = numval(vector_elt(kwtable, x + 1));
@@ -906,7 +907,7 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
         if (i >= nargs)
             break;
         v = Stack[bp + i];
-    } while (issymbol(v) && iskeyword((symbol_t *)ptr(v)));
+    } while (issymbol(v) && iskeyword((struct symbol *)ptr(v)));
 no_kw:
     nrestargs = nargs - i;
     if (!va && nrestargs > 0)
@@ -979,7 +980,7 @@ static value_t apply_cl(uint32_t nargs)
     uint32_t op;
 #endif
     uint32_t i;
-    symbol_t *sym;
+    struct symbol *sym;
     static struct cons *c;
     static value_t *pv;
     static int64_t accum;
@@ -1696,7 +1697,7 @@ apply_cl_top:
             ip++;
         do_loadg:
             assert(issymbol(v));
-            sym = (symbol_t *)ptr(v);
+            sym = (struct symbol *)ptr(v);
             if (sym->binding == UNBOUND)
                 fl_raise(fl_list2(UnboundError, v));
             PUSH(sym->binding);
@@ -1714,7 +1715,7 @@ apply_cl_top:
             ip++;
         do_setg:
             assert(issymbol(v));
-            sym = (symbol_t *)ptr(v);
+            sym = (struct symbol *)ptr(v);
             v = Stack[SP - 1];
             if (!isconstant(sym))
                 sym->binding = v;
@@ -2602,7 +2603,7 @@ int fl_load_system_image(value_t sys_image_iostream)
 {
     value_t e;
     int saveSP;
-    symbol_t *sym;
+    struct symbol *sym;
 
     PUSH(sys_image_iostream);
     saveSP = SP;
