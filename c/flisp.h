@@ -169,25 +169,25 @@ struct fl_readstate {
     struct fl_readstate *prev;
 };
 
-typedef struct _ectx_t {
+struct fl_exception_context {
     jmp_buf buf;
     uint32_t sp;
     uint32_t frame;
     uint32_t ngchnd;
     struct fl_readstate *rdst;
-    struct _ectx_t *prev;
-} fl_exception_context_t;
+    struct fl_exception_context *prev;
+};
 
-extern fl_exception_context_t *fl_ctx;
+extern struct fl_exception_context *fl_ctx;
 extern uint32_t fl_throwing_frame;
 extern value_t fl_lasterror;
 
-#define FL_TRY_EXTERN            \
-    fl_exception_context_t _ctx; \
-    int l__tr, l__ca;            \
-    fl_savestate(&_ctx);         \
-    fl_ctx = &_ctx;              \
-    if (!setjmp(_ctx.buf))       \
+#define FL_TRY_EXTERN                 \
+    struct fl_exception_context _ctx; \
+    int l__tr, l__ca;                 \
+    fl_savestate(&_ctx);              \
+    fl_ctx = &_ctx;                   \
+    if (!setjmp(_ctx.buf))            \
         for (l__tr = 1; l__tr; l__tr = 0, (void)(fl_ctx = fl_ctx->prev))
 
 #define FL_CATCH_EXTERN \
@@ -195,8 +195,8 @@ extern value_t fl_lasterror;
 
 void lerrorf(value_t e, char *format, ...) __attribute__((__noreturn__));
 void lerror(value_t e, const char *msg) __attribute__((__noreturn__));
-void fl_savestate(fl_exception_context_t *_ctx);
-void fl_restorestate(fl_exception_context_t *_ctx);
+void fl_savestate(struct fl_exception_context *_ctx);
+void fl_restorestate(struct fl_exception_context *_ctx);
 void fl_raise(value_t e) __attribute__((__noreturn__));
 void type_error(char *fname, char *expected, value_t got)
 __attribute__((__noreturn__));

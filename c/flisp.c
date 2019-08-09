@@ -146,20 +146,20 @@ static uint32_t *consflags;
 // ------------------------------------------------------------
 
 // saved execution state for an unwind target
-fl_exception_context_t *fl_ctx = NULL;
+struct fl_exception_context *fl_ctx = NULL;
 uint32_t fl_throwing_frame = 0;  // active frame when exception was thrown
 value_t fl_lasterror;
 
-#define FL_TRY                   \
-    fl_exception_context_t _ctx; \
-    int l__tr, l__ca;            \
-    _ctx.sp = SP;                \
-    _ctx.frame = curr_frame;     \
-    _ctx.rdst = readstate;       \
-    _ctx.prev = fl_ctx;          \
-    _ctx.ngchnd = N_GCHND;       \
-    fl_ctx = &_ctx;              \
-    if (!setjmp(_ctx.buf))       \
+#define FL_TRY                        \
+    struct fl_exception_context _ctx; \
+    int l__tr, l__ca;                 \
+    _ctx.sp = SP;                     \
+    _ctx.frame = curr_frame;          \
+    _ctx.rdst = readstate;            \
+    _ctx.prev = fl_ctx;               \
+    _ctx.ngchnd = N_GCHND;            \
+    fl_ctx = &_ctx;                   \
+    if (!setjmp(_ctx.buf))            \
         for (l__tr = 1; l__tr; l__tr = 0, (void)(fl_ctx = fl_ctx->prev))
 
 #define FL_CATCH                                                     \
@@ -167,7 +167,7 @@ value_t fl_lasterror;
                                 fl_throwing_frame = 0, SP = _ctx.sp, \
                                 curr_frame = _ctx.frame)
 
-void fl_savestate(fl_exception_context_t *_ctx)
+void fl_savestate(struct fl_exception_context *_ctx)
 {
     _ctx->sp = SP;
     _ctx->frame = curr_frame;
@@ -176,7 +176,7 @@ void fl_savestate(fl_exception_context_t *_ctx)
     _ctx->ngchnd = N_GCHND;
 }
 
-void fl_restorestate(fl_exception_context_t *_ctx)
+void fl_restorestate(struct fl_exception_context *_ctx)
 {
     fl_lasterror = FL_NIL;
     fl_throwing_frame = 0;
@@ -195,7 +195,7 @@ void fl_raise(value_t e)
     if (fl_throwing_frame == 0)
         fl_throwing_frame = curr_frame;
     N_GCHND = fl_ctx->ngchnd;
-    fl_exception_context_t *thisctx = fl_ctx;
+    struct fl_exception_context *thisctx = fl_ctx;
     if (fl_ctx->prev)  // don't throw past toplevel
         fl_ctx = fl_ctx->prev;
     longjmp(thisctx->buf, 1);
