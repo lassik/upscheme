@@ -2,8 +2,6 @@
   string functions
 */
 
-#define _XOPEN_SOURCE
-
 #include <sys/types.h>
 #include <sys/time.h>
 

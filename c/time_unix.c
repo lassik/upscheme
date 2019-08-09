@@ -1,5 +1,3 @@
-#define _XOPEN_SOURCE
-
 #include <sys/poll.h>
 #include <sys/time.h>
 

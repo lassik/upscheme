@@ -1,11 +1,42 @@
 #!/bin/sh
 set -eu
-CC="${CC:-clang}"
 CFLAGS="-Wall -Wextra -Wno-strict-aliasing -std=gnu99"
 CFLAGS="$CFLAGS -O2" # -falign-functions
 CFLAGS="$CFLAGS -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
 LFLAGS="-lm"
 os="$(uname | tr A-Z- a-z_)"
+case "$os" in
+darwin)
+    default_cc="clang"
+    ;;
+dragonfly)
+    default_cc="gcc"
+    ;;
+freebsd)
+    default_cc="clang"
+    ;;
+haiku)
+    default_cc="gcc"
+    ;;
+linux)
+    default_cc="gcc"
+    CFLAGS="$CFLAGS -D _XOPEN_SOURCE"
+    ;;
+netbsd)
+    default_cc="gcc"
+    ;;
+openbsd)
+    default_cc="clang"
+    ;;
+sunos)
+    default_cc="gcc"
+    ;;
+*)
+    echo "Unknown operating system: $os" >&2
+    exit 1
+    ;;
+esac
+CC="${CC:-$default_cc}"
 builddir="build-$os-$(uname -m | tr A-Z- a-z_)"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
@@ -41,11 +72,11 @@ $CC $CFLAGS -c ../c/table.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 $CC $LFLAGS -o flisp -lm \
-        bitvector-ops.o bitvector.o builtins.o dump.o env_unix.o \
-        equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
-        hashing.o htable.o int2str.o \
-        ios.o iostream.o lltinit.o ptrhash.o random.o socket.o \
-        string.o table.o time_unix.o utf8.o
+    bitvector-ops.o bitvector.o builtins.o dump.o env_unix.o \
+    equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
+    hashing.o htable.o int2str.o \
+    ios.o iostream.o lltinit.o ptrhash.o random.o socket.o \
+    string.o table.o time_unix.o utf8.o
 { set +x; } 2>/dev/null
 cd ../scheme-core
 echo "Entering directory '$PWD'"
