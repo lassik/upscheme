@@ -924,18 +924,21 @@ no_kw:
     return nargs;
 }
 
-#if BYTE_ORDER == BIG_ENDIAN
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define GET_INT32(a)                                             \
     ((int32_t)((((int32_t)a[0]) << 0) | (((int32_t)a[1]) << 8) | \
                (((int32_t)a[2]) << 16) | (((int32_t)a[3]) << 24)))
 #define GET_INT16(a) \
     ((int16_t)((((int16_t)a[0]) << 0) | (((int16_t)a[1]) << 8)))
 #define PUT_INT32(a, i) (*(int32_t *)(a) = bswap_32((int32_t)(i)))
-#else
+#endif
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define GET_INT32(a) (*(int32_t *)a)
 #define GET_INT16(a) (*(int16_t *)a)
 #define PUT_INT32(a, i) (*(int32_t *)(a) = (int32_t)(i))
 #endif
+
 #define SWAP_INT32(a) (*(int32_t *)(a) = bswap_32(*(int32_t *)(a)))
 #define SWAP_INT16(a) (*(int16_t *)(a) = bswap_16(*(int16_t *)(a)))
 
@@ -2243,7 +2246,7 @@ static value_t fl_function(value_t *args, uint32_t nargs)
         for (i = 0; i < sz; i++)
             data[i] -= 48;
     } else {
-#if BYTE_ORDER == BIG_ENDIAN
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
         swap = 1;
 #endif
     }

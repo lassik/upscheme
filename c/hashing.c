@@ -2,18 +2,6 @@
   Hashing
 */
 
-#ifndef WIN32
-#include <sys/param.h> /* attempt to define endianness */
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-#endif
-
-#ifdef LINUX
-#include <endian.h> /* attempt to define endianness */
-#endif
-
 #include <math.h>
 #include <stdarg.h>
 #include <stdint.h>
