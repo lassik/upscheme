@@ -29,10 +29,7 @@
 
 #define MOST_OF(x) ((x) - ((x) >> 4))
 
-/* OS-level primitive wrappers */
-
-#if defined(MACOSX)
-void *memrchr(const void *s, int c, size_t n)
+static void *our_memrchr(const void *s, int c, size_t n)
 {
     const unsigned char *src = s + n;
     unsigned char uc = c;
@@ -41,9 +38,6 @@ void *memrchr(const void *s, int c, size_t n)
             return (void *)src;
     return NULL;
 }
-#else
-extern void *memrchr(const void *s, int c, size_t n);
-#endif
 
 #if 0
 // poll for read, unless forwrite!=0
@@ -362,7 +356,7 @@ size_t ios_write(struct ios *s, char *data, size_t n)
     } else if (n <= space) {
         if (s->bm == bm_line) {
             char *nl;
-            if ((nl = (char *)memrchr(data, '\n', n)) != NULL) {
+            if ((nl = (char *)our_memrchr(data, '\n', n)) != NULL) {
                 size_t linesz = nl - data + 1;
                 s->bm = bm_block;
                 wrote += ios_write(s, data, linesz);
@@ -974,7 +968,7 @@ int ios_vprintf(struct ios *s, const char *format, va_list args)
             s->bpos += (size_t)c;
             _write_update_pos(s);
             // TODO: only works right if newline is at end
-            if (s->bm == bm_line && memrchr(start, '\n', (size_t)c))
+            if (s->bm == bm_line && our_memrchr(start, '\n', (size_t)c))
                 ios_flush(s);
             va_end(al);
             return c;
