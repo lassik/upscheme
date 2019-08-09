@@ -39,10 +39,6 @@ static int outindent(int n, ios_t *f)
     ios_putc('\n', f);
     VPOS++;
     HPOS = n;
-    while (n >= 8) {
-        ios_putc('\t', f);
-        n -= 8;
-    }
     while (n) {
         ios_putc(' ', f);
         n--;

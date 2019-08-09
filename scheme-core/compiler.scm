@@ -666,7 +666,7 @@
           (begin (princ "\n")
                  (disassemble v (+ lev 1)))
           (print v)))
-    (dotimes (xx lev) (princ "\t"))
+    (dotimes (xx lev) (princ "  "))
     (princ "maxstack " (ref-int32-LE code 0) "\n")
     (let ((i 4)
           (N (length code)))
@@ -677,9 +677,9 @@
                                                    k)))
                                       #f Instructions)))
                (if (> i 4) (newline))
-               (dotimes (xx lev) (princ "\t"))
+               (dotimes (xx lev) (princ "  "))
                (princ (hex5 (- i 4)) ":  "
-                      (string inst) "\t")
+                      (string inst) "  ")
                (set! i (+ i 1))
                (case inst
                  ((loadv.l loadg.l setg.l)
