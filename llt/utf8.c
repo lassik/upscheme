@@ -34,20 +34,22 @@
 
 #include "utf8.h"
 
-static const u_int32_t offsetsFromUTF8[6] = {
-    0x00000000UL, 0x00003080UL, 0x000E2080UL,
-    0x03C82080UL, 0xFA082080UL, 0x82082080UL
-};
+static const u_int32_t offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL,
+                                              0x000E2080UL, 0x03C82080UL,
+                                              0xFA082080UL, 0x82082080UL };
 
 static const char trailingBytesForUTF8[256] = {
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5
 };
 
 /* returns length of next utf-8 sequence */
@@ -73,9 +75,9 @@ size_t u8_charlen(u_int32_t ch)
 
 size_t u8_codingsize(u_int32_t *wcstr, size_t n)
 {
-    size_t i, c=0;
+    size_t i, c = 0;
 
-    for(i=0; i < n; i++)
+    for (i = 0; i < n; i++)
         c += u8_charlen(wcstr[i]);
     return c;
 }
@@ -93,16 +95,17 @@ size_t u8_toucs(u_int32_t *dest, size_t sz, const char *src, size_t srcsz)
     u_int32_t ch;
     const char *src_end = src + srcsz;
     size_t nb;
-    size_t i=0;
+    size_t i = 0;
 
     if (sz == 0 || srcsz == 0)
         return 0;
 
     while (i < sz) {
-        if (!isutf(*src)) {     // invalid sequence
+        if (!isutf(*src)) {  // invalid sequence
             dest[i++] = 0xFFFD;
             src++;
-            if (src >= src_end) break;
+            if (src >= src_end)
+                break;
             continue;
         }
         nb = trailingBytesForUTF8[(unsigned char)*src];
@@ -111,12 +114,23 @@ size_t u8_toucs(u_int32_t *dest, size_t sz, const char *src, size_t srcsz)
         ch = 0;
         switch (nb) {
             /* these fall through deliberately */
-        case 5: ch += (unsigned char)*src++; ch <<= 6;
-        case 4: ch += (unsigned char)*src++; ch <<= 6;
-        case 3: ch += (unsigned char)*src++; ch <<= 6;
-        case 2: ch += (unsigned char)*src++; ch <<= 6;
-        case 1: ch += (unsigned char)*src++; ch <<= 6;
-        case 0: ch += (unsigned char)*src++;
+        case 5:
+            ch += (unsigned char)*src++;
+            ch <<= 6;
+        case 4:
+            ch += (unsigned char)*src++;
+            ch <<= 6;
+        case 3:
+            ch += (unsigned char)*src++;
+            ch <<= 6;
+        case 2:
+            ch += (unsigned char)*src++;
+            ch <<= 6;
+        case 1:
+            ch += (unsigned char)*src++;
+            ch <<= 6;
+        case 0:
+            ch += (unsigned char)*src++;
         }
         ch -= offsetsFromUTF8[nb];
         dest[i++] = ch;
@@ -143,31 +157,28 @@ size_t u8_toutf8(char *dest, size_t sz, const u_int32_t *src, size_t srcsz)
             if (dest >= dest_end)
                 break;
             *dest++ = (char)ch;
-        }
-        else if (ch < 0x800) {
-            if (dest >= dest_end-1)
+        } else if (ch < 0x800) {
+            if (dest >= dest_end - 1)
                 break;
-            *dest++ = (ch>>6) | 0xC0;
+            *dest++ = (ch >> 6) | 0xC0;
             *dest++ = (ch & 0x3F) | 0x80;
-        }
-        else if (ch < 0x10000) {
-            if (dest >= dest_end-2)
+        } else if (ch < 0x10000) {
+            if (dest >= dest_end - 2)
                 break;
-            *dest++ = (ch>>12) | 0xE0;
-            *dest++ = ((ch>>6) & 0x3F) | 0x80;
+            *dest++ = (ch >> 12) | 0xE0;
+            *dest++ = ((ch >> 6) & 0x3F) | 0x80;
             *dest++ = (ch & 0x3F) | 0x80;
-        }
-        else if (ch < 0x110000) {
-            if (dest >= dest_end-3)
+        } else if (ch < 0x110000) {
+            if (dest >= dest_end - 3)
                 break;
-            *dest++ = (ch>>18) | 0xF0;
-            *dest++ = ((ch>>12) & 0x3F) | 0x80;
-            *dest++ = ((ch>>6) & 0x3F) | 0x80;
+            *dest++ = (ch >> 18) | 0xF0;
+            *dest++ = ((ch >> 12) & 0x3F) | 0x80;
+            *dest++ = ((ch >> 6) & 0x3F) | 0x80;
             *dest++ = (ch & 0x3F) | 0x80;
         }
         i++;
     }
-    return (dest-dest0);
+    return (dest - dest0);
 }
 
 size_t u8_wc_toutf8(char *dest, u_int32_t ch)
@@ -177,20 +188,20 @@ size_t u8_wc_toutf8(char *dest, u_int32_t ch)
         return 1;
     }
     if (ch < 0x800) {
-        dest[0] = (ch>>6) | 0xC0;
+        dest[0] = (ch >> 6) | 0xC0;
         dest[1] = (ch & 0x3F) | 0x80;
         return 2;
     }
     if (ch < 0x10000) {
-        dest[0] = (ch>>12) | 0xE0;
-        dest[1] = ((ch>>6) & 0x3F) | 0x80;
+        dest[0] = (ch >> 12) | 0xE0;
+        dest[1] = ((ch >> 6) & 0x3F) | 0x80;
         dest[2] = (ch & 0x3F) | 0x80;
         return 3;
     }
     if (ch < 0x110000) {
-        dest[0] = (ch>>18) | 0xF0;
-        dest[1] = ((ch>>12) & 0x3F) | 0x80;
-        dest[2] = ((ch>>6) & 0x3F) | 0x80;
+        dest[0] = (ch >> 18) | 0xF0;
+        dest[1] = ((ch >> 12) & 0x3F) | 0x80;
+        dest[2] = ((ch >> 6) & 0x3F) | 0x80;
         dest[3] = (ch & 0x3F) | 0x80;
         return 4;
     }
@@ -200,7 +211,7 @@ size_t u8_wc_toutf8(char *dest, u_int32_t ch)
 /* charnum => byte offset */
 size_t u8_offset(const char *s, size_t charnum)
 {
-    size_t i=0;
+    size_t i = 0;
 
     while (charnum > 0) {
         if (s[i++] & 0x80) {
@@ -214,7 +225,7 @@ size_t u8_offset(const char *s, size_t charnum)
 /* byte offset => charnum */
 size_t u8_charnum(const char *s, size_t offset)
 {
-    size_t charnum = 0, i=0;
+    size_t charnum = 0, i = 0;
 
     while (i < offset) {
         if (s[i++] & 0x80) {
@@ -235,8 +246,9 @@ size_t u8_strlen(const char *s)
         lasti = i;
         while (s[i] > 0)
             i++;
-        count += (i-lasti);
-        if (s[i++]==0) break;
+        count += (i - lasti);
+        if (s[i++] == 0)
+            break;
         (void)(isutf(s[++i]) || isutf(s[++i]) || ++i);
         count++;
     }
@@ -250,31 +262,47 @@ size_t u8_strlen(const char *s)
 size_t u8_strwidth(const char *s)
 {
     u_int32_t ch;
-    size_t nb, tot=0;
+    size_t nb, tot = 0;
     int w;
     signed char sc;
 
     while ((sc = (signed char)*s) != 0) {
         if (sc >= 0) {
             s++;
-            if (sc) tot++;
-        }
-        else {
-            if (!isutf(sc)) { tot++; s++; continue; }
+            if (sc)
+                tot++;
+        } else {
+            if (!isutf(sc)) {
+                tot++;
+                s++;
+                continue;
+            }
             nb = trailingBytesForUTF8[(unsigned char)sc];
             ch = 0;
             switch (nb) {
                 /* these fall through deliberately */
-            case 5: ch += (unsigned char)*s++; ch <<= 6;
-            case 4: ch += (unsigned char)*s++; ch <<= 6;
-            case 3: ch += (unsigned char)*s++; ch <<= 6;
-            case 2: ch += (unsigned char)*s++; ch <<= 6;
-            case 1: ch += (unsigned char)*s++; ch <<= 6;
-            case 0: ch += (unsigned char)*s++;
+            case 5:
+                ch += (unsigned char)*s++;
+                ch <<= 6;
+            case 4:
+                ch += (unsigned char)*s++;
+                ch <<= 6;
+            case 3:
+                ch += (unsigned char)*s++;
+                ch <<= 6;
+            case 2:
+                ch += (unsigned char)*s++;
+                ch <<= 6;
+            case 1:
+                ch += (unsigned char)*s++;
+                ch <<= 6;
+            case 0:
+                ch += (unsigned char)*s++;
             }
             ch -= offsetsFromUTF8[nb];
             w = wcwidth(ch);  // might return -1
-            if (w > 0) tot += w;
+            if (w > 0)
+                tot += w;
         }
     }
     return tot;
@@ -291,7 +319,7 @@ u_int32_t u8_nextchar(const char *s, size_t *i)
         ch += (unsigned char)s[(*i)];
         sz++;
     } while (s[*i] && (++(*i)) && !isutf(s[*i]));
-    ch -= offsetsFromUTF8[sz-1];
+    ch -= offsetsFromUTF8[sz - 1];
 
     return ch;
 }
@@ -307,30 +335,28 @@ u_int32_t u8_nextmemchar(const char *s, size_t *i)
         ch += (unsigned char)s[(*i)++];
         sz++;
     } while (!isutf(s[*i]));
-    ch -= offsetsFromUTF8[sz-1];
+    ch -= offsetsFromUTF8[sz - 1];
 
     return ch;
 }
 
 void u8_inc(const char *s, size_t *i)
 {
-    (void)(isutf(s[++(*i)]) || isutf(s[++(*i)]) || isutf(s[++(*i)]) || ++(*i));
+    (void)(isutf(s[++(*i)]) || isutf(s[++(*i)]) || isutf(s[++(*i)]) ||
+           ++(*i));
 }
 
 void u8_dec(const char *s, size_t *i)
 {
-    (void)(isutf(s[--(*i)]) || isutf(s[--(*i)]) || isutf(s[--(*i)]) || --(*i));
+    (void)(isutf(s[--(*i)]) || isutf(s[--(*i)]) || isutf(s[--(*i)]) ||
+           --(*i));
 }
 
-int octal_digit(char c)
-{
-    return (c >= '0' && c <= '7');
-}
+int octal_digit(char c) { return (c >= '0' && c <= '7'); }
 
 int hex_digit(char c)
 {
-    return ((c >= '0' && c <= '9') ||
-            (c >= 'A' && c <= 'F') ||
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
             (c >= 'a' && c <= 'f'));
 }
 
@@ -362,29 +388,27 @@ size_t u8_read_escape_sequence(const char *str, size_t ssz, u_int32_t *dest)
     assert(ssz > 0);
     u_int32_t ch;
     char digs[10];
-    int dno=0, ndig;
-    size_t i=1;
+    int dno = 0, ndig;
+    size_t i = 1;
     char c0 = str[0];
 
     if (octal_digit(c0)) {
         i = 0;
         do {
             digs[dno++] = str[i++];
-        } while (i<ssz && octal_digit(str[i]) && dno<3);
+        } while (i < ssz && octal_digit(str[i]) && dno < 3);
         digs[dno] = '\0';
         ch = strtol(digs, NULL, 8);
-    }
-    else if ((c0=='x' && (ndig=2)) ||
-             (c0=='u' && (ndig=4)) ||
-             (c0=='U' && (ndig=8))) {
-        while (i<ssz && hex_digit(str[i]) && dno<ndig) {
+    } else if ((c0 == 'x' && (ndig = 2)) || (c0 == 'u' && (ndig = 4)) ||
+               (c0 == 'U' && (ndig = 8))) {
+        while (i < ssz && hex_digit(str[i]) && dno < ndig) {
             digs[dno++] = str[i++];
         }
-        if (dno == 0) return 0;
+        if (dno == 0)
+            return 0;
         digs[dno] = '\0';
         ch = strtol(digs, NULL, 16);
-    }
-    else {
+    } else {
         ch = (u_int32_t)read_escape_control_char(c0);
     }
     *dest = ch;
@@ -397,7 +421,7 @@ size_t u8_read_escape_sequence(const char *str, size_t ssz, u_int32_t *dest)
    note the double backslash is needed if called on a C string literal */
 size_t u8_unescape(char *buf, size_t sz, const char *src)
 {
-    size_t c=0, amt;
+    size_t c = 0, amt;
     u_int32_t ch;
     char temp[4];
 
@@ -405,14 +429,13 @@ size_t u8_unescape(char *buf, size_t sz, const char *src)
         if (*src == '\\') {
             src++;
             amt = u8_read_escape_sequence(src, 1000, &ch);
-        }
-        else {
+        } else {
             ch = (u_int32_t)*src;
             amt = 1;
         }
         src += amt;
         amt = u8_wc_toutf8(temp, ch);
-        if (amt > sz-c)
+        if (amt > sz - c)
             break;
         memcpy(&buf[c], temp, amt);
         c += amt;
@@ -463,32 +486,29 @@ int u8_escape_wchar(char *buf, size_t sz, u_int32_t ch)
     return 1;
 }
 
-size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi, size_t end,
-                 int escape_quotes, int ascii)
+size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi,
+                 size_t end, int escape_quotes, int ascii)
 {
     size_t i = *pi, i0;
     u_int32_t ch;
     char *start = buf;
-    char *blim = start + sz-11;
+    char *blim = start + sz - 11;
     assert(sz > 11);
 
-    while (i<end && buf<blim) {
+    while (i < end && buf < blim) {
         // sz-11: leaves room for longest escape sequence
         if (escape_quotes && src[i] == '"') {
             buf += buf_put2c(buf, "\\\"");
             i++;
-        }
-        else if (src[i] == '\\') {
+        } else if (src[i] == '\\') {
             buf += buf_put2c(buf, "\\\\");
             i++;
-        }
-        else {
+        } else {
             i0 = i;
             ch = u8_nextmemchar(src, &i);
             if (ascii || !iswprint((wint_t)ch)) {
-                buf += u8_escape_wchar(buf, sz - (buf-start), ch);
-            }
-            else {
+                buf += u8_escape_wchar(buf, sz - (buf - start), ch);
+            } else {
                 i = i0;
                 do {
                     *buf++ = src[i++];
@@ -498,12 +518,12 @@ size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi, size_t end,
     }
     *buf++ = '\0';
     *pi = i;
-    return (buf-start);
+    return (buf - start);
 }
 
 char *u8_strchr(const char *s, u_int32_t ch, size_t *charn)
 {
-    size_t i = 0, lasti=0;
+    size_t i = 0, lasti = 0;
     u_int32_t c;
 
     *charn = 0;
@@ -511,7 +531,7 @@ char *u8_strchr(const char *s, u_int32_t ch, size_t *charn)
         c = u8_nextchar(s, &i);
         if (c == ch) {
             /* it's const for us, but not necessarily the caller */
-            return (char*)&s[lasti];
+            return (char *)&s[lasti];
         }
         lasti = i;
         (*charn)++;
@@ -521,7 +541,7 @@ char *u8_strchr(const char *s, u_int32_t ch, size_t *charn)
 
 char *u8_memchr(const char *s, u_int32_t ch, size_t sz, size_t *charn)
 {
-    size_t i = 0, lasti=0;
+    size_t i = 0, lasti = 0;
     u_int32_t c;
     int csz;
 
@@ -533,10 +553,10 @@ char *u8_memchr(const char *s, u_int32_t ch, size_t sz, size_t *charn)
             c += (unsigned char)s[i++];
             csz++;
         } while (i < sz && !isutf(s[i]));
-        c -= offsetsFromUTF8[csz-1];
+        c -= offsetsFromUTF8[csz - 1];
 
         if (c == ch) {
-            return (char*)&s[lasti];
+            return (char *)&s[lasti];
         }
         lasti = i;
         (*charn)++;
@@ -546,18 +566,20 @@ char *u8_memchr(const char *s, u_int32_t ch, size_t sz, size_t *charn)
 
 char *u8_memrchr(const char *s, u_int32_t ch, size_t sz)
 {
-    size_t i = sz-1, tempi=0;
+    size_t i = sz - 1, tempi = 0;
     u_int32_t c;
 
-    if (sz == 0) return NULL;
+    if (sz == 0)
+        return NULL;
 
-    while (i && !isutf(s[i])) i--;
+    while (i && !isutf(s[i]))
+        i--;
 
     while (1) {
         tempi = i;
         c = u8_nextmemchar(s, &tempi);
         if (c == ch) {
-            return (char*)&s[i];
+            return (char *)&s[i];
         }
         if (i == 0)
             break;
@@ -571,18 +593,20 @@ char *u8_memrchr(const char *s, u_int32_t ch, size_t sz)
 
 int u8_is_locale_utf8(const char *locale)
 {
-    if (locale == NULL) return 0;
+    if (locale == NULL)
+        return 0;
 
     /* this code based on libutf8 */
-    const char* cp = locale;
+    const char *cp = locale;
 
     for (; *cp != '\0' && *cp != '@' && *cp != '+' && *cp != ','; cp++) {
         if (*cp == '.') {
-            const char* encoding = ++cp;
-            for (; *cp != '\0' && *cp != '@' && *cp != '+' && *cp != ','; cp++)
+            const char *encoding = ++cp;
+            for (; *cp != '\0' && *cp != '@' && *cp != '+' && *cp != ',';
+                 cp++)
                 ;
-            if ((cp-encoding == 5 && !strncmp(encoding, "UTF-8", 5))
-                || (cp-encoding == 4 && !strncmp(encoding, "utf8", 4)))
+            if ((cp - encoding == 5 && !strncmp(encoding, "UTF-8", 5)) ||
+                (cp - encoding == 4 && !strncmp(encoding, "utf8", 4)))
                 return 1; /* it's UTF-8 */
             break;
         }
@@ -592,25 +616,26 @@ int u8_is_locale_utf8(const char *locale)
 
 size_t u8_vprintf(const char *fmt, va_list ap)
 {
-    size_t cnt, sz=0, nc, needfree=0;
+    size_t cnt, sz = 0, nc, needfree = 0;
     char *buf;
     u_int32_t *wcs;
 
     sz = 512;
-    buf = (char*)alloca(sz);
+    buf = (char *)alloca(sz);
     cnt = vsnprintf(buf, sz, fmt, ap);
     if ((ssize_t)cnt < 0)
         return 0;
     if (cnt >= sz) {
-        buf = (char*)malloc(cnt + 1);
+        buf = (char *)malloc(cnt + 1);
         needfree = 1;
-        vsnprintf(buf, cnt+1, fmt, ap);
+        vsnprintf(buf, cnt + 1, fmt, ap);
     }
-    wcs = (u_int32_t*)alloca((cnt+1) * sizeof(u_int32_t));
-    nc = u8_toucs(wcs, cnt+1, buf, cnt);
+    wcs = (u_int32_t *)alloca((cnt + 1) * sizeof(u_int32_t));
+    nc = u8_toucs(wcs, cnt + 1, buf, cnt);
     wcs[nc] = 0;
-    printf("%ls", (wchar_t*)wcs);
-    if (needfree) free(buf);
+    printf("%ls", (wchar_t *)wcs);
+    if (needfree)
+        free(buf);
     return nc;
 }
 
@@ -633,11 +658,11 @@ size_t u8_printf(const char *fmt, ...)
    it's hard to know how many characters there are! */
 int u8_isvalid(const char *str, int length)
 {
-    const unsigned char *p, *pend = (unsigned char*)str + length;
+    const unsigned char *p, *pend = (unsigned char *)str + length;
     unsigned char c;
     int ab;
 
-    for (p = (unsigned char*)str; p < pend; p++) {
+    for (p = (unsigned char *)str; p < pend; p++) {
         c = *p;
         if (c < 128)
             continue;
@@ -657,44 +682,49 @@ int u8_isvalid(const char *str, int length)
         switch (ab) {
             /* Check for xx00 000x */
         case 1:
-            if ((c & 0x3e) == 0) return 0;
-            continue;   /* We know there aren't any more bytes to check */
+            if ((c & 0x3e) == 0)
+                return 0;
+            continue; /* We know there aren't any more bytes to check */
 
             /* Check for 1110 0000, xx0x xxxx */
         case 2:
-            if (c == 0xe0 && (*p & 0x20) == 0) return 0;
+            if (c == 0xe0 && (*p & 0x20) == 0)
+                return 0;
             break;
 
             /* Check for 1111 0000, xx00 xxxx */
         case 3:
-            if (c == 0xf0 && (*p & 0x30) == 0) return 0;
+            if (c == 0xf0 && (*p & 0x30) == 0)
+                return 0;
             break;
 
             /* Check for 1111 1000, xx00 0xxx */
         case 4:
-            if (c == 0xf8 && (*p & 0x38) == 0) return 0;
+            if (c == 0xf8 && (*p & 0x38) == 0)
+                return 0;
             break;
 
             /* Check for leading 0xfe or 0xff,
                and then for 1111 1100, xx00 00xx */
         case 5:
-            if (c == 0xfe || c == 0xff ||
-                (c == 0xfc && (*p & 0x3c) == 0)) return 0;
+            if (c == 0xfe || c == 0xff || (c == 0xfc && (*p & 0x3c) == 0))
+                return 0;
             break;
         }
 
         /* Check for valid bytes after the 2nd, if any; all must start 10 */
         while (--ab > 0) {
-            if ((*(++p) & 0xc0) != 0x80) return 0;
+            if ((*(++p) & 0xc0) != 0x80)
+                return 0;
         }
     }
 
     return 1;
 }
 
-int u8_reverse(char *dest, char * src, size_t len)
+int u8_reverse(char *dest, char *src, size_t len)
 {
-    size_t si=0, di=len;
+    size_t si = 0, di = len;
     unsigned char c;
 
     dest[di] = '\0';
@@ -704,24 +734,23 @@ int u8_reverse(char *dest, char * src, size_t len)
             di--;
             dest[di] = c;
             si++;
-        }
-        else {
-            switch (c>>4) {
+        } else {
+            switch (c >> 4) {
             case 0xC:
             case 0xD:
                 di -= 2;
-                *((int16_t*)&dest[di]) = *((int16_t*)&src[si]);
+                *((int16_t *)&dest[di]) = *((int16_t *)&src[si]);
                 si += 2;
                 break;
             case 0xE:
                 di -= 3;
                 dest[di] = src[si];
-                *((int16_t*)&dest[di+1]) = *((int16_t*)&src[si+1]);
+                *((int16_t *)&dest[di + 1]) = *((int16_t *)&src[si + 1]);
                 si += 3;
                 break;
             case 0xF:
                 di -= 4;
-                *((int32_t*)&dest[di]) = *((int32_t*)&src[si]);
+                *((int32_t *)&dest[di]) = *((int32_t *)&src[si]);
                 si += 4;
                 break;
             default:

@@ -1,12 +1,12 @@
-/* 
+/*
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
 
-   Before using, initialize the state by using init_genrand(seed)  
+   Before using, initialize the state by using init_genrand(seed)
    or init_by_array(init_key, key_length).
 
    Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
-   All rights reserved.                          
+   All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -19,15 +19,15 @@
         notice, this list of conditions and the following disclaimer in the
         documentation and/or other materials provided with the distribution.
 
-     3. The names of its contributors may not be used to endorse or promote 
-        products derived from this software without specific prior written 
+     3. The names of its contributors may not be used to endorse or promote
+        products derived from this software without specific prior written
         permission.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-   A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+   A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER
+   OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
@@ -43,23 +43,22 @@
 
 #include <stdio.h>
 
-/* Period parameters */  
+/* Period parameters */
 #define mtN 624
 #define mtM 397
-#define MATRIX_A   0x9908b0dfU /* constant vector a */
+#define MATRIX_A 0x9908b0dfU   /* constant vector a */
 #define UPPER_MASK 0x80000000U /* most significant w-r bits */
 #define LOWER_MASK 0x7fffffffU /* least significant r bits */
 
-static uint32_t mt[mtN]; /* the array for the state vector  */
-static int mti=mtN+1; /* mti==mtN+1 means mt[mtN] is not initialized */
+static uint32_t mt[mtN];  /* the array for the state vector  */
+static int mti = mtN + 1; /* mti==mtN+1 means mt[mtN] is not initialized */
 
 /* initializes mt[mtN] with a seed */
 void init_genrand(uint32_t s)
 {
-    mt[0]= s & 0xffffffffU;
-    for (mti=1; mti<mtN; mti++) {
-        mt[mti] = 
-	    (1812433253U * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti); 
+    mt[0] = s & 0xffffffffU;
+    for (mti = 1; mti < mtN; mti++) {
+        mt[mti] = (1812433253U * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
         /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
         /* In the previous versions, MSBs of the seed affect   */
         /* only MSBs of the array mt[].                        */
@@ -77,54 +76,63 @@ void init_by_array(uint32_t init_key[], int key_length)
 {
     int i, j, k;
     init_genrand(19650218U);
-    i=1; j=0;
-    k = (mtN>key_length ? mtN : key_length);
+    i = 1;
+    j = 0;
+    k = (mtN > key_length ? mtN : key_length);
     for (; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525U))
-          + init_key[j] + j; /* non linear */
-        mt[i] &= 0xffffffffU; /* for WORDSIZE > 32 machines */
-        i++; j++;
-        if (i>=mtN) { mt[0] = mt[mtN-1]; i=1; }
-        if (j>=key_length) j=0;
+        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1664525U)) +
+                init_key[j] + j; /* non linear */
+        mt[i] &= 0xffffffffU;    /* for WORDSIZE > 32 machines */
+        i++;
+        j++;
+        if (i >= mtN) {
+            mt[0] = mt[mtN - 1];
+            i = 1;
+        }
+        if (j >= key_length)
+            j = 0;
     }
-    for (k=mtN-1; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941U))
-          - i; /* non linear */
+    for (k = mtN - 1; k; k--) {
+        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941U)) -
+                i;            /* non linear */
         mt[i] &= 0xffffffffU; /* for WORDSIZE > 32 machines */
         i++;
-        if (i>=mtN) { mt[0] = mt[mtN-1]; i=1; }
+        if (i >= mtN) {
+            mt[0] = mt[mtN - 1];
+            i = 1;
+        }
     }
 
-    mt[0] = 0x80000000U; /* MSB is 1; assuring non-zero initial array */ 
+    mt[0] = 0x80000000U; /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
 uint32_t genrand_int32(void)
 {
     uint32_t y;
-    static uint32_t mag01[2]={0x0U, MATRIX_A};
+    static uint32_t mag01[2] = { 0x0U, MATRIX_A };
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
     if (mti >= mtN) { /* generate mtN words at one time */
         int kk;
 
-        if (mti == mtN+1)   /* if init_genrand() has not been called, */
+        if (mti == mtN + 1)      /* if init_genrand() has not been called, */
             init_genrand(5489U); /* a default initial seed is used */
 
-        for (kk=0;kk<mtN-mtM;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+mtM] ^ (y >> 1) ^ mag01[y & 0x1U];
+        for (kk = 0; kk < mtN - mtM; kk++) {
+            y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+            mt[kk] = mt[kk + mtM] ^ (y >> 1) ^ mag01[y & 0x1U];
         }
-        for (;kk<mtN-1;kk++) {
-            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+(mtM-mtN)] ^ (y >> 1) ^ mag01[y & 0x1U];
+        for (; kk < mtN - 1; kk++) {
+            y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+            mt[kk] = mt[kk + (mtM - mtN)] ^ (y >> 1) ^ mag01[y & 0x1U];
         }
-        y = (mt[mtN-1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
-        mt[mtN-1] = mt[mtM-1] ^ (y >> 1) ^ mag01[y & 0x1U];
+        y = (mt[mtN - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
+        mt[mtN - 1] = mt[mtM - 1] ^ (y >> 1) ^ mag01[y & 0x1U];
 
         mti = 0;
     }
-  
+
     y = mt[mti++];
 
     /* Tempering */
@@ -169,7 +177,7 @@ double genrand_res53(void)
 { 
     uint32_t a=genrand_int32()>>5, b=genrand_int32()>>6; 
     return(a*67108864.0+b)*(1.0/9007199254740992.0); 
-} 
+}
 #endif
 /* These real versions are due to Isaku Wada, 2002/01/09 added */
 #if 0

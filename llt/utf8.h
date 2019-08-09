@@ -21,7 +21,7 @@ extern int wcwidth(uint32_t);
 #endif
 
 /* is c the start of a utf8 sequence? */
-#define isutf(c) (((c)&0xC0)!=0x80)
+#define isutf(c) (((c)&0xC0) != 0x80)
 
 #define UEOF ((u_int32_t)-1)
 
@@ -91,8 +91,8 @@ size_t u8_unescape(char *buf, size_t sz, const char *src);
 
    returns number of bytes placed in buf, including a NUL terminator.
 */
-size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi, size_t end,
-                 int escape_quotes, int ascii);
+size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi,
+                 size_t end, int escape_quotes, int ascii);
 
 /* utility predicates used by the above */
 int octal_digit(char c);

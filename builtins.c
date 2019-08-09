@@ -32,21 +32,21 @@ static value_t fl_nconc(value_t *args, u_int32_t nargs)
 {
     if (nargs == 0)
         return FL_NIL;
-    value_t lst, first=FL_NIL;
+    value_t lst, first = FL_NIL;
     value_t *pcdr = &first;
     cons_t *c;
-    uint32_t i=0;
+    uint32_t i = 0;
     while (1) {
         lst = args[i++];
-        if (i >= nargs) break;
+        if (i >= nargs)
+            break;
         if (iscons(lst)) {
             *pcdr = lst;
-            c = (cons_t*)ptr(lst);
+            c = (cons_t *)ptr(lst);
             while (iscons(c->cdr))
-                c = (cons_t*)ptr(c->cdr);
+                c = (cons_t *)ptr(c->cdr);
             pcdr = &c->cdr;
-        }
-        else if (lst != FL_NIL) {
+        } else if (lst != FL_NIL) {
             type_error("nconc", "cons", lst);
         }
     }
@@ -74,7 +74,7 @@ static value_t fl_memq(value_t *args, u_int32_t nargs)
 {
     argcount("memq", nargs, 2);
     while (iscons(args[1])) {
-        cons_t *c = (cons_t*)ptr(args[1]);
+        cons_t *c = (cons_t *)ptr(args[1]);
         if (c->car == args[0])
             return args[1];
         args[1] = c->cdr;
@@ -89,23 +89,19 @@ static value_t fl_length(value_t *args, u_int32_t nargs)
     cvalue_t *cv;
     if (isvector(a)) {
         return fixnum(vector_size(a));
-    }
-    else if (iscprim(a)) {
-        cv = (cvalue_t*)ptr(a);
+    } else if (iscprim(a)) {
+        cv = (cvalue_t *)ptr(a);
         if (cp_class(cv) == bytetype)
             return fixnum(1);
         else if (cp_class(cv) == wchartype)
-            return fixnum(u8_charlen(*(uint32_t*)cp_data((cprim_t*)cv)));
-    }
-    else if (iscvalue(a)) {
-        cv = (cvalue_t*)ptr(a);
+            return fixnum(u8_charlen(*(uint32_t *)cp_data((cprim_t *)cv)));
+    } else if (iscvalue(a)) {
+        cv = (cvalue_t *)ptr(a);
         if (cv_class(cv)->eltype != NULL)
             return size_wrap(cvalue_arraylen(a));
-    }
-    else if (a == FL_NIL) {
+    } else if (a == FL_NIL) {
         return fixnum(0);
-    }
-    else if (iscons(a)) {
+    } else if (iscons(a)) {
         return fixnum(llength(a));
     }
     type_error("length", "sequence", a);
@@ -136,8 +132,8 @@ static value_t fl_symbol(value_t *args, u_int32_t nargs)
 static value_t fl_keywordp(value_t *args, u_int32_t nargs)
 {
     argcount("keyword?", nargs, 1);
-    return (issymbol(args[0]) &&
-            iskeyword((symbol_t*)ptr(args[0]))) ? FL_T : FL_F;
+    return (issymbol(args[0]) && iskeyword((symbol_t *)ptr(args[0]))) ? FL_T
+                                                                      : FL_F;
 }
 
 static value_t fl_top_level_value(value_t *args, u_int32_t nargs)
@@ -162,7 +158,7 @@ static void global_env_list(symbol_t *root, value_t *pv)
 {
     while (root != NULL) {
         if (root->name[0] != ':' && (root->binding != UNBOUND)) {
-            *pv = fl_cons(tagptr(root,TAG_SYM), *pv);
+            *pv = fl_cons(tagptr(root, TAG_SYM), *pv);
         }
         global_env_list(root->left, pv);
         root = root->right;
@@ -188,7 +184,7 @@ static value_t fl_constantp(value_t *args, u_int32_t nargs)
 {
     argcount("constant?", nargs, 1);
     if (issymbol(args[0]))
-        return (isconstant((symbol_t*)ptr(args[0])) ? FL_T : FL_F);
+        return (isconstant((symbol_t *)ptr(args[0])) ? FL_T : FL_F);
     if (iscons(args[0])) {
         if (car_(args[0]) == QUOTE)
             return FL_T;
@@ -203,22 +199,22 @@ static value_t fl_integer_valuedp(value_t *args, u_int32_t nargs)
     value_t v = args[0];
     if (isfixnum(v)) {
         return FL_T;
-    }
-    else if (iscprim(v)) {
-        numerictype_t nt = cp_numtype((cprim_t*)ptr(v));
+    } else if (iscprim(v)) {
+        numerictype_t nt = cp_numtype((cprim_t *)ptr(v));
         if (nt < T_FLOAT)
             return FL_T;
-        void *data = cp_data((cprim_t*)ptr(v));
+        void *data = cp_data((cprim_t *)ptr(v));
         if (nt == T_FLOAT) {
-            float f = *(float*)data;
-            if (f < 0) f = -f;
+            float f = *(float *)data;
+            if (f < 0)
+                f = -f;
             if (f <= FLT_MAXINT && (float)(int32_t)f == f)
                 return FL_T;
-        }
-        else {
+        } else {
             assert(nt == T_DOUBLE);
-            double d = *(double*)data;
-            if (d < 0) d = -d;
+            double d = *(double *)data;
+            if (d < 0)
+                d = -d;
             if (d <= DBL_MAXINT && (double)(int64_t)d == d)
                 return FL_T;
         }
@@ -231,8 +227,9 @@ static value_t fl_integerp(value_t *args, u_int32_t nargs)
     argcount("integer?", nargs, 1);
     value_t v = args[0];
     return (isfixnum(v) ||
-            (iscprim(v) && cp_numtype((cprim_t*)ptr(v)) < T_FLOAT)) ?
-        FL_T : FL_F;
+            (iscprim(v) && cp_numtype((cprim_t *)ptr(v)) < T_FLOAT))
+           ? FL_T
+           : FL_F;
 }
 
 static value_t fl_fixnum(value_t *args, u_int32_t nargs)
@@ -240,9 +237,8 @@ static value_t fl_fixnum(value_t *args, u_int32_t nargs)
     argcount("fixnum", nargs, 1);
     if (isfixnum(args[0])) {
         return args[0];
-    }
-    else if (iscprim(args[0])) {
-        cprim_t *cp = (cprim_t*)ptr(args[0]);
+    } else if (iscprim(args[0])) {
+        cprim_t *cp = (cprim_t *)ptr(args[0]);
         return fixnum(conv_to_long(cp_data(cp), cp_numtype(cp)));
     }
     type_error("fixnum", "number", args[0]);
@@ -254,14 +250,14 @@ static value_t fl_truncate(value_t *args, u_int32_t nargs)
     if (isfixnum(args[0]))
         return args[0];
     if (iscprim(args[0])) {
-        cprim_t *cp = (cprim_t*)ptr(args[0]);
+        cprim_t *cp = (cprim_t *)ptr(args[0]);
         void *data = cp_data(cp);
         numerictype_t nt = cp_numtype(cp);
         double d;
         if (nt == T_FLOAT)
-            d = (double)*(float*)data;
+            d = (double)*(float *)data;
         else if (nt == T_DOUBLE)
-            d = *(double*)data;
+            d = *(double *)data;
         else
             return args[0];
         if (d > 0) {
@@ -291,8 +287,8 @@ static value_t fl_vector_alloc(value_t *args, u_int32_t nargs)
     else
         f = FL_UNSPECIFIED;
     int k;
-    for(k=0; k < i; k++)
-        vector_elt(v,k) = f;
+    for (k = 0; k < i; k++)
+        vector_elt(v, k) = f;
     return v;
 }
 
@@ -308,7 +304,7 @@ static double todouble(value_t a, char *fname)
     if (isfixnum(a))
         return (double)numval(a);
     if (iscprim(a)) {
-        cprim_t *cp = (cprim_t*)ptr(a);
+        cprim_t *cp = (cprim_t *)ptr(a);
         numerictype_t nt = cp_numtype(cp);
         return conv_to_double(cp_data(cp), nt);
     }
@@ -368,7 +364,8 @@ static value_t fl_os_getenv(value_t *args, uint32_t nargs)
     argcount("os.getenv", nargs, 1);
     char *name = tostring(args[0], "os.getenv");
     char *val = getenv(name);
-    if (val == NULL) return FL_F;
+    if (val == NULL)
+        return FL_F;
     if (*val == 0)
         return symbol_value(emptystringsym);
     return cvalue_static_cstring(val);
@@ -386,8 +383,7 @@ static value_t fl_os_setenv(value_t *args, uint32_t nargs)
         (void)unsetenv(name);
         result = 0;
 #endif
-    }
-    else {
+    } else {
         char *val = tostring(args[1], "os.setenv");
         result = setenv(name, val, 1);
     }
@@ -398,10 +394,11 @@ static value_t fl_os_setenv(value_t *args, uint32_t nargs)
 
 static value_t fl_rand(value_t *args, u_int32_t nargs)
 {
-    (void)args; (void)nargs;
+    (void)args;
+    (void)nargs;
     fixnum_t r;
 #ifdef BITS64
-    r = ((((uint64_t)random())<<32) | random()) & 0x1fffffffffffffffLL;
+    r = ((((uint64_t)random()) << 32) | random()) & 0x1fffffffffffffffLL;
 #else
     r = random() & 0x1fffffff;
 #endif
@@ -409,7 +406,8 @@ static value_t fl_rand(value_t *args, u_int32_t nargs)
 }
 static value_t fl_rand32(value_t *args, u_int32_t nargs)
 {
-    (void)args; (void)nargs;
+    (void)args;
+    (void)nargs;
     uint32_t r = random();
 #ifdef BITS64
     return fixnum(r);
@@ -419,33 +417,36 @@ static value_t fl_rand32(value_t *args, u_int32_t nargs)
 }
 static value_t fl_rand64(value_t *args, u_int32_t nargs)
 {
-    (void)args; (void)nargs;
-    uint64_t r = (((uint64_t)random())<<32) | random();
+    (void)args;
+    (void)nargs;
+    uint64_t r = (((uint64_t)random()) << 32) | random();
     return mk_uint64(r);
 }
 static value_t fl_randd(value_t *args, u_int32_t nargs)
 {
-    (void)args; (void)nargs;
+    (void)args;
+    (void)nargs;
     return mk_double(rand_double());
 }
 static value_t fl_randf(value_t *args, u_int32_t nargs)
 {
-    (void)args; (void)nargs;
+    (void)args;
+    (void)nargs;
     return mk_float(rand_float());
 }
 
-#define MATH_FUNC_1ARG(name)                                    \
-static value_t fl_##name(value_t *args, u_int32_t nargs)        \
-{                                                               \
-    argcount(#name, nargs, 1);                                  \
-    if (iscprim(args[0])) {                                     \
-        cprim_t *cp = (cprim_t*)ptr(args[0]);                   \
-        numerictype_t nt = cp_numtype(cp);                      \
-        if (nt == T_FLOAT)                                      \
-            return mk_float(name##f(*(float*)cp_data(cp)));     \
-    }                                                           \
-    return mk_double(name(todouble(args[0], #name)));           \
-}
+#define MATH_FUNC_1ARG(name)                                     \
+    static value_t fl_##name(value_t *args, u_int32_t nargs)     \
+    {                                                            \
+        argcount(#name, nargs, 1);                               \
+        if (iscprim(args[0])) {                                  \
+            cprim_t *cp = (cprim_t *)ptr(args[0]);               \
+            numerictype_t nt = cp_numtype(cp);                   \
+            if (nt == T_FLOAT)                                   \
+                return mk_float(name##f(*(float *)cp_data(cp))); \
+        }                                                        \
+        return mk_double(name(todouble(args[0], #name)));        \
+    }
 
 MATH_FUNC_1ARG(sqrt)
 MATH_FUNC_1ARG(exp)
@@ -494,11 +495,11 @@ static builtinspec_t builtin_info[] = {
     { "rand.float", fl_randf },
 
     { "sqrt", fl_sqrt },
-    { "exp",  fl_exp },
-    { "log",  fl_log },
-    { "sin",  fl_sin },
-    { "cos",  fl_cos },
-    { "tan",  fl_tan },
+    { "exp", fl_exp },
+    { "log", fl_log },
+    { "sin", fl_sin },
+    { "cos", fl_cos },
+    { "tan", fl_tan },
     { "asin", fl_asin },
     { "acos", fl_acos },
     { "atan", fl_atan },

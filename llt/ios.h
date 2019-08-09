@@ -23,33 +23,33 @@ typedef struct {
 
     int errcode;
 
-    char *buf;        // start of buffer
-    size_t maxsize;   // space allocated to buffer
-    size_t size;      // length of valid data in buf, >=ndirty
-    size_t bpos;      // current position in buffer
-    size_t ndirty;    // # bytes at &buf[0] that need to be written
+    char *buf;       // start of buffer
+    size_t maxsize;  // space allocated to buffer
+    size_t size;     // length of valid data in buf, >=ndirty
+    size_t bpos;     // current position in buffer
+    size_t ndirty;   // # bytes at &buf[0] that need to be written
 
-    off_t fpos;       // cached file pos
-    size_t lineno;    // current line number
+    off_t fpos;     // cached file pos
+    size_t lineno;  // current line number
 
     // pointer-size integer to support platforms where it might have
     // to be a pointer
     long fd;
 
-    unsigned char readonly:1;
-    unsigned char ownbuf:1;
-    unsigned char ownfd:1;
-    unsigned char _eof:1;
+    unsigned char readonly : 1;
+    unsigned char ownbuf : 1;
+    unsigned char ownfd : 1;
+    unsigned char _eof : 1;
 
     // this means you can read, seek back, then read the same data
     // again any number of times. usually only true for files and strings.
-    unsigned char rereadable:1;
+    unsigned char rereadable : 1;
 
     // this enables "stenciled writes". you can alternately write and
     // seek without flushing in between. this performs read-before-write
     // to populate the buffer, so "rereadable" capability is required.
     // this is off by default.
-    //unsigned char stenciled:1;
+    // unsigned char stenciled:1;
 
     // request durable writes (fsync)
     // unsigned char durable:1;
@@ -62,10 +62,10 @@ typedef struct {
 size_t ios_read(ios_t *s, char *dest, size_t n);
 size_t ios_readall(ios_t *s, char *dest, size_t n);
 size_t ios_write(ios_t *s, char *data, size_t n);
-off_t ios_seek(ios_t *s, off_t pos);   // absolute seek
+off_t ios_seek(ios_t *s, off_t pos);  // absolute seek
 off_t ios_seek_end(ios_t *s);
 off_t ios_skip(ios_t *s, off_t offs);  // relative seek
-off_t ios_pos(ios_t *s);  // get current position
+off_t ios_pos(ios_t *s);               // get current position
 size_t ios_trunc(ios_t *s, size_t size);
 int ios_eof(ios_t *s);
 int ios_flush(ios_t *s);
@@ -80,9 +80,9 @@ size_t ios_copyall(ios_t *to, ios_t *from);
 size_t ios_copyuntil(ios_t *to, ios_t *from, char delim);
 // ensure at least n bytes are buffered if possible. returns # available.
 size_t ios_readprep(ios_t *from, size_t n);
-//void ios_lock(ios_t *s);
-//int ios_trylock(ios_t *s);
-//int ios_unlock(ios_t *s);
+// void ios_lock(ios_t *s);
+// int ios_trylock(ios_t *s);
+// int ios_unlock(ios_t *s);
 
 /* stream creation */
 ios_t *ios_file(ios_t *s, char *fname, int rd, int wr, int create, int trunc);
@@ -126,12 +126,12 @@ int ios_prevutf8(ios_t *s);
 /* stdio-style functions */
 #define IOS_EOF (-1)
 int ios_putc(int c, ios_t *s);
-//wint_t ios_putwc(ios_t *s, wchar_t wc);
+// wint_t ios_putwc(ios_t *s, wchar_t wc);
 int ios_getc(ios_t *s);
 int ios_peekc(ios_t *s);
-//wint_t ios_getwc(ios_t *s);
+// wint_t ios_getwc(ios_t *s);
 int ios_ungetc(int c, ios_t *s);
-//wint_t ios_ungetwc(ios_t *s, wint_t wc);
+// wint_t ios_ungetwc(ios_t *s, wint_t wc);
 #define ios_puts(str, s) ios_write(s, str, strlen(str))
 
 /*

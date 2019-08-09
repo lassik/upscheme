@@ -19,7 +19,7 @@ double rand_double()
     d.ieee.mantissa0 = genrand_int32();
     d.ieee.mantissa1 = genrand_int32();
     d.ieee.negative = 0;
-    d.ieee.exponent = IEEE754_DOUBLE_BIAS + 0;    /* 2^0 */
+    d.ieee.exponent = IEEE754_DOUBLE_BIAS + 0; /* 2^0 */
     return d.d - 1.0;
 }
 
@@ -29,7 +29,7 @@ float rand_float()
 
     f.ieee.mantissa = genrand_int32();
     f.ieee.negative = 0;
-    f.ieee.exponent = IEEE754_FLOAT_BIAS + 0;     /* 2^0 */
+    f.ieee.exponent = IEEE754_FLOAT_BIAS + 0; /* 2^0 */
     return f.f - 1.0;
 }
 
@@ -46,11 +46,11 @@ double randn()
     do {
         ure = rand_double();
         uim = rand_double();
-        vre = 2*ure - 1;
-        vim = 2*uim - 1;
-        s = vre*vre + vim*vim;
+        vre = 2 * ure - 1;
+        vim = 2 * uim - 1;
+        s = vre * vre + vim * vim;
     } while (s >= 1);
-    s = sqrt(-2*log(s)/s);
+    s = sqrt(-2 * log(s) / s);
     next = s * vre;
     return s * vim;
 }
@@ -58,5 +58,5 @@ double randn()
 void randomize()
 {
     u_int64_t tm = i64time();
-    init_by_array((uint32_t*)&tm, 2);
+    init_by_array((uint32_t *)&tm, 2);
 }

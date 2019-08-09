@@ -15,7 +15,6 @@
 
 #include "socket.h"
 
-
 int mysocket(int domain, int type, int protocol)
 {
     int val;
@@ -23,16 +22,16 @@ int mysocket(int domain, int type, int protocol)
     if (s < 0)
         return s;
     val = 4096;
-    setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(int));
+    setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&val, sizeof(int));
     val = 4096;
-    setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char*)&val, sizeof(int));
+    setsockopt(s, SOL_SOCKET, SO_SNDBUF, (char *)&val, sizeof(int));
     return s;
 }
 
 void set_nonblock(int socket, int yes)
 {
     int flags;
-    flags = fcntl(socket,F_GETFL,0);
+    flags = fcntl(socket, F_GETFL, 0);
     assert(flags != -1);
     if (yes)
         fcntl(socket, F_SETFL, flags | O_NONBLOCK);
@@ -41,10 +40,7 @@ void set_nonblock(int socket, int yes)
 }
 
 #ifdef WIN32
-void bzero(void *s, size_t n)
-{
-    memset(s, 0, n);
-}
+void bzero(void *s, size_t n) { memset(s, 0, n); }
 #endif
 
 /* returns a socket on which to accept() connections */
@@ -60,7 +56,7 @@ int open_tcp_port(short portno)
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(portno);
-    if (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         return -1;
     }
 
@@ -83,7 +79,8 @@ int open_any_tcp_port(short *portno)
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(*portno);
-    while (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+    while (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <
+           0) {
         (*portno)++;
         serv_addr.sin_port = htons(*portno);
     }
@@ -106,7 +103,8 @@ int open_any_udp_port(short *portno)
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(*portno);
-    while (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+    while (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <
+           0) {
         (*portno)++;
         serv_addr.sin_port = htons(*portno);
     }
@@ -115,17 +113,14 @@ int open_any_udp_port(short *portno)
 }
 
 #ifndef WIN32
-void closesocket(int fd)
-{
-    close(fd);
-}
+void closesocket(int fd) { close(fd); }
 #endif
 
 /* returns a socket to use to send data to the given address */
 int connect_to_host(char *hostname, short portno)
 {
     struct hostent *host_info;
-    int sockfd, yes=1;
+    int sockfd, yes = 1;
     struct sockaddr_in host_addr;
 
     host_info = gethostbyname(hostname);
@@ -138,14 +133,14 @@ int connect_to_host(char *hostname, short portno)
         return -1;
     }
     (void)setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-    memset((char*)&host_addr, 0, sizeof(host_addr));
+    memset((char *)&host_addr, 0, sizeof(host_addr));
     host_addr.sin_family = host_info->h_addrtype;
-    memcpy((char*)&host_addr.sin_addr, host_info->h_addr,
+    memcpy((char *)&host_addr.sin_addr, host_info->h_addr,
            host_info->h_length);
 
     host_addr.sin_port = htons(portno);
 
-    if (connect(sockfd, (struct sockaddr*)&host_addr,
+    if (connect(sockfd, (struct sockaddr *)&host_addr,
                 sizeof(struct sockaddr_in)) != 0) {
         closesocket(sockfd);
         return -1;
@@ -156,7 +151,7 @@ int connect_to_host(char *hostname, short portno)
 
 int connect_to_addr(struct sockaddr_in *host_addr)
 {
-    int sockfd, yes=1;
+    int sockfd, yes = 1;
 
     sockfd = mysocket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sockfd < 0) {
@@ -164,7 +159,7 @@ int connect_to_addr(struct sockaddr_in *host_addr)
     }
     (void)setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
-    if (connect(sockfd, (struct sockaddr*)host_addr,
+    if (connect(sockfd, (struct sockaddr *)host_addr,
                 sizeof(struct sockaddr_in)) != 0) {
         closesocket(sockfd);
         return -1;
@@ -176,33 +171,33 @@ int connect_to_addr(struct sockaddr_in *host_addr)
 /* repeated send until all of buffer is sent */
 int sendall(int sockfd, char *buffer, int bufLen, int flags)
 {
-    int numBytesToSend=bufLen, length;
+    int numBytesToSend = bufLen, length;
 
-    while (numBytesToSend>0) {
-        length = send(sockfd, (void *) buffer, numBytesToSend, flags);
+    while (numBytesToSend > 0) {
+        length = send(sockfd, (void *)buffer, numBytesToSend, flags);
         if (length < 0) {
-            return(-1);
+            return (-1);
         }
-        numBytesToSend -= length ;
-        buffer += length ;
+        numBytesToSend -= length;
+        buffer += length;
     }
-    return(bufLen);
+    return (bufLen);
 }
 
 /* repeated read until all of buffer is read */
 int readall(int sockfd, char *buffer, int bufLen, int flags)
 {
-    int numBytesToRead=bufLen, length;
+    int numBytesToRead = bufLen, length;
 
-    while (numBytesToRead>0) {
+    while (numBytesToRead > 0) {
         length = recv(sockfd, buffer, numBytesToRead, flags);
         if (length <= 0) {
-            return(length);
+            return (length);
         }
         numBytesToRead -= length;
         buffer += length;
     }
-    return(bufLen);
+    return (bufLen);
 }
 
 int addr_eq(struct sockaddr_in *a, struct sockaddr_in *b)
@@ -223,6 +218,6 @@ int socket_ready(int sock)
 
     FD_ZERO(&fds);
     FD_SET(sock, &fds);
-    select(sock+1, &fds, NULL, NULL, &timeout);
+    select(sock + 1, &fds, NULL, NULL, &timeout);
     return FD_ISSET(sock, &fds);
 }

@@ -6,14 +6,14 @@
 #define PATHSEPSTRING "\\"
 #define PATHLISTSEP ';'
 #define PATHLISTSEPSTRING ";"
-#define ISPATHSEP(c) ((c)=='/' || (c)=='\\')
+#define ISPATHSEP(c) ((c) == '/' || (c) == '\\')
 #define MAXPATHLEN 1024
 #else
 #define PATHSEP '/'
 #define PATHSEPSTRING "/"
 #define PATHLISTSEP ':'
 #define PATHLISTSEPSTRING ":"
-#define ISPATHSEP(c) ((c)=='/')
+#define ISPATHSEP(c) ((c) == '/')
 #endif
 
 void get_cwd(char *buf, size_t size);

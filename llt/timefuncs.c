@@ -35,12 +35,12 @@ double floattime()
     struct timeb tstruct;
 
     ftime(&tstruct);
-    return (double)tstruct.time + (double)tstruct.millitm/1.0e3;
+    return (double)tstruct.time + (double)tstruct.millitm / 1.0e3;
 }
 #else
 double tv2float(struct timeval *tv)
 {
-    return (double)tv->tv_sec + (double)tv->tv_usec/1.0e6;
+    return (double)tv->tv_sec + (double)tv->tv_usec / 1.0e6;
 }
 
 double diff_time(struct timeval *tv1, struct timeval *tv2)
@@ -56,11 +56,11 @@ u_int64_t i64time()
 #ifdef WIN32
     struct timeb tstruct;
     ftime(&tstruct);
-    a = (((u_int64_t)tstruct.time)<<32) + (u_int64_t)tstruct.millitm;
+    a = (((u_int64_t)tstruct.time) << 32) + (u_int64_t)tstruct.millitm;
 #else
     struct timeval now;
     gettimeofday(&now, NULL);
-    a = (((u_int64_t)now.tv_sec)<<32) + (u_int64_t)now.tv_usec;
+    a = (((u_int64_t)now.tv_sec) << 32) + (u_int64_t)now.tv_usec;
 #endif
 
     return a;
@@ -89,20 +89,24 @@ void timestring(double seconds, char *buffer, size_t len)
     localtime_r(&tme, &tm);
     strftime(buffer, len, fmt, &tm);
 #else
-    static char *wdaystr[] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-    static char *monthstr[] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
-                               "Sep","Oct","Nov","Dec"};
+    static char *wdaystr[] = {
+        "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    };
+    static char *monthstr[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     struct tm *tm;
     int hr;
 
     tm = localtime(&tme);
     hr = tm->tm_hour;
-    if (hr > 12) hr -= 12;
-    if (hr == 0) hr = 12;
+    if (hr > 12)
+        hr -= 12;
+    if (hr == 0)
+        hr = 12;
     snprintf(buffer, len, "%s %02d %s %d %02d:%02d:%02d %s %s",
              wdaystr[tm->tm_wday], tm->tm_mday, monthstr[tm->tm_mon],
-             tm->tm_year+1900, hr, tm->tm_min, tm->tm_sec,
-             tm->tm_hour>11 ? "PM" : "AM", "");
+             tm->tm_year + 1900, hr, tm->tm_min, tm->tm_sec,
+             tm->tm_hour > 11 ? "PM" : "AM", "");
 #endif
 }
 
@@ -117,8 +121,9 @@ double parsetime(const char *str)
 
     res = strptime(str, fmt, &tm);
     if (res != NULL) {
-        tm.tm_isdst = -1; /* Not set by strptime(); tells mktime() to determine
-                            whether daylight saving time is in effect */
+        tm.tm_isdst =
+        -1; /* Not set by strptime(); tells mktime() to determine
+              whether daylight saving time is in effect */
         t = mktime(&tm);
         if (t == ((time_t)-1))
             return -1;
@@ -140,7 +145,7 @@ void sleep_ms(int ms)
 #else
     struct timeval timeout;
 
-    timeout.tv_sec = ms/1000;
+    timeout.tv_sec = ms / 1000;
     timeout.tv_usec = (ms % 1000) * 1000;
     select(0, NULL, NULL, NULL, &timeout);
 #endif
@@ -154,12 +159,12 @@ void timeparts(int32_t *buf, double t)
     struct tm tm;
     localtime_r(&tme, &tm);
     tm.tm_year += 1900;
-    memcpy(buf, (char*)&tm, sizeof(struct tm));
+    memcpy(buf, (char *)&tm, sizeof(struct tm));
 #else
     struct tm *tm;
 
     tm = localtime(&tme);
     tm->tm_year += 1900;
-    memcpy(buf, (char*)tm, sizeof(struct tm));
+    memcpy(buf, (char *)tm, sizeof(struct tm));
 #endif
 }

@@ -7,10 +7,10 @@
 static value_t argv_list(int argc, char *argv[])
 {
     int i;
-    value_t lst=FL_NIL, temp;
+    value_t lst = FL_NIL, temp;
     fl_gc_handle(&lst);
     fl_gc_handle(&temp);
-    for(i=argc-1; i >= 0; i--) {
+    for (i = argc - 1; i >= 0; i--) {
         temp = cvalue_static_cstring(argv[i]);
         lst = fl_cons(temp, lst);
     }
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 {
     char fname_buf[1024];
 
-    fl_init(512*1024);
+    fl_init(512 * 1024);
 
     fname_buf[0] = '\0';
 #ifdef INITFILE
@@ -42,7 +42,8 @@ int main(int argc, char *argv[])
     value_t args[2];
     fl_gc_handle(&args[0]);
     fl_gc_handle(&args[1]);
-    FL_TRY_EXTERN {
+    FL_TRY_EXTERN
+    {
         args[0] = cvalue_static_cstring(fname_buf);
         args[1] = symbol(":read");
         value_t f = fl_file(&args[0], 2);
@@ -54,7 +55,8 @@ int main(int argc, char *argv[])
         (void)fl_applyn(1, symbol_value(symbol("__start")),
                         argv_list(argc, argv));
     }
-    FL_CATCH_EXTERN {
+    FL_CATCH_EXTERN
+    {
         ios_puts("fatal error:\n", ios_stderr);
         fl_print(ios_stderr, fl_lasterror);
         ios_putc('\n', ios_stderr);
