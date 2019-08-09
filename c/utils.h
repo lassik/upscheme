@@ -60,25 +60,6 @@ static uint32_t ByteSwap32(uint32_t x)
 
 #define bswap_32(x) ByteSwap32(x)
 
-static uint64_t ByteSwap64(uint64_t x)
-{
-#ifdef ARCH_X86_64
-    __asm("bswap        %0" : "=r"(x) : "0"(x));
-    return x;
-#else
-    register union {
-        __extension__ uint64_t __ll;
-        uint32_t __l[2];
-    } __x;
-    asm("xchgl  %0,%1"
-        : "=r"(__x.__l[0]), "=r"(__x.__l[1])
-        : "0"(bswap_32((unsigned long)x)),
-          "1"(bswap_32((unsigned long)(x >> 32))));
-    return __x.__ll;
-#endif
-}
-#define bswap_64(x) ByteSwap64(x)
-
 #else
 
 #define bswap_16(x) (((x)&0x00ff) << 8 | ((x)&0xff00) >> 8)
@@ -90,18 +71,5 @@ static uint64_t ByteSwap64(uint64_t x)
     ((((x)&0xff000000) >> 24) | (((x)&0x00ff0000) >> 8) | \
      (((x)&0x0000ff00) << 8) | (((x)&0x000000ff) << 24))
 #endif
-
-static uint64_t ByteSwap64(uint64_t x)
-{
-    union {
-        uint64_t ll;
-        uint32_t l[2];
-    } w, r;
-    w.ll = x;
-    r.l[0] = bswap_32(w.l[1]);
-    r.l[1] = bswap_32(w.l[0]);
-    return r.ll;
-}
-#define bswap_64(x) ByteSwap64(x)
 
 #endif
