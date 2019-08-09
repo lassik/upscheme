@@ -283,7 +283,7 @@ static struct symbol *mk_symbol(char *str)
     }
     sym->type = sym->dlcache = NULL;
     sym->hash = memhash32(str, len) ^ 0xAAAAAAAA;
-    strcpy(&sym->name[0], str);
+    memcpy(&sym->name[0], str, len + 1);
     return sym;
 }
 

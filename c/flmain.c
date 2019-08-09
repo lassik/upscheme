@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <setjmp.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -39,17 +40,19 @@ extern value_t fl_file(value_t *args, uint32_t nargs);
 int main(int argc, char *argv[])
 {
     char fname_buf[1024];
+    const char *bootfile = "flisp.boot";
 
     fl_init(512 * 1024);
 
     fname_buf[0] = '\0';
     value_t str = symbol_value(symbol("*install-dir*"));
     char *exedir = (str == UNBOUND ? NULL : cvalue_data(str));
-    if (exedir != NULL) {
-        strcat(fname_buf, exedir);
-        strcat(fname_buf, PATHSEPSTRING);
+    if (exedir == NULL) {
+        snprintf(fname_buf, sizeof(fname_buf), "%s", bootfile);
+    } else {
+        snprintf(fname_buf, sizeof(fname_buf), "%s%s%s", exedir,
+                 PATHSEPSTRING, bootfile);
     }
-    strcat(fname_buf, "flisp.boot");
 
     value_t args[2];
     fl_gc_handle(&args[0]);
