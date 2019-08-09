@@ -394,8 +394,8 @@ value_t alloc_vector(size_t n, int init)
 // cvalues
 // --------------------------------------------------------------------
 
-#include "cvalues.c"
-#include "types.c"
+#include "cvalues.h"
+#include "types.h"
 
 // print
 // ----------------------------------------------------------------------
@@ -403,7 +403,7 @@ value_t alloc_vector(size_t n, int init)
 static int isnumtok(char *tok, value_t *pval);
 static inline int symchar(char c);
 
-#include "print.c"
+#include "print.h"
 
 // collector
 // ------------------------------------------------------------------
@@ -747,12 +747,12 @@ int fl_isnumber(value_t v)
 // read
 // -----------------------------------------------------------------------
 
-#include "read.c"
+#include "read.h"
 
 // equal
 // ----------------------------------------------------------------------
 
-#include "equal.c"
+#include "equal.h"
 
 // eval
 // -----------------------------------------------------------------------

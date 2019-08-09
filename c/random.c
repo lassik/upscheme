@@ -10,7 +10,7 @@
 #include "random.h"
 #include "timefuncs.h"
 
-#include "mt19937ar.c"
+#include "mt19937ar.h"
 
 double rand_double()
 {

@@ -61,7 +61,7 @@ u_int32_t int64to32hash(u_int64_t key)
     return (u_int32_t)key;
 }
 
-#include "lookup3.c"
+#include "lookup3.h"
 
 u_int64_t memhash(const char *buf, size_t n)
 {
