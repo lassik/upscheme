@@ -1,7 +1,8 @@
 #!/bin/sh
 set -eu
 CC="${CC:-clang}"
-CFLAGS="-O2 -falign-functions -Wall -Wno-strict-aliasing -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
+CFLAGS="-O2 -falign-functions -Wall -Wno-strict-aliasing"
+CFLAGS="$CFLAGS -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
 LFLAGS="-lm"
 builddir="build-$(uname | tr A-Z- a-z_)-$(uname -m | tr A-Z- a-z_)"
 cd "$(dirname "$0")"/..

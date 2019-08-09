@@ -19,6 +19,6 @@
 
 (define (f x)
   (begin (write x)
-	 (newline)
-	 (f (+ x 1))
-	 0))
+         (newline)
+         (f (+ x 1))
+         0))

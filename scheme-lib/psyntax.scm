@@ -48,7 +48,7 @@
 ;;; Guide (R. Kent Dybvig, Cadence Research Systems, 1998), which can
 ;;; also be found online at http://www.scheme.com/csug/.  They are
 ;;; described briefly here as well.
-    
+
 ;;; All are definitions and may appear where and only where other
 ;;; definitions may appear.  modules may be named:
 ;;;
@@ -94,36 +94,36 @@
 ;;; drop-prefix, rename, and alias.
 ;;;
 ;;;   (import (only m x y))
-;;; 
+;;;
 ;;; imports x and y (and nothing else) from m.
 ;;;
 ;;;   (import (except m x y))
-;;; 
+;;;
 ;;; imports all of m's imports except for x and y.
 ;;;
 ;;;   (import (add-prefix (only m x y) m:))
-;;; 
+;;;
 ;;; imports x and y as m:x and m:y.
 ;;;
 ;;;   (import (drop-prefix m foo:))
-;;; 
+;;;
 ;;; imports all of m's imports, dropping the common foo: prefix
 ;;; (which must appear on all of m's exports).
-;;; 
+;;;
 ;;;   (import (rename (except m a b) (m-c c) (m-d d)))
-;;; 
+;;;
 ;;; imports all of m's imports except for x and y, renaming c
 ;;; m-c and d m-d.
-;;; 
+;;;
 ;;;   (import (alias (except m a b) (m-c c) (m-d d)))
-;;; 
+;;;
 ;;; imports all of m's imports except for x and y, with additional
 ;;; aliases m-c for c and m-d for d.
-;;; 
+;;;
 ;;; multiple imports may be specified with one import form:
-;;; 
+;;;
 ;;;   (import (except m1 x) (only m2 x))
-;;; 
+;;;
 ;;; imports all of m1's exports except for x plus x from m2.
 
 ;;; Another form, meta, may be used as a prefix for any definition and
@@ -165,7 +165,7 @@
 
 ;;; meta definitions propagate through macro expansion, so one can write,
 ;;; for example:
-;;; 
+;;;
 ;;;   (module (a)
 ;;;     (meta define-structure (foo x))
 ;;;     (define-syntax a
@@ -173,17 +173,17 @@
 ;;;         (lambda (x)
 ;;;           (foo-x q)))))
 ;;;   a -> q
-;;; 
+;;;
 ;;; where define-record is a macro that expands into a set of defines.
-;;; 
+;;;
 ;;; It is also sometimes convenient to write
-;;; 
+;;;
 ;;;   (meta begin defn ...)
-;;; 
+;;;
 ;;; or
-;;; 
+;;;
 ;;;   (meta module {exports} defn ...)
-;;; 
+;;;
 ;;; to create groups of meta bindings.
 
 ;;; Another form, alias, is used to create aliases from one identifier
@@ -1166,7 +1166,7 @@
                 (and (same-marks? marks (join-marks new-marks (wrap-marks top-wrap))) new))
                ((same-marks? marks (join-marks new-marks (wrap-marks (syntax-object-wrap new)))) new)
                (else #f)))))))
-  
+
 (define store-import-binding
   (lambda (id token new-marks)
     (define cons-id
@@ -1186,7 +1186,7 @@
                       (join-marks new-marks (id-marks id))
                       (id-subst id))))))
       (let ((sym (id-sym-name id)))
-       ; no need to record bindings mapping symbol to self, since this   
+       ; no need to record bindings mapping symbol to self, since this
        ; assumed by default.
         (unless (eq? id sym)
           (let ((marks (id-marks id)))
@@ -1483,7 +1483,7 @@
   (lambda (i.sym i.marks j.sym j.marks)
     (and (eq? i.sym j.sym)
          (same-marks? i.marks j.marks))))
-   
+
 (define bound-id=?
   (lambda (i j)
     (help-bound-id=? (id-sym-name i) (id-marks i) (id-sym-name j) (id-marks j))))
@@ -1952,7 +1952,7 @@
                                     ((define-syntax-form)
                                      (let ((sym (generate-id (id-sym-name id))))
                                        (process-exports fexports
-                                         (lambda () 
+                                         (lambda ()
                                            (let ((local-label (get-indirect-label label)))
                                              (set-indirect-label! label sym)
                                              (cons
@@ -2711,7 +2711,7 @@
       (unless label
         (syntax-error id "exported identifier not visible"))
       label)))
-  
+
 (define do-import!
   (lambda (import-iface ribcage)
     (let ((ie (interface-exports (import-interface-interface import-iface))))
@@ -3434,7 +3434,7 @@
                      (let ((id (if (pair? x) (car x) x)))
                        (make-syntax-object
                          (syntax-object->datum id)
-                         (let ((marks (join-marks new-marks (wrap-marks (syntax-object-wrap id))))) 
+                         (let ((marks (join-marks new-marks (wrap-marks (syntax-object-wrap id)))))
                            (make-wrap marks
                                      ; the anti mark should always be present at the head
                                      ; of new-marks, but we paranoically check anyway
@@ -3578,7 +3578,7 @@
   (put-cte-hook 'import
     (lambda (orig)
       ($import-help orig #f)))
-  
+
   (put-cte-hook 'import-only
     (lambda (orig)
       ($import-help orig #t)))
@@ -3725,7 +3725,7 @@
               ; unique mark (in tmp-wrap) to distinguish from non-temporaries
                tmp-wrap))
            ls))))
-  
+
 (set! free-identifier=?
    (lambda (x y)
       (arg-check nonsymbol-id? x 'free-identifier=?)
@@ -4292,4 +4292,3 @@
            ((set! var val) (syntax exp2))
            ((id x (... ...)) (syntax (exp1 x (... ...))))
            (id (identifier? (syntax id)) (syntax exp1))))))))
-

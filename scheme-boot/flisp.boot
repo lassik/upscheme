@@ -1,4 +1,4 @@
-(*banner* ";  _\n; |_ _ _ |_ _ |  . _ _\n; | (-||||_(_)|__|_)|_)\n;-------------------|----------------------------------------------------------\n\n"
+(*banner* ";  _\n; |_ _ _ |_ _ |  . _ _\n; | (-||||_(_)|__|_)|_)\n;-------------------|--\n\n"
 	  *builtins* [0 0 0 0 0 0 0 0 0 0 0 0 #fn("7000r2|}<;" [])
 		      #fn("7000r2|}=;" [])
 		      #fn("7000r2|}>;" [])
@@ -64,7 +64,7 @@
   with-bindings *output-stream* #fn(copy-list)])  catch #fn("7000r2c0qc13041;" [#fn("@000r1c0\x7fc1|L1c2c3c4|L2c5c6|L2c7c8L2L3c5c9|L2~L3L4c:|L2c;|L2L4L3L3;" [trycatch
   lambda if and pair? eq car quote thrown-value cadr caddr raise])
   #fn(gensym)]))
-	  *whitespace* "\t\n\v\f\r \u0085  ᠎           \u2028\u2029  　" 1+
+	  *whitespace* "\t\n\v\f\r \u0085  \u180e               　" 1+
 	  #fn("7000r1|aw;" [] 1+) 1- #fn("7000r1|ax;" [] 1-) 1arg-lambda?
 	  #fn("8000r1|F16T02|Mc0<16J02|NF16B02|\x84F16:02e1|\x84a42;" [lambda
   length=] 1arg-lambda?)

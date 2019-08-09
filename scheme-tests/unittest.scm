@@ -1,11 +1,14 @@
 ; -*- scheme -*-
 (define-macro (assert-fail expr . what)
   `(assert (trycatch (begin ,expr #f)
-		     (lambda (e) ,(if (null? what) #t
-				      `(eq? (car e) ',(car what)))))))
+                     (lambda (e) ,(if (null? what) #t
+                                      `(eq? (car e) ',(car what)))))))
 
 (define (every-int n)
-  (list (fixnum n) (int8 n) (uint8 n) (int16 n) (uint16 n) (int32 n) (uint32 n)
+  (list (fixnum n)
+        (int8 n)  (uint8 n)
+        (int16 n) (uint16 n)
+        (int32 n) (uint32 n)
         (int64 n) (uint64 n)))
 
 (define (every-sint n)
@@ -14,7 +17,7 @@
 (define (each f l)
   (if (atom? l) ()
       (begin (f (car l))
-	     (each f (cdr l)))))
+             (each f (cdr l)))))
 
 (define (each^2 f l m)
   (each (lambda (o) (each (lambda (p) (f o p)) m)) l))
@@ -71,9 +74,9 @@
 
 (assert (not (equal? #int64(0x8000000000000000) #uint64(0x8000000000000000))))
 (assert (equal? (+ #int64(0x4000000000000000) #int64(0x4000000000000000))
-		#uint64(0x8000000000000000)))
+                #uint64(0x8000000000000000)))
 (assert (equal? (* 2 #int64(0x4000000000000000))
-		#uint64(0x8000000000000000)))
+                #uint64(0x8000000000000000)))
 
 (assert (equal? (uint64 (double -123)) #uint64(0xffffffffffffff85)))
 
@@ -128,9 +131,9 @@
 (assert (= (apply + (iota 100000)) 4999950000))
 (define ones (map (lambda (x) 1) (iota 80000)))
 (assert (= (eval `(if (< 2 1)
-		      (+ ,@ones)
-		      (+ ,@(cdr ones))))
-	   79999))
+                      (+ ,@ones)
+                      (+ ,@(cdr ones))))
+           79999))
 
 (define MAX_ARGS 255)
 
@@ -142,10 +145,10 @@
 
 (define as (apply list* (map-int (lambda (x) (gensym)) (+ MAX_ARGS 100))))
 (define ff (compile `(lambda ,as (set! ,(car (last-pair as)) 42)
-			     ,(car (last-pair as)))))
+                             ,(car (last-pair as)))))
 (assert (equal? (apply ff (iota (+ MAX_ARGS 100))) 42))
 (define ff (compile `(lambda ,as (set! ,(car (last-pair as)) 42)
-			     (lambda () ,(car (last-pair as))))))
+                             (lambda () ,(car (last-pair as))))))
 (assert (equal? ((apply ff (iota (+ MAX_ARGS 100)))) 42))
 
 (define as (map-int (lambda (x) (gensym)) 1000))
@@ -173,9 +176,9 @@
 (assert (not (keyword? 'kw)))
 (assert (not (keyword? ':)))
 (assert (equal? ((lambda (x (a 2) (b: a) . r) (list x a b r)) 1 0 8 4 5)
-		'(1 0 0 (8 4 5))))
+                '(1 0 0 (8 4 5))))
 (assert (equal? ((lambda (x (a 2) (b: a) . r) (list x a b r)) 0 b: 3 1)
-		'(0 2 3 (1))))
+                '(0 2 3 (1))))
 (define (keys4 (a: 8) (b: 3) (c: 7) (d: 6)) (list a b c d))
 (assert (equal? (keys4 a: 10) '(10 3 7 6)))
 (assert (equal? (keys4 b: 10) '(8 10 7 6)))
@@ -214,75 +217,75 @@
 
 (load "color.scm")
 (assert (equal? (color-pairs (generate-5x5-pairs) '(a b c d e))
-		'((23 . a) (9 . a) (22 . b) (17 . d) (14 . d) (8 . b) (21 . e)
-		  (19 . b) (16 . c) (13 . c) (11 . b) (7 . e) (24 . c) (20 . d)
-		  (18 . e) (15 . a) (12 . a) (10 . e) (6 . d) (5 . c) (4 . e)
-		  (3 . d) (2 . c) (0 . b) (1 . a))))
+                '((23 . a) (9 . a) (22 . b) (17 . d) (14 . d) (8 . b)
+                  (21 . e) (19 . b) (16 . c) (13 . c) (11 . b) (7 . e)
+                  (24 . c) (20 . d) (18 . e) (15 . a) (12 . a) (10 . e)
+                  (6 . d) (5 . c) (4 . e) (3 . d) (2 . c) (0 . b) (1 . a))))
 
 ; hashing strange things
 (assert (equal?
-	 (hash '#0=(1 1 #0# . #0#))
-	 (hash '#1=(1 1 #1# 1 1 #1# . #1#))))
+         (hash '#0=(1 1 #0# . #0#))
+         (hash '#1=(1 1 #1# 1 1 #1# . #1#))))
 
 (assert (not (equal?
-	      (hash '#0=(1 1 #0# . #0#))
-	      (hash '#1=(1 2 #1# 1 1 #1# . #1#)))))
+              (hash '#0=(1 1 #0# . #0#))
+              (hash '#1=(1 2 #1# 1 1 #1# . #1#)))))
 
 (assert (equal?
-	 (hash '#0=((1 . #0#) . #0#))
-	 (hash '#1=((1 . #1#) (1 . #1#) . #1#))))
+         (hash '#0=((1 . #0#) . #0#))
+         (hash '#1=((1 . #1#) (1 . #1#) . #1#))))
 
 (assert (not (equal?
-	      (hash '#0=((1 . #0#) . #0#))
-	      (hash '#1=((2 . #1#) (1 . #1#) . #1#)))))
+              (hash '#0=((1 . #0#) . #0#))
+              (hash '#1=((2 . #1#) (1 . #1#) . #1#)))))
 
 (assert (not (equal?
-	      (hash '#0=((1 . #0#) . #0#))
-	      (hash '#1=((1 . #1#) (2 . #1#) . #1#)))))
+              (hash '#0=((1 . #0#) . #0#))
+              (hash '#1=((1 . #1#) (2 . #1#) . #1#)))))
 
 (assert (equal?
-	 (hash '(#0=(#0#) 0))
-	 (hash '(#1=(((((#1#))))) 0))))
+         (hash '(#0=(#0#) 0))
+         (hash '(#1=(((((#1#))))) 0))))
 
 (assert (not (equal?
-	      (hash '(#0=(#0#) 0))
-	      (hash '(#1=(((((#1#))))) 1)))))
+              (hash '(#0=(#0#) 0))
+              (hash '(#1=(((((#1#))))) 1)))))
 
 (assert (equal?
-	 (hash #0=[1 [2 [#0#]] 3])
-	 (hash #1=[1 [2 [[1 [2 [#1#]] 3]]] 3])))
+         (hash #0=[1 [2 [#0#]] 3])
+         (hash #1=[1 [2 [[1 [2 [#1#]] 3]]] 3])))
 
 (assert (not (equal?
-	      (hash #0=[1 [2 [#0#]] 3])
-	      (hash #1=[1 [2 [[5 [2 [#1#]] 3]]] 3]))))
+              (hash #0=[1 [2 [#0#]] 3])
+              (hash #1=[1 [2 [[5 [2 [#1#]] 3]]] 3]))))
 
 (assert (equal?
-	 (hash #0=[1 #0# [2 [#0#]] 3])
-	 (hash #1=[1 #1# [2 [[1 #1# [2 [#1#]] 3]]] 3])))
+         (hash #0=[1 #0# [2 [#0#]] 3])
+         (hash #1=[1 #1# [2 [[1 #1# [2 [#1#]] 3]]] 3])))
 
 (assert (not (equal?
-	      (hash #0=[1 #0# [2 [#0#]] 3])
-	      (hash #1=[6 #1# [2 [[1 #1# [2 [#1#]] 3]]] 3]))))
+              (hash #0=[1 #0# [2 [#0#]] 3])
+              (hash #1=[6 #1# [2 [[1 #1# [2 [#1#]] 3]]] 3]))))
 
 (assert (equal?
-	 (hash [1 [2 [[1 1 [2 [1]] 3]]] 3])
-	 (hash [1 [2 [[1 1 [2 [1]] 3]]] 3])))
+         (hash [1 [2 [[1 1 [2 [1]] 3]]] 3])
+         (hash [1 [2 [[1 1 [2 [1]] 3]]] 3])))
 
 (assert (not (equal?
-	      (hash [6 1 [2 [[3 1 [2 [1]] 3]]] 3])
-	      (hash [6 1 [2 [[1 1 [2 [1]] 3]]] 3]))))
+              (hash [6 1 [2 [[3 1 [2 [1]] 3]]] 3])
+              (hash [6 1 [2 [[1 1 [2 [1]] 3]]] 3]))))
 
 (assert (equal? (hash '#0=(1 . #0#))
-		(hash '#1=(1 1 . #1#))))
+                (hash '#1=(1 1 . #1#))))
 
 (assert (not (equal? (hash '#0=(1 1 . #0#))
-		     (hash '#1=(1 #0# . #1#)))))
+                     (hash '#1=(1 #0# . #1#)))))
 
 (assert (not (equal? (hash (iota 10))
-		     (hash (iota 20)))))
+                     (hash (iota 20)))))
 
 (assert (not (equal? (hash (iota 41))
-		     (hash (iota 42)))))
+                     (hash (iota 42)))))
 
 (if (top-level-bound? 'time.fromstring)
     (assert (let ((ts (time.string (time.now))))

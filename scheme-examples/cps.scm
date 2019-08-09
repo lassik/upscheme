@@ -3,8 +3,8 @@
   (cond ((atom? forms)       `(,k ,forms))
         ((null? (cdr forms))  (cps- (car forms) k))
         (#t (let ((_ (gensym)))   ; var to bind ignored value
-	      (cps- (car forms) `(lambda (,_)
-				   ,(begin->cps (cdr forms) k)))))))
+              (cps- (car forms) `(lambda (,_)
+                                   ,(begin->cps (cdr forms) k)))))))
 
 (define-macro (lambda/cc args body)
   `(cons 'lambda/cc (lambda ,args ,body)))
@@ -24,7 +24,7 @@
     `(define (,name f k ,@args)
        (if (and (pair? f) (eq (car f) 'lambda/cc))
            ((cdr f) k ,@args)
-	   (k (f ,@args))))))
+           (k (f ,@args))))))
 (def-funcall/cc-n ())
 (def-funcall/cc-n (a0))
 (def-funcall/cc-n (a0 a1))
@@ -242,8 +242,8 @@
 (define-macro (define-generator form . body)
   (let ((ko  (gensym))
         (cur (gensym))
-	(name (car form))
-	(args (cdr form)))
+        (name (car form))
+        (args (cdr form)))
     `(define (,name ,@args)
        (let ((,ko  #f)
              (,cur #f))
@@ -284,7 +284,8 @@ todo:
 
 * handle dotted arglists in lambda
 
-- optimize constant functions, e.g. (funcall/cc-0 #:g65 (lambda (#:g58) 'done))
+- optimize constant functions, e.g.
+  (funcall/cc-0 #:g65 (lambda (#:g58) 'done))
 
 - implement CPS version of apply
 

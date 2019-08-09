@@ -11,8 +11,8 @@
 
 (define (index-of item lst start)
   (cond ((null? lst) #f)
-	((eq item (car lst)) start)
-	(#t (index-of item (cdr lst) (+ start 1)))))
+        ((eq item (car lst)) start)
+        (#t (index-of item (cdr lst) (+ start 1)))))
 
 (define (each f l)
   (if (null? l) l
@@ -41,31 +41,33 @@
       (f t zero)
       (f t (foldl t (lambda (e state) (foldtree-post f e state)) zero))))
 
-; general tree transformer
-; folds in preorder (foldtree-pre), maps in postorder (maptree-post)
-; therefore state changes occur immediately, just by looking at the current node,
-; while transformation follows evaluation order. this seems to be the most natural
-; approach.
-; (mapper tree state) - should return transformed tree given current state
-; (folder tree state) - should return new state
+;; general tree transformer
+;;
+;; Folds in preorder (foldtree-pre), maps in postorder (maptree-post).
+;; Therefore state changes occur immediately, just by looking at the current
+;; node, while transformation follows evaluation order. This seems to be the
+;; most natural approach.
+;;
+;; (mapper tree state) - should return transformed tree given current state
+;; (folder tree state) - should return new state
 (define (map&fold t zero mapper folder)
   (let ((head (and (pair? t) (car t))))
     (cond ((eq? head 'quote)
-	   t)
-	  ((or (eq? head 'the) (eq? head 'meta))
-	   (list head
-		 (cadr t)
-		 (map&fold (caddr t) zero mapper folder)))
-	  (else
-	   (let ((new-s (folder t zero)))
-	     (mapper
-	      (if (pair? t)
-		  ; head symbol is a tag; never transform it
-		  (cons (car t)
-			(map (lambda (e) (map&fold e new-s mapper folder))
-			     (cdr t)))
-		  t)
-	      new-s))))))
+           t)
+          ((or (eq? head 'the) (eq? head 'meta))
+           (list head
+                 (cadr t)
+                 (map&fold (caddr t) zero mapper folder)))
+          (else
+           (let ((new-s (folder t zero)))
+             (mapper
+              (if (pair? t)
+                  ; head symbol is a tag; never transform it
+                  (cons (car t)
+                        (map (lambda (e) (map&fold e new-s mapper folder))
+                             (cdr t)))
+                  t)
+              new-s))))))
 
 ; convert to proper list, i.e. remove "dots", and append
 (define (append.2 l tail)
@@ -77,11 +79,11 @@
 ; env is a list of lexical variables in effect at that point.
 (define (lexical-walk f t)
   (map&fold t () f
-	    (lambda (tree state)
-	      (if (and (eq? (car t) 'lambda)
-		       (pair? (cdr t)))
-		  (append.2 (cadr t) state)
-		  state))))
+            (lambda (tree state)
+              (if (and (eq? (car t) 'lambda)
+                       (pair? (cdr t)))
+                  (append.2 (cadr t) state)
+                  state))))
 
 ; collapse forms like (&& (&& (&& (&& a b) c) d) e) to (&& a b c d e)
 (define (flatten-left-op op e)
@@ -110,14 +112,14 @@
         ((pair? e)
          (if (eq (car e) 'quote)
              e
-	     (let* ((newvs (and (eq (car e) 'lambda) (cadr e)))
-		    (newenv (if newvs (cons newvs env) env)))
-	       (if newvs
-		   (cons 'lambda
-			 (cons (cadr e)
-			       (map (lambda (se) (lvc- se newenv))
-				    (cddr e))))
-		   (map (lambda (se) (lvc- se env)) e)))))
+             (let* ((newvs (and (eq (car e) 'lambda) (cadr e)))
+                    (newenv (if newvs (cons newvs env) env)))
+               (if newvs
+                   (cons 'lambda
+                         (cons (cadr e)
+                               (map (lambda (se) (lvc- se newenv))
+                                    (cddr e))))
+                   (map (lambda (se) (lvc- se env)) e)))))
         (#t e)))
 (define (lexical-var-conversion e)
   (lvc- e ()))
@@ -125,32 +127,32 @@
 ; convert let to lambda
 (define (let-expand e)
   (maptree-post (lambda (n)
-		  (if (and (pair? n) (eq (car n) 'let))
-		      `((lambda ,(map car (cadr n)) ,@(cddr n))
-			,@(map cadr (cadr n)))
+                  (if (and (pair? n) (eq (car n) 'let))
+                      `((lambda ,(map car (cadr n)) ,@(cddr n))
+                        ,@(map cadr (cadr n)))
                     n))
-		e))
+                e))
 
 ; alpha renaming
 ; transl is an assoc list ((old-sym-name . new-sym-name) ...)
 (define (alpha-rename e transl)
   (map&fold e
-	    ()
-	    ; mapper: replace symbol if unbound
-	    (lambda (t env)
-	      (if (symbol? t)
-		  (let ((found (assq t transl)))
-		    (if (and found
-			     (not (memq t env)))
-			(cdr found)
-			t))
-		  t))
-	    ; folder: add locals to environment if entering a new scope
-	    (lambda (t env)
-	      (if (and (pair? t) (or (eq? (car t) 'let)
-				     (eq? (car t) 'lambda)))
-		  (append (cadr t) env)
-		  env))))
+            ()
+            ; mapper: replace symbol if unbound
+            (lambda (t env)
+              (if (symbol? t)
+                  (let ((found (assq t transl)))
+                    (if (and found
+                             (not (memq t env)))
+                        (cdr found)
+                        t))
+                  t))
+            ; folder: add locals to environment if entering a new scope
+            (lambda (t env)
+              (if (and (pair? t) (or (eq? (car t) 'let)
+                                     (eq? (car t) 'lambda)))
+                  (append (cadr t) env)
+                  env))))
 
 ; flatten op with any associativity
 (define-macro (flatten-all-op op e)

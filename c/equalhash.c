@@ -9,7 +9,7 @@
 #include "flisp.h"
 #include "equalhash.h"
 
-#include "htable.inc"
+#include "htable_inc.h"
 
 #define _equal_lispvalue_(x, y) equal_lispvalue((value_t)(x), (value_t)(y))
 

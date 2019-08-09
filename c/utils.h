@@ -47,13 +47,13 @@ STATIC_INLINE u_int16_t ByteSwap16(u_int16_t x)
 STATIC_INLINE u_int32_t ByteSwap32(u_int32_t x)
 {
 #if __CPU__ > 386
-    __asm("bswap	%0"
+    __asm("bswap        %0"
           : "=r"(x)
           :
 #else
-    __asm("xchgb	%b0,%h0\n"
-          "	rorl	$16,%0\n"
-          "	xchgb	%b0,%h0"
+    __asm("xchgb        %b0,%h0\n"
+          "     rorl    $16,%0\n"
+          "     xchgb   %b0,%h0"
           : LEGACY_REGS(x)
           :
 #endif
@@ -66,14 +66,14 @@ STATIC_INLINE u_int32_t ByteSwap32(u_int32_t x)
 STATIC_INLINE u_int64_t ByteSwap64(u_int64_t x)
 {
 #ifdef ARCH_X86_64
-    __asm("bswap	%0" : "=r"(x) : "0"(x));
+    __asm("bswap        %0" : "=r"(x) : "0"(x));
     return x;
 #else
     register union {
         __extension__ u_int64_t __ll;
         u_int32_t __l[2];
     } __x;
-    asm("xchgl	%0,%1"
+    asm("xchgl  %0,%1"
         : "=r"(__x.__l[0]), "=r"(__x.__l[1])
         : "0"(bswap_32((unsigned long)x)),
           "1"(bswap_32((unsigned long)(x >> 32))));

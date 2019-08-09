@@ -1,6 +1,6 @@
 ; -*- scheme -*-
 
-; dictionaries ----------------------------------------------------------------
+; dictionaries ---------------------------------------------------------------
 (define (dict-new) ())
 
 (define (dict-extend dl key value)
@@ -15,7 +15,7 @@
 
 (define (dict-keys dl) (map car dl))
 
-; graphs ----------------------------------------------------------------------
+; graphs ---------------------------------------------------------------------
 (define (graph-empty) (dict-new))
 
 (define (graph-connect g n1 n2)
@@ -39,7 +39,7 @@
                    (caar edge-list)
                    (cdar edge-list))))
 
-; graph coloring --------------------------------------------------------------
+; graph coloring -------------------------------------------------------------
 (define (node-colorable? g coloring node-to-color color-of-node)
   (not (member
         color-of-node
@@ -52,7 +52,7 @@
 (define (try-each f lst)
   (if (null? lst) #f
       (let ((ret (f (car lst))))
-	(if ret ret (try-each f (cdr lst))))))
+        (if ret ret (try-each f (cdr lst))))))
 
 (define (color-node g coloring colors uncolored-nodes color)
   (cond
@@ -72,7 +72,7 @@
 (define (color-pairs pairs colors)
   (color-graph (graph-from-edges pairs) colors))
 
-; queens ----------------------------------------------------------------------
+; queens ---------------------------------------------------------------------
 (define (can-attack x y)
   (let ((x1 (mod x 5))
         (y1 (truncate (/ x 5)))
