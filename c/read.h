@@ -22,7 +22,7 @@ enum {
     TOK_DOUBLEQUOTE
 };
 
-#define F value2c(ios_t *, readstate->source)
+#define F value2c(struct ios *, readstate->source)
 
 // defines which characters are ordinary symbol characters.
 // exceptions are '.', which is an ordinary symbol character
@@ -121,7 +121,7 @@ static char nextchar(void)
 {
     int ch;
     char c;
-    ios_t *f = F;
+    struct ios *f = F;
 
     do {
         if (f->bpos < f->size) {

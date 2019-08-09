@@ -27,7 +27,7 @@
 static value_t tablesym;
 static fltype_t *tabletype;
 
-void print_htable(value_t v, ios_t *f)
+void print_htable(value_t v, struct ios *f)
 {
     struct htable *h = (struct htable *)cv_data((cvalue_t *)ptr(v));
     size_t i;

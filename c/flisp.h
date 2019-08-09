@@ -133,7 +133,7 @@ extern value_t FL_NIL, FL_T, FL_F, FL_EOF;
 
 /* read, eval, print main entry points */
 value_t fl_read_sexpr(value_t f);
-void fl_print(ios_t *f, value_t v);
+void fl_print(struct ios *f, value_t v);
 value_t fl_toplevel_eval(value_t expr);
 value_t fl_apply(value_t f, value_t l);
 value_t fl_applyn(uint32_t n, value_t f, ...);
@@ -212,7 +212,7 @@ static inline void argcount(char *fname, uint32_t nargs, uint32_t c)
 }
 
 typedef struct {
-    void (*print)(value_t self, ios_t *f);
+    void (*print)(value_t self, struct ios *f);
     void (*relocate)(value_t oldv, value_t newv);
     void (*finalize)(value_t self);
     void (*print_traverse)(value_t self);
@@ -244,9 +244,9 @@ typedef enum {
 
 value_t relocate_lispvalue(value_t v);
 void print_traverse(value_t v);
-void fl_print_chr(char c, ios_t *f);
-void fl_print_str(char *s, ios_t *f);
-void fl_print_child(ios_t *f, value_t v);
+void fl_print_chr(char c, struct ios *f);
+void fl_print_str(char *s, struct ios *f);
+void fl_print_child(struct ios *f, value_t v);
 
 typedef int (*cvinitfunc_t)(struct _fltype_t *, value_t, void *);
 
@@ -367,7 +367,7 @@ int fl_isstring(value_t v);
 int fl_isnumber(value_t v);
 int fl_isgensym(value_t v);
 int fl_isiostream(value_t v);
-ios_t *fl_toiostream(value_t v, char *fname);
+struct ios *fl_toiostream(value_t v, char *fname);
 value_t cvalue_compare(value_t a, value_t b);
 int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname);
 

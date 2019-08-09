@@ -2608,7 +2608,7 @@ int fl_load_system_image(value_t sys_image_iostream)
     {
         while (1) {
             e = fl_read_sexpr(Stack[SP - 1]);
-            if (ios_eof(value2c(ios_t *, Stack[SP - 1])))
+            if (ios_eof(value2c(struct ios *, Stack[SP - 1])))
                 break;
             if (isfunction(e)) {
                 // stage 0 format: series of thunks
@@ -2635,7 +2635,7 @@ int fl_load_system_image(value_t sys_image_iostream)
         ios_putc('\n', ios_stderr);
         return 1;
     }
-    ios_close(value2c(ios_t *, Stack[SP - 1]));
+    ios_close(value2c(struct ios *, Stack[SP - 1]));
     POPN(1);
     return 0;
 }

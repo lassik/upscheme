@@ -574,7 +574,7 @@ void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
 {
     if (iscvalue(v)) {
         cvalue_t *pcv = (cvalue_t *)ptr(v);
-        ios_t *x = value2c(ios_t *, v);
+        struct ios *x = value2c(struct ios *, v);
         if (cv_class(pcv) == iostreamtype && (x->bm == bm_mem)) {
             *pdata = x->buf;
             *psz = x->size;

@@ -11,7 +11,8 @@ static char hexdig[] = "0123456789abcdef";
   display a given number of bytes from a buffer, with the first
   address label being startoffs
 */
-void hexdump(ios_t *dest, const char *buffer, size_t len, size_t startoffs)
+void hexdump(struct ios *dest, const char *buffer, size_t len,
+             size_t startoffs)
 {
     size_t offs = 0;
     size_t i, pos;

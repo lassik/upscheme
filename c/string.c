@@ -144,7 +144,7 @@ value_t fl_string(value_t *args, u_int32_t nargs)
         return args[0];
     value_t arg, buf = fl_buffer(NULL, 0);
     fl_gc_handle(&buf);
-    ios_t *s = value2c(ios_t *, buf);
+    struct ios *s = value2c(struct ios *, buf);
     uint32_t i;
     value_t oldpr = symbol_value(printreadablysym);
     value_t oldpp = symbol_value(printprettysym);

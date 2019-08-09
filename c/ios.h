@@ -11,7 +11,7 @@ typedef enum { bst_none, bst_rd, bst_wr } bufstate_t;
 #define IOS_INLSIZE 54
 #define IOS_BUFSIZE 131072
 
-typedef struct {
+struct ios {
     bufmode_t bm;
 
     // the state only indicates where the underlying file position is relative
@@ -54,82 +54,85 @@ typedef struct {
 
     // todo: mutex
     char local[IOS_INLSIZE];
-} ios_t;
+};
 
 /* low-level interface functions */
-size_t ios_read(ios_t *s, char *dest, size_t n);
-size_t ios_readall(ios_t *s, char *dest, size_t n);
-size_t ios_write(ios_t *s, char *data, size_t n);
-off_t ios_seek(ios_t *s, off_t pos);  // absolute seek
-off_t ios_seek_end(ios_t *s);
-off_t ios_skip(ios_t *s, off_t offs);  // relative seek
-off_t ios_pos(ios_t *s);               // get current position
-size_t ios_trunc(ios_t *s, size_t size);
-int ios_eof(ios_t *s);
-int ios_flush(ios_t *s);
-void ios_close(ios_t *s);
-char *ios_takebuf(ios_t *s, size_t *psize);  // release buffer to caller
+size_t ios_read(struct ios *s, char *dest, size_t n);
+size_t ios_readall(struct ios *s, char *dest, size_t n);
+size_t ios_write(struct ios *s, char *data, size_t n);
+off_t ios_seek(struct ios *s, off_t pos);  // absolute seek
+off_t ios_seek_end(struct ios *s);
+off_t ios_skip(struct ios *s, off_t offs);  // relative seek
+off_t ios_pos(struct ios *s);               // get current position
+size_t ios_trunc(struct ios *s, size_t size);
+int ios_eof(struct ios *s);
+int ios_flush(struct ios *s);
+void ios_close(struct ios *s);
+char *ios_takebuf(struct ios *s,
+                  size_t *psize);  // release buffer to caller
 // set buffer space to use
-int ios_setbuf(ios_t *s, char *buf, size_t size, int own);
-int ios_bufmode(ios_t *s, bufmode_t mode);
-void ios_set_readonly(ios_t *s);
-size_t ios_copy(ios_t *to, ios_t *from, size_t nbytes);
-size_t ios_copyall(ios_t *to, ios_t *from);
-size_t ios_copyuntil(ios_t *to, ios_t *from, char delim);
+int ios_setbuf(struct ios *s, char *buf, size_t size, int own);
+int ios_bufmode(struct ios *s, bufmode_t mode);
+void ios_set_readonly(struct ios *s);
+size_t ios_copy(struct ios *to, struct ios *from, size_t nbytes);
+size_t ios_copyall(struct ios *to, struct ios *from);
+size_t ios_copyuntil(struct ios *to, struct ios *from, char delim);
 // ensure at least n bytes are buffered if possible. returns # available.
-size_t ios_readprep(ios_t *from, size_t n);
-// void ios_lock(ios_t *s);
-// int ios_trylock(ios_t *s);
-// int ios_unlock(ios_t *s);
+size_t ios_readprep(struct ios *from, size_t n);
+// void ios_lock(struct ios *s);
+// int struct iosrylock(struct ios *s);
+// int ios_unlock(struct ios *s);
 
 /* stream creation */
-ios_t *ios_file(ios_t *s, char *fname, int rd, int wr, int create, int trunc);
-ios_t *ios_mem(ios_t *s, size_t initsize);
-ios_t *ios_str(ios_t *s, char *str);
-ios_t *ios_static_buffer(ios_t *s, char *buf, size_t sz);
-ios_t *ios_fd(ios_t *s, long fd, int isfile, int own);
+struct ios *ios_file(struct ios *s, char *fname, int rd, int wr, int create,
+                     int trunc);
+struct ios *ios_mem(struct ios *s, size_t initsize);
+struct ios *ios_str(struct ios *s, char *str);
+struct ios *ios_static_buffer(struct ios *s, char *buf, size_t sz);
+struct ios *ios_fd(struct ios *s, long fd, int isfile, int own);
 // todo: ios_socket
-extern ios_t *ios_stdin;
-extern ios_t *ios_stdout;
-extern ios_t *ios_stderr;
+extern struct ios *ios_stdin;
+extern struct ios *ios_stdout;
+extern struct ios *ios_stderr;
 void ios_init_stdstreams();
 
 /* high-level functions - output */
-int ios_putnum(ios_t *s, char *data, uint32_t type);
-int ios_putint(ios_t *s, int n);
-int ios_pututf8(ios_t *s, uint32_t wc);
-int ios_putstringz(ios_t *s, char *str, bool_t do_write_nulterm);
-int ios_printf(ios_t *s, const char *format, ...);
-int ios_vprintf(ios_t *s, const char *format, va_list args);
+int ios_putnum(struct ios *s, char *data, uint32_t type);
+int ios_putint(struct ios *s, int n);
+int ios_pututf8(struct ios *s, uint32_t wc);
+int ios_putstringz(struct ios *s, char *str, bool_t do_write_nulterm);
+int ios_printf(struct ios *s, const char *format, ...);
+int ios_vprintf(struct ios *s, const char *format, va_list args);
 
-void hexdump(ios_t *dest, const char *buffer, size_t len, size_t startoffs);
+void hexdump(struct ios *dest, const char *buffer, size_t len,
+             size_t startoffs);
 
 /* high-level stream functions - input */
-int ios_getnum(ios_t *s, char *data, uint32_t type);
-int ios_getutf8(ios_t *s, uint32_t *pwc);
-int ios_peekutf8(ios_t *s, uint32_t *pwc);
-int ios_ungetutf8(ios_t *s, uint32_t wc);
-int ios_getstringz(ios_t *dest, ios_t *src);
-int ios_getstringn(ios_t *dest, ios_t *src, size_t nchars);
-int ios_getline(ios_t *s, char **pbuf, size_t *psz);
-char *ios_readline(ios_t *s);
+int ios_getnum(struct ios *s, char *data, uint32_t type);
+int ios_getutf8(struct ios *s, uint32_t *pwc);
+int ios_peekutf8(struct ios *s, uint32_t *pwc);
+int ios_ungetutf8(struct ios *s, uint32_t wc);
+int ios_getstringz(struct ios *dest, struct ios *src);
+int ios_getstringn(struct ios *dest, struct ios *src, size_t nchars);
+int ios_getline(struct ios *s, char **pbuf, size_t *psz);
+char *ios_readline(struct ios *s);
 
 // discard data buffered for reading
-void ios_purge(ios_t *s);
+void ios_purge(struct ios *s);
 
 // seek by utf8 sequence increments
-int ios_nextutf8(ios_t *s);
-int ios_prevutf8(ios_t *s);
+int ios_nextutf8(struct ios *s);
+int ios_prevutf8(struct ios *s);
 
 /* stdio-style functions */
 #define IOS_EOF (-1)
-int ios_putc(int c, ios_t *s);
-// wint_t ios_putwc(ios_t *s, wchar_t wc);
-int ios_getc(ios_t *s);
-int ios_peekc(ios_t *s);
-// wint_t ios_getwc(ios_t *s);
-int ios_ungetc(int c, ios_t *s);
-// wint_t ios_ungetwc(ios_t *s, wint_t wc);
+int ios_putc(int c, struct ios *s);
+// wint_t ios_putwc(struct ios *s, wchar_t wc);
+int ios_getc(struct ios *s);
+int ios_peekc(struct ios *s);
+// wint_t ios_getwc(struct ios *s);
+int ios_ungetc(int c, struct ios *s);
+// wint_t ios_ungetwc(struct ios *s, wint_t wc);
 #define ios_puts(str, s) ios_write(s, str, strlen(str))
 
 /*

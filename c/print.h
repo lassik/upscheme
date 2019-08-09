@@ -10,7 +10,7 @@ static fixnum_t P_LEVEL;
 static int SCR_WIDTH = 80;
 
 static int HPOS = 0, VPOS;
-static void outc(char c, ios_t *f)
+static void outc(char c, struct ios *f)
 {
     ios_putc(c, f);
     if (c == '\n')
@@ -18,17 +18,17 @@ static void outc(char c, ios_t *f)
     else
         HPOS++;
 }
-static void outs(char *s, ios_t *f)
+static void outs(char *s, struct ios *f)
 {
     ios_puts(s, f);
     HPOS += u8_strwidth(s);
 }
-static void outsn(char *s, ios_t *f, size_t n)
+static void outsn(char *s, struct ios *f, size_t n)
 {
     ios_write(f, s, n);
     HPOS += u8_strwidth(s);
 }
-static int outindent(int n, ios_t *f)
+static int outindent(int n, struct ios *f)
 {
     // move back to left margin if we get too indented
     if (n > SCR_WIDTH - 12)
@@ -44,9 +44,9 @@ static int outindent(int n, ios_t *f)
     return n0;
 }
 
-void fl_print_chr(char c, ios_t *f) { outc(c, f); }
+void fl_print_chr(char c, struct ios *f) { outc(c, f); }
 
-void fl_print_str(char *s, ios_t *f) { outs(s, f); }
+void fl_print_str(char *s, struct ios *f) { outs(s, f); }
 
 void print_traverse(value_t v)
 {
@@ -96,7 +96,7 @@ void print_traverse(value_t v)
     }
 }
 
-static void print_symbol_name(ios_t *f, char *name)
+static void print_symbol_name(struct ios *f, char *name)
 {
     int i, escape = 0, charescape = 0;
 
@@ -243,7 +243,7 @@ static int blockindent(value_t v)
     return (allsmallp(v) > 9);
 }
 
-static void print_pair(ios_t *f, value_t v)
+static void print_pair(struct ios *f, value_t v)
 {
     value_t cd;
     char *op = NULL;
@@ -334,9 +334,9 @@ static void print_pair(ios_t *f, value_t v)
     }
 }
 
-static void cvalue_print(ios_t *f, value_t v);
+static void cvalue_print(struct ios *f, value_t v);
 
-static int print_circle_prefix(ios_t *f, value_t v)
+static int print_circle_prefix(struct ios *f, value_t v)
 {
     value_t label;
     if ((label = (value_t)ptrhash_get(&printconses, (void *)v)) !=
@@ -352,7 +352,7 @@ static int print_circle_prefix(ios_t *f, value_t v)
     return 0;
 }
 
-void fl_print_child(ios_t *f, value_t v)
+void fl_print_child(struct ios *f, value_t v)
 {
     char *name;
     if (print_level >= 0 && P_LEVEL >= print_level &&
@@ -469,7 +469,7 @@ void fl_print_child(ios_t *f, value_t v)
     P_LEVEL--;
 }
 
-static void print_string(ios_t *f, char *str, size_t sz)
+static void print_string(struct ios *f, char *str, size_t sz)
 {
     char buf[512];
     size_t i = 0;
@@ -593,8 +593,8 @@ static numerictype_t sym_to_numtype(value_t type);
 // for example #int32(0) can be printed as just 0. this is used
 // printing in a context where a type is already implied, e.g. inside
 // an array.
-static void cvalue_printdata(ios_t *f, void *data, size_t len, value_t type,
-                             int weak)
+static void cvalue_printdata(struct ios *f, void *data, size_t len,
+                             value_t type, int weak)
 {
     if (type == bytesym) {
         unsigned char ch = *(unsigned char *)data;
@@ -778,7 +778,7 @@ static void cvalue_printdata(ios_t *f, void *data, size_t len, value_t type,
     }
 }
 
-static void cvalue_print(ios_t *f, value_t v)
+static void cvalue_print(struct ios *f, value_t v)
 {
     cvalue_t *cv = (cvalue_t *)ptr(v);
     void *data = cptr(v);
@@ -817,7 +817,7 @@ static void set_print_width(void)
     SCR_WIDTH = numval(pw);
 }
 
-void fl_print(ios_t *f, value_t v)
+void fl_print(struct ios *f, value_t v)
 {
     print_pretty = (symbol_value(printprettysym) != FL_F);
     if (print_pretty)
