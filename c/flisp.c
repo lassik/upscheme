@@ -2217,7 +2217,7 @@ static value_t _stacktrace(uint32_t top)
 // builtins
 // -------------------------------------------------------------------
 
-void assign_global_builtins(builtinspec_t *b)
+void assign_global_builtins(struct builtinspec *b)
 {
     while (b->name != NULL) {
         setc(symbol(b->name), cbuiltin(b->name, b->fptr));
@@ -2437,7 +2437,7 @@ value_t fl_map1(value_t *args, u_int32_t nargs)
     return first;
 }
 
-static builtinspec_t core_builtin_info[] = {
+static struct builtinspec core_builtin_info[] = {
     { "function", fl_function },
     { "function:code", fl_function_code },
     { "function:vals", fl_function_vals },

@@ -401,12 +401,12 @@ uint32_t conv_to_uint32(void *data, numerictype_t tag);
 #define conv_to_ulong conv_to_uint32
 #endif
 
-typedef struct {
+struct builtinspec {
     char *name;
     builtin_t fptr;
-} builtinspec_t;
+};
 
-void assign_global_builtins(builtinspec_t *b);
+void assign_global_builtins(struct builtinspec *b);
 
 /* builtins */
 value_t fl_hash(value_t *args, u_int32_t nargs);

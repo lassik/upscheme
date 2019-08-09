@@ -435,7 +435,7 @@ value_t fl_iotostring(value_t *args, u_int32_t nargs)
     return stream_to_string(&args[0]);
 }
 
-static builtinspec_t iostreamfunc_info[] = {
+static struct builtinspec iostreamfunc_info[] = {
     { "iostream?", fl_iostreamp },
     { "eof-object", fl_eof_object },
     { "eof-object?", fl_eof_objectp },

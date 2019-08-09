@@ -419,7 +419,7 @@ value_t fl_string_isutf8(value_t *args, u_int32_t nargs)
     return u8_isvalid(s, len) ? FL_T : FL_F;
 }
 
-static builtinspec_t stringfunc_info[] = {
+static struct builtinspec stringfunc_info[] = {
     { "string", fl_string },
     { "string?", fl_stringp },
     { "string.count", fl_string_count },

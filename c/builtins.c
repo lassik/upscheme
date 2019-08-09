@@ -477,7 +477,7 @@ extern void stringfuncs_init(void);
 extern void table_init(void);
 extern void iostream_init(void);
 
-static builtinspec_t builtin_info[] = {
+static struct builtinspec builtin_info[] = {
     { "environment", fl_global_env },
     { "constant?", fl_constantp },
     { "top-level-value", fl_top_level_value },

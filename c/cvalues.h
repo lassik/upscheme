@@ -895,21 +895,22 @@ static value_t fl_logxor(value_t *args, u_int32_t nargs);
 static value_t fl_lognot(value_t *args, u_int32_t nargs);
 static value_t fl_ash(value_t *args, u_int32_t nargs);
 
-static builtinspec_t cvalues_builtin_info[] = { { "c-value", cvalue_new },
-                                                { "typeof", cvalue_typeof },
-                                                { "sizeof", cvalue_sizeof },
-                                                { "builtin", fl_builtin },
-                                                { "copy", fl_copy },
-                                                { "plain-old-data?",
-                                                  fl_podp },
+static struct builtinspec cvalues_builtin_info[] = {
+    { "c-value", cvalue_new },
+    { "typeof", cvalue_typeof },
+    { "sizeof", cvalue_sizeof },
+    { "builtin", fl_builtin },
+    { "copy", fl_copy },
+    { "plain-old-data?", fl_podp },
 
-                                                { "logand", fl_logand },
-                                                { "logior", fl_logior },
-                                                { "logxor", fl_logxor },
-                                                { "lognot", fl_lognot },
-                                                { "ash", fl_ash },
-                                                // todo: autorelease
-                                                { NULL, NULL } };
+    { "logand", fl_logand },
+    { "logior", fl_logior },
+    { "logxor", fl_logxor },
+    { "lognot", fl_lognot },
+    { "ash", fl_ash },
+    // todo: autorelease
+    { NULL, NULL }
+};
 
 #define cv_intern(tok) tok##sym = symbol(#tok)
 #define ctor_cv_intern(tok) \

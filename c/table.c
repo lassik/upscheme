@@ -205,14 +205,15 @@ value_t fl_table_foldl(value_t *args, uint32_t nargs)
     return zero;
 }
 
-static builtinspec_t tablefunc_info[] = { { "table", fl_table },
-                                          { "table?", fl_tablep },
-                                          { "put!", fl_table_put },
-                                          { "get", fl_table_get },
-                                          { "has?", fl_table_has },
-                                          { "del!", fl_table_del },
-                                          { "table.foldl", fl_table_foldl },
-                                          { NULL, NULL } };
+static struct builtinspec tablefunc_info[] = { { "table", fl_table },
+                                               { "table?", fl_tablep },
+                                               { "put!", fl_table_put },
+                                               { "get", fl_table_get },
+                                               { "has?", fl_table_has },
+                                               { "del!", fl_table_del },
+                                               { "table.foldl",
+                                                 fl_table_foldl },
+                                               { NULL, NULL } };
 
 void table_init(void)
 {
