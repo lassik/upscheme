@@ -32,6 +32,8 @@
 
 #include "flisp.h"
 
+#include "argcount.h"
+
 value_t fl_stringp(value_t *args, uint32_t nargs)
 {
     argcount("string?", nargs, 1);

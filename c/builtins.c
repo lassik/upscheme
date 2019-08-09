@@ -33,6 +33,8 @@
 
 #include "flisp.h"
 
+#include "argcount.h"
+
 size_t llength(value_t v)
 {
     size_t n = 0;

@@ -22,6 +22,8 @@
 #include "llt.h"
 
 #include "flisp.h"
+
+#include "argcount.h"
 #include "equalhash.h"
 
 static value_t tablesym;

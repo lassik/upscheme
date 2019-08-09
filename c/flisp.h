@@ -201,12 +201,6 @@ void bounds_error(char *fname, value_t arr, value_t ind)
 __attribute__((__noreturn__));
 extern value_t ArgError, IOError, KeyError, MemoryError, EnumerationError;
 extern value_t UnboundError;
-static void argcount(char *fname, uint32_t nargs, uint32_t c)
-{
-    if (__unlikely(nargs != c))
-        lerrorf(ArgError, "%s: too %s arguments", fname,
-                nargs < c ? "few" : "many");
-}
 
 struct cvtable {
     void (*print)(value_t self, struct ios *f);

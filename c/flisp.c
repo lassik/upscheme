@@ -62,7 +62,9 @@
 #include "ieee754.h"
 
 #include "flisp.h"
+
 #include "opcodes.h"
+#include "argcount.h"
 
 static char *builtin_names[] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -923,7 +925,6 @@ no_kw:
     curr_frame = SP;
     return nargs;
 }
-
 
 #if defined(__amd64__) || defined(_M_AMD64)
 #define ARCH_X86_64

@@ -23,6 +23,8 @@
 
 #include "flisp.h"
 
+#include "argcount.h"
+
 static value_t iostreamsym, rdsym, wrsym, apsym, crsym, truncsym;
 static value_t instrsym, outstrsym;
 struct fltype *iostreamtype;
