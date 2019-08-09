@@ -63,8 +63,9 @@
 
 #include "flisp.h"
 
-#include "opcodes.h"
 #include "argcount.h"
+#include "env.h"
+#include "opcodes.h"
 
 static char *builtin_names[] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -2622,19 +2623,7 @@ static void lisp_init(size_t initial_heapsize)
     setc(symbol("procedure?"), builtin(OP_FUNCTIONP));
     setc(symbol("top-level-bound?"), builtin(OP_BOUNDP));
 
-#ifdef LINUX
-    set(symbol("*os-name*"), symbol("linux"));
-#elif defined(_WIN32)
-    set(symbol("*os-name*"), symbol("win32"));
-#elif defined(MACOSX)
-    set(symbol("*os-name*"), symbol("macos"));
-#elif defined(OPENBSD)
-    set(symbol("*os-name*"), symbol("openbsd"));
-#elif defined(FREEBSD)
-    set(symbol("*os-name*"), symbol("freebsd"));
-#else
-    set(symbol("*os-name*"), symbol("unknown"));
-#endif
+    set(symbol("*os-name*"), symbol(env_get_os_name()));
 
     the_empty_vector = tagptr(alloc_words(1), TAG_VECTOR);
     vector_setsize(the_empty_vector, 0);

@@ -21,6 +21,7 @@ $CC $CFLAGS -c ../c/bitvector-ops.c
 $CC $CFLAGS -c ../c/bitvector.c
 $CC $CFLAGS -c ../c/builtins.c
 $CC $CFLAGS -c ../c/dump.c
+$CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c
 $CC $CFLAGS -c ../c/flisp.c
 $CC $CFLAGS -c ../c/flmain.c
@@ -40,7 +41,7 @@ $CC $CFLAGS -c ../c/table.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 $CC $LFLAGS -o flisp -lm \
-        bitvector-ops.o bitvector.o builtins.o dump.o \
+        bitvector-ops.o bitvector.o builtins.o dump.o env_unix.o \
         equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
         hashing.o htable.o int2str.o \
         ios.o iostream.o lltinit.o ptrhash.o random.o socket.o \

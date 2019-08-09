@@ -1056,9 +1056,7 @@
 
 ; initialize globals that need to be set at load time
 (define (__init_globals)
-  (if (or (eq? *os-name* 'win32)
-          (eq? *os-name* 'win64)
-          (eq? *os-name* 'windows))
+  (if (eq? *os-name* 'windows)
       (begin (set! *directory-separator* "\\")
              (set! *linefeed* "\r\n"))
       (begin (set! *directory-separator* "/")
