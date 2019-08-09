@@ -101,18 +101,18 @@ static value_t fl_length(value_t *args, u_int32_t nargs)
 {
     argcount("length", nargs, 1);
     value_t a = args[0];
-    cvalue_t *cv;
+    struct cvalue *cv;
     if (isvector(a)) {
         return fixnum(vector_size(a));
     } else if (iscprim(a)) {
-        cv = (cvalue_t *)ptr(a);
+        cv = (struct cvalue *)ptr(a);
         if (cp_class(cv) == bytetype)
             return fixnum(1);
         else if (cp_class(cv) == wchartype)
             return fixnum(
             u8_charlen(*(uint32_t *)cp_data((struct cprim *)cv)));
     } else if (iscvalue(a)) {
-        cv = (cvalue_t *)ptr(a);
+        cv = (struct cvalue *)ptr(a);
         if (cv_class(cv)->eltype != NULL)
             return size_wrap(cvalue_arraylen(a));
     } else if (a == FL_NIL) {

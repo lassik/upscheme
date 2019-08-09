@@ -86,7 +86,7 @@ void print_traverse(value_t v)
         print_traverse(f->env);
     } else {
         assert(iscvalue(v));
-        cvalue_t *cv = (cvalue_t *)ptr(v);
+        struct cvalue *cv = (struct cvalue *)ptr(v);
         // don't consider shared references to ""
         if (!cv_isstr(cv) || cv_len(cv) != 0)
             mark_cons(v);
@@ -150,7 +150,7 @@ static inline int tinyp(value_t v)
     if (issymbol(v))
         return (u8_strwidth(symbol_name(v)) < SMALL_STR_LEN);
     if (fl_isstring(v))
-        return (cv_len((cvalue_t *)ptr(v)) < SMALL_STR_LEN);
+        return (cv_len((struct cvalue *)ptr(v)) < SMALL_STR_LEN);
     return (isfixnum(v) || isbuiltin(v) || v == FL_F || v == FL_T ||
             v == FL_NIL || v == FL_EOF || iscprim(v));
 }
@@ -780,7 +780,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
 
 static void cvalue_print(struct ios *f, value_t v)
 {
-    cvalue_t *cv = (cvalue_t *)ptr(v);
+    struct cvalue *cv = (struct cvalue *)ptr(v);
     void *data = cptr(v);
     value_t label;
 

@@ -45,7 +45,7 @@ value_t fl_string_count(value_t *args, u_int32_t nargs)
         argcount("string.count", nargs, 1);
     if (!fl_isstring(args[0]))
         type_error("string.count", "string", args[0]);
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     size_t stop = len;
     if (nargs > 1) {
         start = toulong(args[1], "string.count");
@@ -84,7 +84,7 @@ value_t fl_string_reverse(value_t *args, u_int32_t nargs)
     argcount("string.reverse", nargs, 1);
     if (!fl_isstring(args[0]))
         type_error("string.reverse", "string", args[0]);
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     value_t ns = cvalue_string(len);
     u8_reverse(cvalue_data(ns), cvalue_data(args[0]), len);
     return ns;
@@ -94,14 +94,15 @@ value_t fl_string_encode(value_t *args, u_int32_t nargs)
 {
     argcount("string.encode", nargs, 1);
     if (iscvalue(args[0])) {
-        cvalue_t *cv = (cvalue_t *)ptr(args[0]);
+        struct cvalue *cv = (struct cvalue *)ptr(args[0]);
         struct fltype *t = cv_class(cv);
         if (t->eltype == wchartype) {
             size_t nc = cv_len(cv) / sizeof(uint32_t);
             uint32_t *ptr = (uint32_t *)cv_data(cv);
             size_t nbytes = u8_codingsize(ptr, nc);
             value_t str = cvalue_string(nbytes);
-            ptr = cv_data((cvalue_t *)ptr(args[0]));  // relocatable pointer
+            ptr =
+            cv_data((struct cvalue *)ptr(args[0]));  // relocatable pointer
             u8_toutf8(cvalue_data(str), nbytes, ptr, nc);
             return str;
         }
@@ -119,7 +120,7 @@ value_t fl_string_decode(value_t *args, u_int32_t nargs)
     }
     if (!fl_isstring(args[0]))
         type_error("string.decode", "string", args[0]);
-    cvalue_t *cv = (cvalue_t *)ptr(args[0]);
+    struct cvalue *cv = (struct cvalue *)ptr(args[0]);
     char *ptr = (char *)cv_data(cv);
     size_t nb = cv_len(cv);
     size_t nc = u8_charnum(ptr, nb);
@@ -127,7 +128,7 @@ value_t fl_string_decode(value_t *args, u_int32_t nargs)
     if (term)
         newsz += sizeof(uint32_t);
     value_t wcstr = cvalue(wcstringtype, newsz);
-    ptr = cv_data((cvalue_t *)ptr(args[0]));  // relocatable pointer
+    ptr = cv_data((struct cvalue *)ptr(args[0]));  // relocatable pointer
     uint32_t *pwc = cvalue_data(wcstr);
     u8_toucs(pwc, nc, ptr, nb);
     if (term)
@@ -163,8 +164,8 @@ value_t fl_string_split(value_t *args, u_int32_t nargs)
     argcount("string.split", nargs, 2);
     char *s = tostring(args[0], "string.split");
     char *delim = tostring(args[1], "string.split");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
-    size_t dlen = cv_len((cvalue_t *)ptr(args[1]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
+    size_t dlen = cv_len((struct cvalue *)ptr(args[1]));
     size_t ssz, tokend = 0, tokstart = 0, i = 0;
     value_t first = FL_NIL, c = FL_NIL, last;
     size_t junk;
@@ -182,11 +183,11 @@ value_t fl_string_split(value_t *args, u_int32_t nargs)
         c = fl_cons(cvalue_string(ssz), FL_NIL);
 
         // we've done allocation; reload movable pointers
-        s = cv_data((cvalue_t *)ptr(args[0]));
-        delim = cv_data((cvalue_t *)ptr(args[1]));
+        s = cv_data((struct cvalue *)ptr(args[0]));
+        delim = cv_data((struct cvalue *)ptr(args[1]));
 
         if (ssz)
-            memcpy(cv_data((cvalue_t *)ptr(car_(c))), &s[tokstart], ssz);
+            memcpy(cv_data((struct cvalue *)ptr(car_(c))), &s[tokstart], ssz);
 
         // link new cell
         if (last == FL_NIL)
@@ -207,7 +208,7 @@ value_t fl_string_sub(value_t *args, u_int32_t nargs)
     if (nargs != 2)
         argcount("string.sub", nargs, 3);
     char *s = tostring(args[0], "string.sub");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     size_t i1, i2;
     i1 = toulong(args[1], "string.sub");
     if (i1 > len)
@@ -222,7 +223,7 @@ value_t fl_string_sub(value_t *args, u_int32_t nargs)
     if (i2 <= i1)
         return cvalue_string(0);
     value_t ns = cvalue_string(i2 - i1);
-    memcpy(cv_data((cvalue_t *)ptr(ns)), &s[i1], i2 - i1);
+    memcpy(cv_data((struct cvalue *)ptr(ns)), &s[i1], i2 - i1);
     return ns;
 }
 
@@ -230,7 +231,7 @@ value_t fl_string_char(value_t *args, u_int32_t nargs)
 {
     argcount("string.char", nargs, 2);
     char *s = tostring(args[0], "string.char");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     size_t i = toulong(args[1], "string.char");
     if (i >= len)
         bounds_error("string.char", args[0], args[1]);
@@ -283,7 +284,7 @@ value_t fl_string_find(value_t *args, u_int32_t nargs)
     else
         argcount("string.find", nargs, 2);
     char *s = tostring(args[0], "string.find");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     if (start > len)
         bounds_error("string.find", args[0], args[2]);
     char *needle;
@@ -300,7 +301,7 @@ value_t fl_string_find(value_t *args, u_int32_t nargs)
     } else if (iscprim(v) && cp_class(cp) == bytetype) {
         return mem_find_byte(s, *(char *)cp_data(cp), start, len);
     } else if (fl_isstring(v)) {
-        cvalue_t *cv = (cvalue_t *)ptr(v);
+        struct cvalue *cv = (struct cvalue *)ptr(v);
         needlesz = cv_len(cv);
         needle = (char *)cv_data(cv);
     } else {
@@ -327,7 +328,7 @@ value_t fl_string_inc(value_t *args, u_int32_t nargs)
     if (nargs < 2 || nargs > 3)
         argcount("string.inc", nargs, 2);
     char *s = tostring(args[0], "string.inc");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     size_t i = toulong(args[1], "string.inc");
     size_t cnt = 1;
     if (nargs == 3)
@@ -345,7 +346,7 @@ value_t fl_string_dec(value_t *args, u_int32_t nargs)
     if (nargs < 2 || nargs > 3)
         argcount("string.dec", nargs, 2);
     char *s = tostring(args[0], "string.dec");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     size_t i = toulong(args[1], "string.dec");
     size_t cnt = 1;
     if (nargs == 3)
@@ -415,7 +416,7 @@ value_t fl_string_isutf8(value_t *args, u_int32_t nargs)
 {
     argcount("string.isutf8", nargs, 1);
     char *s = tostring(args[0], "string.isutf8");
-    size_t len = cv_len((cvalue_t *)ptr(args[0]));
+    size_t len = cv_len((struct cvalue *)ptr(args[0]));
     return u8_isvalid(s, len) ? FL_T : FL_F;
 }
 

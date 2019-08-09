@@ -53,7 +53,7 @@ struct cvtable iostream_vtable = { print_iostream, relocate_iostream,
 
 int fl_isiostream(value_t v)
 {
-    return iscvalue(v) && cv_class((cvalue_t *)ptr(v)) == iostreamtype;
+    return iscvalue(v) && cv_class((struct cvalue *)ptr(v)) == iostreamtype;
 }
 
 value_t fl_iostreamp(value_t *args, uint32_t nargs)
@@ -281,7 +281,7 @@ value_t fl_ioread(value_t *args, u_int32_t nargs)
     value_t cv = cvalue(ft, n);
     char *data;
     if (iscvalue(cv))
-        data = cv_data((cvalue_t *)ptr(cv));
+        data = cv_data((struct cvalue *)ptr(cv));
     else
         data = cp_data((struct cprim *)ptr(cv));
     size_t got = ios_read(value2c(struct ios *, args[0]), data, n);
@@ -364,7 +364,7 @@ value_t fl_ioreaduntil(value_t *args, u_int32_t nargs)
 {
     argcount("io.readuntil", nargs, 2);
     value_t str = cvalue_string(80);
-    cvalue_t *cv = (cvalue_t *)ptr(str);
+    struct cvalue *cv = (struct cvalue *)ptr(str);
     char *data = cv_data(cv);
     struct ios dest;
     ios_mem(&dest, 0);
@@ -424,7 +424,7 @@ value_t stream_to_string(value_t *ps)
         b[n] = '\0';
         str = cvalue_from_ref(stringtype, b, n, FL_NIL);
 #ifndef BOEHM_GC
-        cv_autorelease((cvalue_t *)ptr(str));
+        cv_autorelease((struct cvalue *)ptr(str));
 #endif
     }
     return str;

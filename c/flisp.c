@@ -252,7 +252,7 @@ void bounds_error(char *fname, value_t arr, value_t ind)
 SAFECAST_OP(cons, struct cons *, ptr)
 SAFECAST_OP(symbol, struct symbol *, ptr)
 SAFECAST_OP(fixnum, fixnum_t, numval)
-SAFECAST_OP(cvalue, cvalue_t *, ptr)
+SAFECAST_OP(cvalue, struct cvalue *, ptr)
 SAFECAST_OP(string, char *, cvalue_data)
 #undef isstring
 
@@ -989,7 +989,7 @@ static value_t apply_cl(uint32_t nargs)
 apply_cl_top:
     captured = 0;
     func = Stack[SP - nargs - 1];
-    ip = cv_data((cvalue_t *)ptr(fn_bcode(func)));
+    ip = cv_data((struct cvalue *)ptr(fn_bcode(func)));
     assert(!ismanaged((uptrint_t)ip));
     while (SP + GET_INT32(ip) > N_STACK) {
         grow_stack();
@@ -2237,7 +2237,7 @@ static value_t fl_function(value_t *args, uint32_t nargs)
         type_error("function", "string", args[0]);
     if (!isvector(args[1]))
         type_error("function", "vector", args[1]);
-    cvalue_t *arr = (cvalue_t *)ptr(args[0]);
+    struct cvalue *arr = (struct cvalue *)ptr(args[0]);
     cv_pin(arr);
     char *data = cv_data(arr);
     int swap = 0;

@@ -40,16 +40,16 @@ value_t cvalue_typeof(value_t *args, u_int32_t nargs);
 
 static size_t malloc_pressure = 0;
 
-static cvalue_t **Finalizers = NULL;
+static struct cvalue **Finalizers = NULL;
 static size_t nfinalizers = 0;
 static size_t maxfinalizers = 0;
 
-void add_finalizer(cvalue_t *cv)
+void add_finalizer(struct cvalue *cv)
 {
     if (nfinalizers == maxfinalizers) {
         size_t nn = (maxfinalizers == 0 ? 256 : maxfinalizers * 2);
-        cvalue_t **temp =
-        (cvalue_t **)realloc(Finalizers, nn * sizeof(value_t));
+        struct cvalue **temp =
+        (struct cvalue **)realloc(Finalizers, nn * sizeof(value_t));
         if (temp == NULL)
             lerror(MemoryError, "out of memory");
         Finalizers = temp;
@@ -61,9 +61,9 @@ void add_finalizer(cvalue_t *cv)
 // remove dead objects from finalization list in-place
 static void sweep_finalizers(void)
 {
-    cvalue_t **lst = Finalizers;
+    struct cvalue **lst = Finalizers;
     size_t n = 0, ndel = 0, l = nfinalizers;
-    cvalue_t *tmp;
+    struct cvalue *tmp;
 #define SWAP_sf(a, b) (tmp = a, a = b, b = tmp, 1)
     if (l == 0)
         return;
@@ -71,7 +71,7 @@ static void sweep_finalizers(void)
         tmp = lst[n];
         if (isforwarded((value_t)tmp)) {
             // object is alive
-            lst[n] = (cvalue_t *)ptr(forwardloc((value_t)tmp));
+            lst[n] = (struct cvalue *)ptr(forwardloc((value_t)tmp));
             n++;
         } else {
             struct fltype *t = cv_class(tmp);
@@ -98,7 +98,7 @@ static void sweep_finalizers(void)
 }
 
 // compute the size of the metadata object for a cvalue
-static size_t cv_nwords(cvalue_t *cv)
+static size_t cv_nwords(struct cvalue *cv)
 {
     if (isinlined(cv)) {
         size_t n = cv_len(cv);
@@ -109,13 +109,13 @@ static size_t cv_nwords(cvalue_t *cv)
     return CVALUE_NWORDS;
 }
 
-static void autorelease(cvalue_t *cv)
+static void autorelease(struct cvalue *cv)
 {
     cv->type = (struct fltype *)(((uptrint_t)cv->type) | CV_OWNED_BIT);
     add_finalizer(cv);
 }
 
-void cv_autorelease(cvalue_t *cv) { autorelease(cv); }
+void cv_autorelease(struct cvalue *cv) { autorelease(cv); }
 
 static value_t cprim(struct fltype *type, size_t sz)
 {
@@ -129,7 +129,7 @@ static value_t cprim(struct fltype *type, size_t sz)
 
 value_t cvalue(struct fltype *type, size_t sz)
 {
-    cvalue_t *pcv;
+    struct cvalue *pcv;
     int str = 0;
 
     if (valid_numtype(type->numtype)) {
@@ -143,7 +143,7 @@ value_t cvalue(struct fltype *type, size_t sz)
     }
     if (sz <= MAX_INL_SIZE) {
         size_t nw = CVALUE_NWORDS - 1 + NWORDS(sz) + (sz == 0 ? 1 : 0);
-        pcv = (cvalue_t *)alloc_words(nw);
+        pcv = (struct cvalue *)alloc_words(nw);
         pcv->type = type;
         pcv->data = &pcv->_space[0];
         if (type->vtable != NULL && type->vtable->finalize != NULL)
@@ -151,7 +151,7 @@ value_t cvalue(struct fltype *type, size_t sz)
     } else {
         if (malloc_pressure > ALLOC_LIMIT_TRIGGER)
             gc(0);
-        pcv = (cvalue_t *)alloc_words(CVALUE_NWORDS);
+        pcv = (struct cvalue *)alloc_words(CVALUE_NWORDS);
         pcv->type = type;
         pcv->data = malloc(sz);
         autorelease(pcv);
@@ -184,10 +184,10 @@ value_t cvalue_from_data(struct fltype *type, void *data, size_t sz)
 value_t cvalue_from_ref(struct fltype *type, void *ptr, size_t sz,
                         value_t parent)
 {
-    cvalue_t *pcv;
+    struct cvalue *pcv;
     value_t cv;
 
-    pcv = (cvalue_t *)alloc_words(CVALUE_NWORDS);
+    pcv = (struct cvalue *)alloc_words(CVALUE_NWORDS);
     pcv->data = ptr;
     pcv->len = sz;
     pcv->type = type;
@@ -220,11 +220,11 @@ value_t string_from_cstr(char *str)
 
 int fl_isstring(value_t v)
 {
-    return (iscvalue(v) && cv_isstr((cvalue_t *)ptr(v)));
+    return (iscvalue(v) && cv_isstr((struct cvalue *)ptr(v)));
 }
 
 // convert to malloc representation (fixed address)
-void cv_pin(cvalue_t *cv)
+void cv_pin(struct cvalue *cv)
 {
     if (!isinlined(cv))
         return;
@@ -362,7 +362,7 @@ value_t cvalue_enum(value_t *args, u_int32_t nargs)
 
 static int isarray(value_t v)
 {
-    return iscvalue(v) && cv_class((cvalue_t *)ptr(v))->eltype != NULL;
+    return iscvalue(v) && cv_class((struct cvalue *)ptr(v))->eltype != NULL;
 }
 
 static size_t predict_arraylen(value_t arg)
@@ -418,7 +418,7 @@ static int cvalue_array_init(struct fltype *ft, value_t arg, void *dest)
             lerror(ArgError, "array: size mismatch");
         return 0;
     } else if (iscvalue(arg)) {
-        cvalue_t *cv = (cvalue_t *)ptr(arg);
+        struct cvalue *cv = (struct cvalue *)ptr(arg);
         if (isarray(arg)) {
             struct fltype *aet = cv_class(cv)->eltype;
             if (aet == eltype) {
@@ -454,7 +454,7 @@ value_t cvalue_array(value_t *args, u_int32_t nargs)
     sz = elsize * cnt;
 
     value_t cv = cvalue(type, sz);
-    char *dest = cv_data((cvalue_t *)ptr(cv));
+    char *dest = cv_data((struct cvalue *)ptr(cv));
     FOR_ARGS(i, 1, arg, args)
     {
         cvalue_init(type->eltype, arg, dest);
@@ -466,7 +466,7 @@ value_t cvalue_array(value_t *args, u_int32_t nargs)
 // NOTE: v must be an array
 size_t cvalue_arraylen(value_t v)
 {
-    cvalue_t *cv = (cvalue_t *)ptr(v);
+    struct cvalue *cv = (struct cvalue *)ptr(v);
     return cv_len(cv) / (cv_class(cv)->elsz);
 }
 
@@ -575,7 +575,7 @@ extern struct fltype *iostreamtype;
 void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
 {
     if (iscvalue(v)) {
-        cvalue_t *pcv = (cvalue_t *)ptr(v);
+        struct cvalue *pcv = (struct cvalue *)ptr(v);
         struct ios *x = value2c(struct ios *, v);
         if (cv_class(pcv) == iostreamtype && (x->bm == bm_mem)) {
             *pdata = x->buf;
@@ -632,18 +632,18 @@ value_t cvalue_typeof(value_t *args, u_int32_t nargs)
             return builtinsym;
         return FUNCTION;
     }
-    return cv_type((cvalue_t *)ptr(args[0]));
+    return cv_type((struct cvalue *)ptr(args[0]));
 }
 
 static value_t cvalue_relocate(value_t v)
 {
     size_t nw;
-    cvalue_t *cv = (cvalue_t *)ptr(v);
-    cvalue_t *nv;
+    struct cvalue *cv = (struct cvalue *)ptr(v);
+    struct cvalue *nv;
     value_t ncv;
 
     nw = cv_nwords(cv);
-    nv = (cvalue_t *)alloc_words(nw);
+    nv = (struct cvalue *)alloc_words(nw);
     memcpy(nv, cv, nw * sizeof(value_t));
     if (isinlined(cv))
         nv->data = &nv->_space[0];
@@ -659,11 +659,11 @@ value_t cvalue_copy(value_t v)
 {
     assert(iscvalue(v));
     PUSH(v);
-    cvalue_t *cv = (cvalue_t *)ptr(v);
+    struct cvalue *cv = (struct cvalue *)ptr(v);
     size_t nw = cv_nwords(cv);
-    cvalue_t *ncv = (cvalue_t *)alloc_words(nw);
+    struct cvalue *ncv = (struct cvalue *)alloc_words(nw);
     v = POP();
-    cv = (cvalue_t *)ptr(v);
+    cv = (struct cvalue *)ptr(v);
     memcpy(ncv, cv, nw * sizeof(value_t));
     if (!isinlined(cv)) {
         size_t len = cv_len(cv);
@@ -691,7 +691,7 @@ value_t fl_copy(value_t *args, u_int32_t nargs)
         lerror(ArgError, "copy: argument must be a leaf atom");
     if (!iscvalue(args[0]))
         return args[0];
-    if (!cv_isPOD((cvalue_t *)ptr(args[0])))
+    if (!cv_isPOD((struct cvalue *)ptr(args[0])))
         lerror(ArgError, "copy: argument must be a plain-old-data type");
     return cvalue_copy(args[0]);
 }
@@ -700,7 +700,7 @@ value_t fl_podp(value_t *args, u_int32_t nargs)
 {
     argcount("plain-old-data?", nargs, 1);
     return (iscprim(args[0]) ||
-            (iscvalue(args[0]) && cv_isPOD((cvalue_t *)ptr(args[0]))))
+            (iscvalue(args[0]) && cv_isPOD((struct cvalue *)ptr(args[0]))))
            ? FL_T
            : FL_F;
 }
@@ -780,7 +780,7 @@ value_t cvalue_new(value_t *args, u_int32_t nargs)
             cnt = 0;
         cv = cvalue(ft, elsz * cnt);
         if (nargs == 2)
-            cvalue_array_init(ft, args[1], cv_data((cvalue_t *)ptr(cv)));
+            cvalue_array_init(ft, args[1], cv_data((struct cvalue *)ptr(cv)));
     } else {
         cv = cvalue(ft, ft->size);
         if (nargs == 2)
@@ -792,8 +792,8 @@ value_t cvalue_new(value_t *args, u_int32_t nargs)
 // NOTE: this only compares lexicographically; it ignores numeric formats
 value_t cvalue_compare(value_t a, value_t b)
 {
-    cvalue_t *ca = (cvalue_t *)ptr(a);
-    cvalue_t *cb = (cvalue_t *)ptr(b);
+    struct cvalue *ca = (struct cvalue *)ptr(a);
+    struct cvalue *cb = (struct cvalue *)ptr(b);
     char *adata = cv_data(ca);
     char *bdata = cv_data(cb);
     size_t asz = cv_len(ca);
@@ -813,7 +813,7 @@ static void check_addr_args(char *fname, value_t arr, value_t ind,
                             char **data, ulong_t *index)
 {
     size_t numel;
-    cvalue_t *cv = (cvalue_t *)ptr(arr);
+    struct cvalue *cv = (struct cvalue *)ptr(arr);
     *data = cv_data(cv);
     numel = cv_len(cv) / (cv_class(cv)->elsz);
     *index = toulong(ind, fname);
@@ -825,7 +825,7 @@ static value_t cvalue_array_aref(value_t *args)
 {
     char *data;
     ulong_t index;
-    struct fltype *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
+    struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     value_t el = 0;
     numerictype_t nt = eltype->numtype;
     if (nt >= T_INT32)
@@ -859,7 +859,7 @@ static value_t cvalue_array_aset(value_t *args)
 {
     char *data;
     ulong_t index;
-    struct fltype *eltype = cv_class((cvalue_t *)ptr(args[0]))->eltype;
+    struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     check_addr_args("aset!", args[0], args[1], &data, &index);
     char *dest = data + index * eltype->size;
     cvalue_init(eltype, args[2], dest);
@@ -870,7 +870,7 @@ value_t fl_builtin(value_t *args, u_int32_t nargs)
 {
     argcount("builtin", nargs, 1);
     struct symbol *name = tosymbol(args[0], "builtin");
-    cvalue_t *cv;
+    struct cvalue *cv;
     if (ismanaged(args[0]) || (cv = name->dlcache) == NULL) {
         lerrorf(ArgError, "builtin: function %s not found", name->name);
     }
@@ -879,7 +879,8 @@ value_t fl_builtin(value_t *args, u_int32_t nargs)
 
 value_t cbuiltin(char *name, builtin_t f)
 {
-    cvalue_t *cv = (cvalue_t *)malloc(CVALUE_NWORDS * sizeof(value_t));
+    struct cvalue *cv =
+    (struct cvalue *)malloc(CVALUE_NWORDS * sizeof(value_t));
     cv->type = builtintype;
     cv->data = &cv->_space[0];
     cv->len = sizeof(value_t);

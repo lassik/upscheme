@@ -114,7 +114,7 @@ struct gensym {
 #define isfunction(x) (tag(x) == TAG_FUNCTION && (x) > (N_BUILTINS << 3))
 #define isclosure(x) isfunction(x)
 #define iscbuiltin(x) \
-    (iscvalue(x) && (cv_class((cvalue_t *)ptr(x)) == builtintype))
+    (iscvalue(x) && (cv_class((struct cvalue *)ptr(x)) == builtintype))
 
 void fl_gc_handle(value_t *pv);
 void fl_free_gc_handles(uint32_t n);
@@ -262,7 +262,7 @@ struct fltype {
     cvinitfunc_t init;
 };
 
-typedef struct {
+struct cvalue {
     struct fltype *type;
     void *data;
     size_t len;  // length of *data in bytes
@@ -270,7 +270,7 @@ typedef struct {
         value_t parent;  // optional
         char _space[1];  // variable size
     };
-} cvalue_t;
+};
 
 #define CVALUE_NWORDS 4
 
@@ -301,9 +301,9 @@ struct function {
 #define cv_isstr(cv) (cv_class(cv)->eltype == bytetype)
 #define cv_isPOD(cv) (cv_class(cv)->init != NULL)
 
-#define cvalue_data(v) cv_data((cvalue_t *)ptr(v))
-#define cvalue_len(v) cv_len((cvalue_t *)ptr(v))
-#define value2c(type, v) ((type)cv_data((cvalue_t *)ptr(v)))
+#define cvalue_data(v) cv_data((struct cvalue *)ptr(v))
+#define cvalue_len(v) cv_len((struct cvalue *)ptr(v))
+#define value2c(type, v) ((type)cv_data((struct cvalue *)ptr(v)))
 
 #define valid_numtype(v) ((v) < N_NUMTYPES)
 #define cp_class(cp) ((cp)->type)
@@ -314,7 +314,7 @@ struct function {
 // WARNING: multiple evaluation!
 #define cptr(v)                                   \
     (iscprim(v) ? cp_data((struct cprim *)ptr(v)) \
-                : cv_data((cvalue_t *)ptr(v)))
+                : cv_data((struct cvalue *)ptr(v)))
 
 /* C type names corresponding to cvalues type names */
 typedef int8_t fl_int8_t;
@@ -349,9 +349,9 @@ extern struct fltype *stringtype, *wcstringtype;
 extern struct fltype *builtintype;
 
 value_t cvalue(struct fltype *type, size_t sz);
-void add_finalizer(cvalue_t *cv);
-void cv_autorelease(cvalue_t *cv);
-void cv_pin(cvalue_t *cv);
+void add_finalizer(struct cvalue *cv);
+void cv_autorelease(struct cvalue *cv);
+void cv_pin(struct cvalue *cv);
 size_t ctype_sizeof(value_t type, int *palign);
 value_t cvalue_copy(value_t v);
 value_t cvalue_from_data(struct fltype *type, void *data, size_t sz);

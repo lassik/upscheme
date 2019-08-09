@@ -101,7 +101,8 @@ compare_top:
         break;
     case TAG_CVALUE:
         if (iscvalue(b)) {
-            if (cv_isPOD((cvalue_t *)ptr(a)) && cv_isPOD((cvalue_t *)ptr(b)))
+            if (cv_isPOD((struct cvalue *)ptr(a)) &&
+                cv_isPOD((struct cvalue *)ptr(b)))
                 return cvalue_compare(a, b);
             return fixnum(1);
         }
@@ -311,7 +312,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
     } u;
     numerictype_t nt;
     size_t i, len;
-    cvalue_t *cv;
+    struct cvalue *cv;
     struct cprim *cp;
     void *data;
     uptrint_t h = 0;
@@ -337,7 +338,7 @@ static uptrint_t bounded_hash(value_t a, int bound, int *oob)
         u.d = conv_to_double(data, nt);
         return doublehash(u.i64);
     case TAG_CVALUE:
-        cv = (cvalue_t *)ptr(a);
+        cv = (struct cvalue *)ptr(a);
         data = cv_data(cv);
         return memhash(data, cv_len(cv));
 
