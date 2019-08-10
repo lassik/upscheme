@@ -916,16 +916,12 @@
          (raise `(load-error ,filename ,e)))))))
 
 (define *banner* (string.tail "
-;  _
-; |_ _ _ |_ _ |  . _ _
-; | (-||||_(_)|__|_)|_)
-;-------------------|--
-
+Up Scheme
 " 1))
 
 (define (repl)
   (define (prompt)
-    (princ "> ") (io.flush *output-stream*)
+    (princ "up> ") (io.flush *output-stream*)
     (let ((v (trycatch (read)
                        (lambda (e) (begin (io.discardbuffer *input-stream*)
                                           (raise e))))))

@@ -1,0 +1,7 @@
+= Up Scheme
+
+Small scripting Scheme emphasizing portability and stability.
+
+Based on the excellent FemtoLisp interpreter by Jeff Bezanson.
+
+More info soon.

@@ -71,7 +71,7 @@ $CC $CFLAGS -c ../c/string.c
 $CC $CFLAGS -c ../c/table.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
-$CC $LFLAGS -o flisp -lm \
+$CC $LFLAGS -o upscheme -lm \
     bitvector-ops.o bitvector.o builtins.o dump.o env_unix.o \
     equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
     hashing.o htable.o int2str.o \
@@ -82,14 +82,14 @@ cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 0 boot file..."
 set -x
-../"$builddir"/flisp mkboot0.scm system.scm compiler.scm >flisp.boot.new
+../"$builddir"/upscheme mkboot0.scm system.scm compiler.scm >flisp.boot.new
 mv flisp.boot.new ../scheme-boot/flisp.boot
 { set +x; } 2>/dev/null
 echo "Creating stage 1 boot file..."
 set -x
-../"$builddir"/flisp mkboot1.scm
+../"$builddir"/upscheme mkboot1.scm
 mv flisp.boot.new ../scheme-boot/flisp.boot
 { set +x; } 2>/dev/null
 cd ../scheme-tests
 echo "Entering directory '$PWD'"
-../"$builddir"/flisp unittest.scm
+../"$builddir"/upscheme unittest.scm
