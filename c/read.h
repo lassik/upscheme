@@ -34,12 +34,62 @@ static int symchar(char c)
     return !strchr(special, c);
 }
 
+static int read_digits(char *token, char **out_end, unsigned int radix,
+                       uint64_t *out_value)
+{
+    uint64_t value = 0;
+    int letterlimit, digit, was_digit_p, c;
+
+    if (!radix) {
+        radix = 10;
+    }
+    if (radix <= 10) {
+        letterlimit = 0;
+    } else if (radix <= 36) {
+        letterlimit = radix - 10;
+    } else {
+        letterlimit = 0;
+    }
+    was_digit_p = 0;
+    for (; (c = *token); token++) {
+        if (c == '_') {
+            if (was_digit_p) {
+                was_digit_p = 0;
+                continue;
+            } else if (value) {
+                lerror(ArgError, "More than one consecutive underscore");
+            } else {
+                lerror(ArgError, "Underscore before digits");
+            }
+        }
+        if ((c >= '0') && (c <= '9')) {
+            digit = c - '0';
+        } else if ((c >= 'A') && (c < 'A' + letterlimit)) {
+            digit = 10 + (c - 'A');
+        } else if ((c >= 'a') && (c < 'a' + letterlimit)) {
+            digit = 10 + (c - 'a');
+        } else if (value && !was_digit_p) {
+            lerror(ArgError, "Underscore after digits");
+        } else {
+            break;
+        }
+        value *= radix;
+        value += digit;
+        was_digit_p = 1;
+    }
+    *out_end = token;
+    *out_value = value;
+    return was_digit_p;
+}
+
 int isnumtok_base(char *tok, value_t *pval, int base)
 {
     char *end;
     int64_t i64;
     uint64_t ui64;
     double d;
+    int ok;
+
     if (*tok == '\0')
         return 0;
     if (!((tok[0] == '0' && tok[1] == 'x') || (base >= 15)) &&
@@ -89,10 +139,24 @@ int isnumtok_base(char *tok, value_t *pval, int base)
             *pval = return_from_int64(i64);
         return (*end == '\0');
     }
-    errno = 0;
-    ui64 = strtoull(tok, &end, base);
-    if (errno)
+    if (tok[0] == '_') {
         return 0;
+    }
+    ok = 0;
+    if (tok[0] == '0') {
+        if (tok[1] == 'x') {
+            // TODO: We should get rid of 0x hex syntax: #x is enough.
+            if (!(ok = read_digits(tok + 2, &end, 16, &ui64))) {
+                return 0;
+            }
+        }
+    }
+    if (!ok) {
+        ok = read_digits(tok, &end, base, &ui64);
+    }
+    if (!ok) {
+        return 0;
+    }
     if (pval)
         *pval = return_from_uint64(ui64);
     return (*end == '\0');
