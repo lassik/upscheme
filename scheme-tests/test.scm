@@ -174,7 +174,7 @@
        (lambda (n)
          (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2))))))))
 
-;(defun tt () (time (dotimes (i 500000) (* 0x1fffffff 1) )))
+;(defun tt () (time (dotimes (i 500000) (* #x1fffffff 1) )))
 ;(tt)
 ;(tt)
 ;(tt)

@@ -88,7 +88,6 @@ int isnumtok_base(char *tok, value_t *pval, int base)
     int64_t i64;
     uint64_t ui64;
     double d;
-    int ok;
 
     if (*tok == '\0')
         return 0;
@@ -142,19 +141,7 @@ int isnumtok_base(char *tok, value_t *pval, int base)
     if (tok[0] == '_') {
         return 0;
     }
-    ok = 0;
-    if (tok[0] == '0') {
-        if (tok[1] == 'x') {
-            // TODO: We should get rid of 0x hex syntax: #x is enough.
-            if (!(ok = read_digits(tok + 2, &end, 16, &ui64))) {
-                return 0;
-            }
-        }
-    }
-    if (!ok) {
-        ok = read_digits(tok, &end, base, &ui64);
-    }
-    if (!ok) {
+    if (!read_digits(tok, &end, base, &ui64)) {
         return 0;
     }
     if (pval)

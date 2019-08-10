@@ -48,11 +48,11 @@
 
 (test-square (every-sint -67))
 (test-square (every-int 3))
-(test-square (every-int 0x80000000))
-(test-square (every-sint 0x80000000))
-(test-square (every-sint -0x80000000))
+(test-square (every-int #x80000000))
+(test-square (every-sint #x80000000))
+(test-square (every-sint #x-80000000))
 
-(assert (= (* 128 0x02000001) 0x100000080))
+(assert (= (* 128 #x02000001) #x100000080))
 
 (assert (= (/ 1) 1))
 (assert (= (/ -1) -1))
@@ -64,21 +64,21 @@
 (assert (not (eqv? #\newline 10)))
 
 ; tricky cases involving INT_MIN
-(assert (< (- #uint32(0x80000000)) 0))
-(assert (> (- #int32(0x80000000)) 0))
-(assert (< (- #uint64(0x8000000000000000)) 0))
-(assert (> (- #int64(0x8000000000000000)) 0))
+(assert (< (- #uint32(#x80000000)) 0))
+(assert (> (- #int32(#x80000000)) 0))
+(assert (< (- #uint64(#x8000000000000000)) 0))
+(assert (> (- #int64(#x8000000000000000)) 0))
 ; fixnum versions
 (assert (= (- -536870912) 536870912))
 (assert (= (- -2305843009213693952) 2305843009213693952))
 
-(assert (not (equal? #int64(0x8000000000000000) #uint64(0x8000000000000000))))
-(assert (equal? (+ #int64(0x4000000000000000) #int64(0x4000000000000000))
-                #uint64(0x8000000000000000)))
-(assert (equal? (* 2 #int64(0x4000000000000000))
-                #uint64(0x8000000000000000)))
+(assert (not (equal? #int64(#x8000000000000000) #uint64(#x8000000000000000))))
+(assert (equal? (+ #int64(#x4000000000000000) #int64(#x4000000000000000))
+                #uint64(#x8000000000000000)))
+(assert (equal? (* 2 #int64(#x4000000000000000))
+                #uint64(#x8000000000000000)))
 
-(assert (equal? (uint64 (double -123)) #uint64(0xffffffffffffff85)))
+(assert (equal? (uint64 (double -123)) #uint64(#xffffffffffffff85)))
 
 (assert (equal? (string 'sym #byte(65) #wchar(945) "blah") "symA\u03B1blah"))
 (assert (= (length (string #\x0)) 1))

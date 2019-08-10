@@ -601,9 +601,9 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         if (print_princ)
             outc(ch, f);
         else if (weak)
-            HPOS += ios_printf(f, "0x%hhx", ch);
+            HPOS += ios_printf(f, "#x%hhx", ch);
         else
-            HPOS += ios_printf(f, "#byte(0x%hhx)", ch);
+            HPOS += ios_printf(f, "#byte(#x%hhx)", ch);
     } else if (type == wcharsym) {
         uint32_t wc = *(uint32_t *)data;
         char seq[8];
@@ -789,7 +789,7 @@ static void cvalue_print(struct ios *f, value_t v)
         label = (value_t)ptrhash_get(&reverse_dlsym_lookup_table, cv);
         if (label == (value_t)HT_NOTFOUND) {
             HPOS +=
-            ios_printf(f, "#<builtin @0x%08zx>", (size_t)(builtin_t)fptr);
+            ios_printf(f, "#<builtin @#x%08zx>", (size_t)(builtin_t)fptr);
         } else {
             if (print_princ) {
                 outs(symbol_name(label), f);
