@@ -85,7 +85,6 @@ static int read_digits(char *token, char **out_end, unsigned int radix,
 int isnumtok_base(char *tok, value_t *pval, int base)
 {
     char *end;
-    int64_t i64;
     uint64_t ui64;
     double d;
 
@@ -130,12 +129,14 @@ int isnumtok_base(char *tok, value_t *pval, int base)
                 *pval = mk_double(D_NINF);
             return 1;
         }
-        errno = 0;
-        i64 = strtoll(tok, &end, base);
-        if (errno)
+        if (!read_digits(tok + 1, &end, base, &ui64)) {
             return 0;
+        }
+        if (ui64 >= 0x8000000000000000ULL) {
+            lerror(ArgError, "Number too negative");
+        }
         if (pval)
-            *pval = return_from_int64(i64);
+            *pval = return_from_int64(-(int64_t)ui64);
         return (*end == '\0');
     }
     if (tok[0] == '_') {
