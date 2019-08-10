@@ -2,6 +2,7 @@
 
 Small scripting Scheme emphasizing portability and stability.
 
-Based on the excellent FemtoLisp interpreter by Jeff Bezanson.
+Based on the excellent https://github.com/JeffBezanson/femtolisp/[FemtoLisp]
+interpreter by Jeff Bezanson.
 
 More info soon.
