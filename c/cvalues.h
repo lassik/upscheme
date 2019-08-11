@@ -206,14 +206,14 @@ value_t cvalue_static_cstring(const char *str)
     return cvalue_from_ref(stringtype, (char *)str, strlen(str), NIL);
 }
 
-value_t string_from_cstrn(char *str, size_t n)
+value_t string_from_cstrn(const char *str, size_t n)
 {
     value_t v = cvalue_string(n);
     memcpy(cvalue_data(v), str, n);
     return v;
 }
 
-value_t string_from_cstr(char *str)
+value_t string_from_cstr(const char *str)
 {
     return string_from_cstrn(str, strlen(str));
 }
