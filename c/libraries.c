@@ -83,6 +83,8 @@ static struct builtin_procedure builtin_procedures[] = {
     { "string-reverse", fl_string_reverse, SRFI_13 | UP_2019 },
     { "substring", fl_string_sub, R7RS_BASE | UP_2019 },
 
+    { "environment-stack", builtin_environment_stack, UP_2019 },
+
     { 0, 0, 0 },
 };
 
