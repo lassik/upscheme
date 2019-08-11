@@ -34,6 +34,7 @@
 #include "flisp.h"
 
 #include "argcount.h"
+#include "libraries.h"
 
 size_t llength(value_t v)
 {
@@ -501,6 +502,9 @@ static struct builtinspec builtin_info[] = {
 
     { "os.getenv", fl_os_getenv },
     { "os.setenv", fl_os_setenv },
+
+    { "import", builtin_import },
+
     { NULL, NULL }
 };
 

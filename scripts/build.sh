@@ -50,6 +50,7 @@ set -x
 ln -s ../scheme-boot/flisp.boot flisp.boot
 $CC $CFLAGS -c ../c/bitvector-ops.c
 $CC $CFLAGS -c ../c/bitvector.c
+$CC $CFLAGS -c ../c/buf.c
 $CC $CFLAGS -c ../c/builtins.c
 $CC $CFLAGS -c ../c/dump.c
 $CC $CFLAGS -c ../c/env_unix.c
@@ -63,6 +64,7 @@ $CC $CFLAGS -c ../c/htable.c
 $CC $CFLAGS -c ../c/int2str.c
 $CC $CFLAGS -c ../c/ios.c
 $CC $CFLAGS -c ../c/iostream.c
+$CC $CFLAGS -c ../c/libraries.c
 $CC $CFLAGS -c ../c/lltinit.c
 $CC $CFLAGS -c ../c/ptrhash.c
 $CC $CFLAGS -c ../c/random.c
@@ -72,10 +74,10 @@ $CC $CFLAGS -c ../c/table.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 $CC $LFLAGS -o upscheme -lm \
-    bitvector-ops.o bitvector.o builtins.o dump.o env_unix.o \
+    bitvector-ops.o bitvector.o buf.o builtins.o dump.o env_unix.o \
     equalhash.o flisp.o flmain.o fs_"$os".o fs_unix.o \
     hashing.o htable.o int2str.o \
-    ios.o iostream.o lltinit.o ptrhash.o random.o socket.o \
+    ios.o iostream.o libraries.o lltinit.o ptrhash.o random.o socket.o \
     string.o table.o time_unix.o utf8.o
 { set +x; } 2>/dev/null
 cd ../scheme-core
