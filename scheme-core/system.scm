@@ -113,6 +113,9 @@
                             (cond-clauses->if (cdr lst)))))))))
   (cond-clauses->if clauses))
 
+(define-macro (import . rest)
+  `(import-procedure ,@(map (lambda (x) `(quote ,x)) rest)))
+
 ; standard procedures --------------------------------------------------------
 
 (define (member item lst)
