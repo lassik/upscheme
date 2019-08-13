@@ -1,6 +1,6 @@
 #include <windows.h>
 
-#include "fs.h"
+#include "os.h"
 
 void path_to_dirname(char *path)
 {

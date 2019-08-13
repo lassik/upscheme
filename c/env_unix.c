@@ -26,7 +26,7 @@
 #include "htable.h"
 #include "htableh_inc.h"
 #include "bitvector.h"
-#include "fs.h"
+#include "os.h"
 #include "random.h"
 #include "llt.h"
 
