@@ -146,5 +146,6 @@ $CC $LFLAGS -o upscheme $o_files
 { set +x; } 2>/dev/null
 cd ../scheme-tests
 echo "Entering directory '$PWD'"
+set -x
 
 ../"$builddir"/upscheme unittest.scm
