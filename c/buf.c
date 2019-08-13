@@ -1,6 +1,8 @@
 // Copyright 2019 Lassi Kortela
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include <inttypes.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +41,7 @@ void buf_putu(struct buf *buf, uint64_t u)
 {
     char tmp[24];
 
-    snprintf(tmp, sizeof(tmp), "%llu", u);
+    snprintf(tmp, sizeof(tmp), "%" PRIu64, u);
     buf_puts(buf, tmp);
 }
 

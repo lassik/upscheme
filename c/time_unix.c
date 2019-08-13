@@ -1,6 +1,6 @@
-#include <sys/poll.h>
 #include <sys/time.h>
 
+#include <poll.h>
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
