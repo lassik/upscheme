@@ -1,9 +1,5 @@
 #!/bin/sh
 set -eu
-CFLAGS="-Wall -Wextra -Wno-strict-aliasing -std=gnu99"
-CFLAGS="$CFLAGS -O2" # -falign-functions
-CFLAGS="$CFLAGS -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
-LFLAGS="-lm"
 os="$(uname | tr A-Z- a-z_)"
 o_files=""
 o_files="$o_files bitvector-ops.o"
@@ -31,10 +27,11 @@ o_files="$o_files string.o"
 o_files="$o_files table.o"
 o_files="$o_files time_unix.o"
 o_files="$o_files utf8.o"
+default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO -Wextra -std=gnu99 -Wno-strict-aliasing"
+default_lflags="-lm"
 case "$os" in
 darwin)
     default_cc="clang"
-    default_cflags="-Wall -Wextra -Wno-strict-aliasing -O2 -falign-functions -std=gnu99"
     ;;
 dragonfly)
     default_cc="gcc"
@@ -44,25 +41,24 @@ freebsd)
     ;;
 haiku)
     default_cc="gcc"
-    default_cflags="-Wall"
+    default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO"
     ;;
 linux)
     default_cc="gcc"
-    default_cflags="-std=gnu99 -Wall -Wextra -Wno-strict-aliasing -D _GNU_SOURCE"
+    default_cflags="$default_cflags -D _GNU_SOURCE"
     ;;
 minix)
     default_cc="clang"
-    default_cflags="-std=gnu99 -Wall -Wextra -Wno-strict-aliasing"
     ;;
 netbsd)
     default_cc="gcc"
     ;;
 openbsd)
     default_cc="clang"
-    default_cflags="-Wall"
     ;;
 sunos)
     default_cc="gcc"
+    default_lflags="$default_lflags -lsocket -lnsl"
     ;;
 *)
     echo "Unknown operating system: $os" >&2
@@ -70,6 +66,8 @@ sunos)
     ;;
 esac
 CC="${CC:-$default_cc}"
+CFLAGS="${CFLAGS:-$default_cflags}"
+LFLAGS="${LFLAGS:-$default_lflags}"
 builddir="build-$os-$(uname -m | tr A-Z- a-z_)"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
