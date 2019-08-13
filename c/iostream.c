@@ -153,6 +153,17 @@ value_t fl_read(value_t *args, uint32_t nargs)
     return v;
 }
 
+value_t builtin_read_u8(value_t *args, uint32_t nargs)
+{
+    argcount("read-u8", nargs, 1);
+    struct ios *s = toiostream(args[0], "read-u8");
+    int c;
+    if ((c = ios_getc(s)) == IOS_EOF)
+        // lerror(IOError, "io.getc: end of file reached");
+        return FL_EOF;
+    return fixnum(c);
+}
+
 value_t fl_iogetc(value_t *args, uint32_t nargs)
 {
     argcount("io.getc", nargs, 1);
@@ -447,6 +458,7 @@ static struct builtinspec iostreamfunc_info[] = {
     { "file", fl_file },
     { "buffer", fl_buffer },
     { "read", fl_read },
+    { "read-u8", builtin_read_u8 },
     { "write", fl_write },
     { "io.flush", fl_ioflush },
     { "io.close", fl_ioclose },
