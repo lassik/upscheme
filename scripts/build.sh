@@ -5,13 +5,32 @@ CFLAGS="$CFLAGS -O2" # -falign-functions
 CFLAGS="$CFLAGS -I ../c -D NDEBUG -D USE_COMPUTED_GOTO"
 LFLAGS="-lm"
 os="$(uname | tr A-Z- a-z_)"
-read -d '' o_files <<EOF || true
-    bitvector-ops.o bitvector.o buf.o builtins.o dump.o env_unix.o
-    equalhash.o flisp.o flmain.o fs_$os.o fs_unix.o
-    hashing.o htable.o int2str.o
-    ios.o iostream.o libraries.o lltinit.o ptrhash.o random.o socket.o
-    string.o table.o time_unix.o utf8.o
-EOF
+o_files=""
+o_files="$o_files bitvector-ops.o"
+o_files="$o_files bitvector.o"
+o_files="$o_files buf.o"
+o_files="$o_files builtins.o"
+o_files="$o_files dump.o"
+o_files="$o_files env_unix.o"
+o_files="$o_files equalhash.o"
+o_files="$o_files flisp.o"
+o_files="$o_files flmain.o"
+o_files="$o_files fs_$os.o"
+o_files="$o_files fs_unix.o"
+o_files="$o_files hashing.o"
+o_files="$o_files htable.o"
+o_files="$o_files int2str.o"
+o_files="$o_files ios.o"
+o_files="$o_files iostream.o"
+o_files="$o_files libraries.o"
+o_files="$o_files lltinit.o"
+o_files="$o_files ptrhash.o"
+o_files="$o_files random.o"
+o_files="$o_files socket.o"
+o_files="$o_files string.o"
+o_files="$o_files table.o"
+o_files="$o_files time_unix.o"
+o_files="$o_files utf8.o"
 case "$os" in
 darwin)
     default_cc="clang"
