@@ -105,7 +105,7 @@ $CC $CFLAGS -c ../c/utf8.c
 
 $CC $CFLAGS -c ../c/flmain.c
 
-$CC $LFLAGS -o upscheme -lm $o_files
+$CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
 cd ../scheme-core
@@ -120,7 +120,7 @@ cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
 $CC $CFLAGS -c ../c/flmain.c
-$CC $LFLAGS -o upscheme -lm $o_files
+$CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
 cd ../scheme-core
@@ -135,7 +135,7 @@ cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
 $CC $CFLAGS -c ../c/flmain.c
-$CC $LFLAGS -o upscheme -lm $o_files
+$CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
 cd ../scheme-tests
