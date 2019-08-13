@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <math.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stdint.h>
