@@ -67,6 +67,8 @@
 #include "env.h"
 #include "opcodes.h"
 
+#include "../scheme-boot/boot_image.h"
+
 static char *builtin_names[] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     // predicates
@@ -2655,13 +2657,17 @@ value_t fl_toplevel_eval(value_t expr)
 
 void fl_init(size_t initial_heapsize) { lisp_init(initial_heapsize); }
 
-int fl_load_system_image(value_t sys_image_iostream)
+int fl_load_boot_image(void)
 {
-    value_t e;
+    value_t e, f;
     int saveSP;
+    struct ios *s;
     struct symbol *sym;
 
-    PUSH(sys_image_iostream);
+    f = cvalue(iostreamtype, sizeof(struct ios));
+    s = value2c(struct ios *, f);
+    ios_static_buffer(s, boot_image, sizeof(boot_image));
+    PUSH(f);
     saveSP = SP;
     FL_TRY
     {

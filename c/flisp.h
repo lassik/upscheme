@@ -389,4 +389,4 @@ value_t cvalue_byte(value_t *args, uint32_t nargs);
 value_t cvalue_wchar(value_t *args, uint32_t nargs);
 
 void fl_init(size_t initial_heapsize);
-int fl_load_system_image(value_t ios);
+int fl_load_boot_image(void);

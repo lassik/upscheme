@@ -2,4 +2,6 @@
 
 (load "system.scm")
 (load "compiler.scm")
-(make-system-image "flisp.boot.new")
+(load "dump.scm")
+
+(dump-buffer-as-c-literal (system-image->buffer))

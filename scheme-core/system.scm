@@ -1032,8 +1032,8 @@ Up Scheme
                         (list piv)
                         (simple-sort grtr))))))
 
-(define (make-system-image fname)
-  (let ((f (file fname :write :create :truncate))
+(define (system-image->buffer)
+  (let ((out (buffer))
         (excludes '(*linefeed* *directory-separator* *argv* that
                                *print-pretty* *print-width* *print-readably*
                                *print-level* *print-length* *os-name*)))
@@ -1049,9 +1049,10 @@ Up Scheme
                             (not (memq s excludes))
                             (not (iostream? (top-level-value s)))))
                      (simple-sort (environment)))))
-        (write (apply nconc (map list syms (map top-level-value syms))) f)
-        (io.write f *linefeed*))
-      (io.close f))))
+        (write (apply nconc (map list syms (map top-level-value syms)))
+               out)
+        (io.seek out 0)
+        out))))
 
 ; initialize globals that need to be set at load time
 (define (__init_globals)
