@@ -353,8 +353,8 @@ struct fltype *get_array_type(value_t eltype);
 struct fltype *define_opaque_type(value_t sym, size_t sz,
                                   struct cvtable *vtab, cvinitfunc_t init);
 
-value_t mk_double(double n);
-value_t mk_float(float n);
+value_t mk_double(double_t n);
+value_t mk_float(float_t n);
 value_t mk_uint32(uint32_t n);
 value_t mk_uint64(uint64_t n);
 value_t mk_wchar(int32_t n);
