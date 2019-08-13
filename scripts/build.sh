@@ -8,6 +8,7 @@ os="$(uname | tr A-Z- a-z_)"
 case "$os" in
 darwin)
     default_cc="clang"
+    default_cflags="-Wall -Wextra -Wno-strict-aliasing -O2 -falign-functions -std=gnu99"
     ;;
 dragonfly)
     default_cc="gcc"
@@ -17,16 +18,22 @@ freebsd)
     ;;
 haiku)
     default_cc="gcc"
+    default_cflags="-Wall"
     ;;
 linux)
     default_cc="gcc"
-    CFLAGS="$CFLAGS -D _GNU_SOURCE"
+    default_cflags="-std=gnu99 -Wall -Wextra -Wno-strict-aliasing -D _GNU_SOURCE"
+    ;;
+minix)
+    default_cc="clang"
+    default_cflags="-std=gnu99 -Wall -Wextra -Wno-strict-aliasing"
     ;;
 netbsd)
     default_cc="gcc"
     ;;
 openbsd)
     default_cc="clang"
+    default_cflags="-Wall"
     ;;
 sunos)
     default_cc="gcc"
