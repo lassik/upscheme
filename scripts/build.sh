@@ -105,7 +105,6 @@ $CC $CFLAGS -c ../c/utf8.c
 
 $CC $CFLAGS -c ../c/flmain.c
 
-echo $o_files
 $CC $LFLAGS -o upscheme -lm $o_files
 
 { set +x; } 2>/dev/null
