@@ -113,8 +113,7 @@ cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 0 boot file..."
 set -x
-../"$builddir"/upscheme mkboot0.scm system.scm compiler.scm \
-   >../scheme-boot/boot_image.h.new
+../"$builddir"/upscheme mkboot0.scm >../scheme-boot/boot_image.h.new
 mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 
 { set +x; } 2>/dev/null
@@ -129,8 +128,7 @@ cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 1 boot file..."
 set -x
-../"$builddir"/upscheme mkboot1.scm \
-   >../scheme-boot/boot_image.h.new
+../"$builddir"/upscheme mkboot1.scm >../scheme-boot/boot_image.h.new
 mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 
 { set +x; } 2>/dev/null

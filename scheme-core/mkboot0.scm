@@ -19,6 +19,6 @@
     (io.seek out 0)
     out))
 
-(for-each (lambda (file)
-            (dump-buffer-as-c-literal (compile-file->buffer file)))
-          (cdr *argv*))
+(dump-buffers-as-c-literal
+ (compile-file->buffer "system.scm")
+ (compile-file->buffer "compiler.scm"))
