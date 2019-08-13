@@ -172,7 +172,7 @@ static char buf[256];
 static char nextchar(void)
 {
     int ch;
-    char c;
+    int c;
     struct ios *f = F;
 
     do {
@@ -207,7 +207,7 @@ static void accumchar(char c, int *pi)
 }
 
 // return: 1 if escaped (forced to be symbol)
-static int read_token(char c, int digits)
+static int read_token(int c, int digits)
 {
     int i = 0, ch, escaped = 0, issym = 0, first = 1;
 
@@ -244,9 +244,9 @@ static value_t do_read_sexpr(value_t label);
 
 static uint32_t peek(void)
 {
-    char c, *end;
+    char *end;
     fixnum_t x;
-    int ch, base;
+    int c, ch, base;
 
     if (toktype != TOK_NONE)
         return toktype;
