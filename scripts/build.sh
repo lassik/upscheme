@@ -72,12 +72,15 @@ builddir="build-$os-$(uname -m | tr A-Z- a-z_)"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
 set -x
+
 mkdir -p "$builddir"
 find "$builddir" -mindepth 1 -delete
+
 { set +x; } 2>/dev/null
 cd "$builddir"
 echo "Entering directory '$PWD'"
 set -x
+
 $CC $CFLAGS -c ../c/bitvector-ops.c
 $CC $CFLAGS -c ../c/bitvector.c
 $CC $CFLAGS -c ../c/buf.c
@@ -104,7 +107,6 @@ $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 
 $CC $CFLAGS -c ../c/flmain.c
-
 $CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
@@ -112,6 +114,7 @@ cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 0 boot file..."
 set -x
+
 ../"$builddir"/upscheme mkboot0.scm >../scheme-boot/boot_image.h.new
 mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 
@@ -119,6 +122,7 @@ mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
+
 $CC $CFLAGS -c ../c/flmain.c
 $CC $LFLAGS -o upscheme $o_files
 
@@ -127,6 +131,7 @@ cd ../scheme-core
 echo "Entering directory '$PWD'"
 echo "Creating stage 1 boot file..."
 set -x
+
 ../"$builddir"/upscheme mkboot1.scm >../scheme-boot/boot_image.h.new
 mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 
@@ -134,10 +139,12 @@ mv ../scheme-boot/boot_image.h.new ../scheme-boot/boot_image.h
 cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
+
 $CC $CFLAGS -c ../c/flmain.c
 $CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
 cd ../scheme-tests
 echo "Entering directory '$PWD'"
+
 ../"$builddir"/upscheme unittest.scm
