@@ -9,6 +9,7 @@ struct buf {
 
 struct buf *buf_new(void);
 char *buf_resb(struct buf *buf, size_t nbyte);
+void buf_put_ios(struct buf *buf, struct ios *ios);
 void buf_putc(struct buf *buf, int c);
 void buf_putb(struct buf *buf, const void *bytes, size_t nbyte);
 void buf_puts(struct buf *buf, const char *s);

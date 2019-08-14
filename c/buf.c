@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "dtypes.h"
+#include "ios.h"
+
 #include "buf.h"
 
 struct buf *buf_new(void) { return calloc(1, sizeof(struct buf)); }
@@ -26,6 +29,19 @@ char *buf_resb(struct buf *buf, size_t nbyte)
     place = buf->bytes + buf->fill;
     buf->fill += nbyte;
     return place;
+}
+
+void buf_put_ios(struct buf *buf, struct ios *ios)
+{
+    const size_t chunksize = 512;
+    size_t nread;
+    char *chunk;
+
+    do {
+        chunk = buf_resb(buf, chunksize);
+        nread = ios_readall(ios, chunk, chunksize);
+        buf->fill -= (chunksize - nread);
+    } while (nread);
 }
 
 void buf_putc(struct buf *buf, int c) { buf_resb(buf, 1)[0] = c; }
