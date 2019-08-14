@@ -4,6 +4,8 @@
 struct buf {
     size_t cap;
     size_t fill;
+    size_t scan;
+    size_t mark;
     char *bytes;
 };
 
@@ -15,3 +17,12 @@ void buf_putb(struct buf *buf, const void *bytes, size_t nbyte);
 void buf_puts(struct buf *buf, const char *s);
 void buf_putu(struct buf *buf, uint64_t u);
 void buf_free(struct buf *buf);
+
+int buf_scan_end(struct buf *buf);
+int buf_scan_byte(struct buf *buf, int byte);
+int buf_scan_bag(struct buf *buf, const char *bag);
+int buf_scan_bag_not(struct buf *buf, const char *bag);
+int buf_scan_while(struct buf *buf, const char *bag);
+int buf_scan_while_not(struct buf *buf, const char *bag);
+void buf_scan_mark(struct buf *buf);
+int buf_scan_equals(struct buf *buf, const char *s);
