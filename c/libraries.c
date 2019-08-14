@@ -88,6 +88,15 @@ static struct builtin_procedure builtin_procedures[] = {
 
     { "read-ini-file", builtin_read_ini_file, UP_2019 },
 
+    { "pid", builtin_pid, SRFI_170 | UP_2019 },
+    { "parent-pid", builtin_parent_pid, SRFI_170 | UP_2019 },
+    { "process-group", builtin_process_group, SRFI_170 | UP_2019 },
+
+    { "user-effective-gid", builtin_user_effective_gid, SRFI_170 | UP_2019 },
+    { "user-effective-uid", builtin_user_effective_uid, SRFI_170 | UP_2019 },
+    { "user-real-gid", builtin_user_real_gid, SRFI_170 | UP_2019 },
+    { "user-real-uid", builtin_user_real_uid, SRFI_170 | UP_2019 },
+
     { 0, 0, 0 },
 };
 
