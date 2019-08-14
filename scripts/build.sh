@@ -25,6 +25,7 @@ o_files="$o_files random.o"
 o_files="$o_files socket.o"
 o_files="$o_files string.o"
 o_files="$o_files table.o"
+o_files="$o_files text_ini.o"
 o_files="$o_files time_unix.o"
 o_files="$o_files utf8.o"
 default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO -Wextra -std=gnu99 -Wno-strict-aliasing"
@@ -103,6 +104,7 @@ $CC $CFLAGS -c ../c/random.c
 $CC $CFLAGS -c ../c/socket.c
 $CC $CFLAGS -c ../c/string.c
 $CC $CFLAGS -c ../c/table.c
+$CC $CFLAGS -c ../c/text_ini.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 

@@ -39,8 +39,9 @@
 #include "env.h"
 #include "opcodes.h"
 
-#include "stringfuncs.h"
+#include "builtins.h"
 #include "libraries.h"
+#include "stringfuncs.h"
 
 struct builtin_procedure {
     char *name;
@@ -84,6 +85,8 @@ static struct builtin_procedure builtin_procedures[] = {
     { "substring", fl_string_sub, R7RS_BASE | UP_2019 },
 
     { "environment-stack", builtin_environment_stack, UP_2019 },
+
+    { "read-ini-file", builtin_read_ini_file, UP_2019 },
 
     { 0, 0, 0 },
 };
