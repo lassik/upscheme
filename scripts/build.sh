@@ -21,6 +21,7 @@ o_files="$o_files libraries.o"
 o_files="$o_files lltinit.o"
 o_files="$o_files os_$os.o"
 o_files="$o_files os_unix.o"
+o_files="$o_files os_unix_process.o"
 o_files="$o_files ptrhash.o"
 o_files="$o_files random.o"
 o_files="$o_files socket.o"
@@ -101,6 +102,7 @@ $CC $CFLAGS -c ../c/libraries.c
 $CC $CFLAGS -c ../c/lltinit.c
 $CC $CFLAGS -c ../c/os_"$os".c
 $CC $CFLAGS -c ../c/os_unix.c
+$CC $CFLAGS -c ../c/os_unix_process.c
 $CC $CFLAGS -c ../c/ptrhash.c
 $CC $CFLAGS -c ../c/random.c
 $CC $CFLAGS -c ../c/socket.c
