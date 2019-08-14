@@ -2,6 +2,7 @@
 set -eu
 os="$(uname | tr A-Z- a-z_)"
 o_files=""
+o_files="$o_files algo_color.o"
 o_files="$o_files bitvector-ops.o"
 o_files="$o_files bitvector.o"
 o_files="$o_files buf.o"
@@ -82,6 +83,7 @@ cd "$builddir"
 echo "Entering directory '$PWD'"
 set -x
 
+$CC $CFLAGS -c ../c/algo_color.c
 $CC $CFLAGS -c ../c/bitvector-ops.c
 $CC $CFLAGS -c ../c/bitvector.c
 $CC $CFLAGS -c ../c/buf.c
