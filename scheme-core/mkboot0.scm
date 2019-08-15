@@ -21,4 +21,5 @@
 
 (dump-buffers-as-c-literal
  (compile-file->buffer "system.scm")
+ (compile-file->buffer "aliases.scm")
  (compile-file->buffer "compiler.scm"))
