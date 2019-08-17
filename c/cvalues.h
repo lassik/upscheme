@@ -1327,7 +1327,8 @@ int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname)
     return 1;
 }
 
-static void DivideByZeroError() __attribute__((__noreturn__));
+STATIC_NORETURN(void, DivideByZeroError());
+
 static void DivideByZeroError(void)
 {
     lerror(DivideError, "/: division by zero");
