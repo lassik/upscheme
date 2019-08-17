@@ -1,6 +1,8 @@
 // Copyright 2019 Lassi Kortela
 // SPDX-License-Identifier: BSD-3-Clause
 
+#include <sys/types.h>
+
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>

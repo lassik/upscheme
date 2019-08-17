@@ -2,6 +2,8 @@
   Hashing
 */
 
+#include <sys/types.h>
+
 #include <math.h>
 #include <stdarg.h>
 #include <stdint.h>

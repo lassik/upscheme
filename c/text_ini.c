@@ -1,3 +1,5 @@
+#include <sys/types.h>
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
