@@ -16,18 +16,6 @@
 #undef BITS32   // TODO
 #define BITS64  // TODO
 
-#ifdef _WIN32
-#define STDCALL __stdcall
-#if defined(IMPORT_EXPORTS)
-#define DLLEXPORT __declspec(dllimport)
-#else
-#define DLLEXPORT __declspec(dllexport)
-#endif
-#else
-#define STDCALL
-#define DLLEXPORT __attribute__((visibility("default")))
-#endif
-
 #define LLT_ALLOC(n) malloc(n)
 #define LLT_REALLOC(p, n) realloc((p), (n))
 #define LLT_FREE(x) free(x)
