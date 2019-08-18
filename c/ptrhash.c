@@ -3,6 +3,8 @@
   optimized for storing info about particular values
 */
 
+#include <sys/types.h>
+
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>
