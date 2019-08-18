@@ -10,6 +10,7 @@ static fixnum_t P_LEVEL;
 static int SCR_WIDTH = 80;
 
 static int HPOS = 0, VPOS;
+
 static void outc(char c, struct ios *f)
 {
     ios_putc(c, f);
@@ -18,22 +19,27 @@ static void outc(char c, struct ios *f)
     else
         HPOS++;
 }
+
 static void outs(char *s, struct ios *f)
 {
     ios_puts(s, f);
     HPOS += u8_strwidth(s);
 }
+
 static void outsn(char *s, struct ios *f, size_t n)
 {
     ios_write(f, s, n);
     HPOS += u8_strwidth(s);
 }
+
 static int outindent(int n, struct ios *f)
 {
+    int n0;
+
     // move back to left margin if we get too indented
     if (n > SCR_WIDTH - 12)
         n = 2;
-    int n0 = n;
+    n0 = n;
     ios_putc('\n', f);
     VPOS++;
     HPOS = n;
@@ -51,6 +57,7 @@ void fl_print_str(char *s, struct ios *f) { outs(s, f); }
 void print_traverse(value_t v)
 {
     value_t *bp;
+
     while (iscons(v)) {
         if (ismarked(v)) {
             bp = (value_t *)ptrhash_bp(&printconses, (void *)v);
@@ -71,26 +78,32 @@ void print_traverse(value_t v)
         return;
     }
     if (isvector(v)) {
+        unsigned int i;
+
         if (vector_size(v) > 0)
             mark_cons(v);
-        unsigned int i;
         for (i = 0; i < vector_size(v); i++)
             print_traverse(vector_elt(v, i));
     } else if (iscprim(v)) {
         // don't consider shared references to e.g. chars
     } else if (isclosure(v)) {
+        struct function *f;
+
         mark_cons(v);
-        struct function *f = (struct function *)ptr(v);
+        f = (struct function *)ptr(v);
         print_traverse(f->bcode);
         print_traverse(f->vals);
         print_traverse(f->env);
     } else {
+        struct cvalue *cv;
+        struct fltype *t;
+
         assert(iscvalue(v));
-        struct cvalue *cv = (struct cvalue *)ptr(v);
+        cv = (struct cvalue *)ptr(v);
         // don't consider shared references to ""
         if (!cv_isstr(cv) || cv_len(cv) != 0)
             mark_cons(v);
-        struct fltype *t = cv_class(cv);
+        t = cv_class(cv);
         if (t->vtable != NULL && t->vtable->print_traverse != NULL)
             t->vtable->print_traverse(v);
     }
@@ -98,8 +111,9 @@ void print_traverse(value_t v)
 
 static void print_symbol_name(struct ios *f, char *name)
 {
-    int i, escape = 0, charescape = 0;
+    int i, escape, charescape;
 
+    escape = charescape = 0;
     if ((name[0] == '\0') || (name[0] == '.' && name[1] == '\0') ||
         (name[0] == '#') || isnumtok(name, NULL))
         escape = 1;
@@ -197,7 +211,9 @@ static int lengthestimate(value_t v)
 
 static int allsmallp(value_t v)
 {
-    int n = 1;
+    int n;
+
+    n = 1;
     while (iscons(v)) {
         if (!smallp(car_(v)))
             return 0;
@@ -224,9 +240,11 @@ static int indentafter2(value_t head, value_t v)
 
 static int indentevery(value_t v)
 {
+    value_t c;
+
     // indent before every subform of a special form, unless every
     // subform is "small"
-    value_t c = car_(v);
+    c = car_(v);
     if (c == LAMBDA || c == setqsym)
         return 0;
     if (c == IF)  // TODO: others
@@ -245,8 +263,12 @@ static int blockindent(value_t v)
 
 static void print_pair(struct ios *f, value_t v)
 {
-    value_t cd;
-    char *op = NULL;
+    value_t cd, head;
+    char *op;
+    int startpos, newindent, blk, n_unindented;
+    int lastv, n, si, ind, est, always, nextsmall, thistiny, after2, after3;
+
+    op = NULL;
     if (iscons(cdr_(v)) && cdr_(cdr_(v)) == NIL &&
         !ptrhash_has(&printconses, (void *)cdr_(v)) &&
         (((car_(v) == QUOTE) && (op = "'")) ||
@@ -261,16 +283,17 @@ static void print_pair(struct ios *f, value_t v)
         fl_print_child(f, car_(cdr_(v)));
         return;
     }
-    int startpos = HPOS;
+    startpos = HPOS;
     outc('(', f);
-    int newindent = HPOS, blk = blockindent(v);
-    int lastv, n = 0, si, ind = 0, est, always = 0, nextsmall, thistiny;
+    newindent = HPOS;
+    blk = blockindent(v);
+    n = ind = always = 0;
     if (!blk)
         always = indentevery(v);
-    value_t head = car_(v);
-    int after3 = indentafter3(head, v);
-    int after2 = indentafter2(head, v);
-    int n_unindented = 1;
+    head = car_(v);
+    after3 = indentafter3(head, v);
+    after2 = indentafter2(head, v);
+    n_unindented = 1;
     while (1) {
         cd = cdr_(v);
         if (print_length >= 0 && n >= print_length && cd != NIL) {
@@ -339,6 +362,7 @@ static void cvalue_print(struct ios *f, value_t v);
 static int print_circle_prefix(struct ios *f, value_t v)
 {
     value_t label;
+
     if ((label = (value_t)ptrhash_get(&printconses, (void *)v)) !=
         (value_t)HT_NOTFOUND) {
         if (!ismarked(v)) {
@@ -355,13 +379,13 @@ static int print_circle_prefix(struct ios *f, value_t v)
 void fl_print_child(struct ios *f, value_t v)
 {
     char *name;
+
     if (print_level >= 0 && P_LEVEL >= print_level &&
         (iscons(v) || isvector(v) || isclosure(v))) {
         outc('#', f);
         return;
     }
     P_LEVEL++;
-
     switch (tag(v)) {
     case TAG_NUM:
     case TAG_NUM1:
@@ -393,12 +417,16 @@ void fl_print_child(struct ios *f, value_t v)
         } else {
             assert(isclosure(v));
             if (!print_princ) {
+                struct function *fn;
+                char *data;
+                size_t i, sz;
+
                 if (print_circle_prefix(f, v))
                     break;
-                struct function *fn = (struct function *)ptr(v);
+                fn = (struct function *)ptr(v);
                 outs("#fn(", f);
-                char *data = cvalue_data(fn->bcode);
-                size_t i, sz = cvalue_len(fn->bcode);
+                data = cvalue_data(fn->bcode);
+                sz = cvalue_len(fn->bcode);
                 for (i = 0; i < sz; i++)
                     data[i] += 48;
                 fl_print_child(f, fn->bcode);
@@ -432,9 +460,11 @@ void fl_print_child(struct ios *f, value_t v)
         if (!print_princ && print_circle_prefix(f, v))
             break;
         if (isvector(v)) {
+            int newindent, est, sz, i;
+
             outc('[', f);
-            int newindent = HPOS, est;
-            int i, sz = vector_size(v);
+            newindent = HPOS;
+            sz = vector_size(v);
             for (i = 0; i < sz; i++) {
                 if (print_length >= 0 && i >= print_length && i < sz - 1) {
                     outsn("...", f, 3);
@@ -605,9 +635,10 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         else
             HPOS += ios_printf(f, "#byte(#x%hhx)", ch);
     } else if (type == wcharsym) {
-        uint32_t wc = *(uint32_t *)data;
         char seq[8];
+        uint32_t wc = *(uint32_t *)data;
         size_t nb = u8_toutf8(seq, sizeof(seq), &wc, 1);
+
         seq[nb] = '\0';
         if (print_princ) {
             // TODO: better multibyte handling
@@ -648,6 +679,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         char buf[64];
         double d;
         int ndec;
+
         if (type == floatsym) {
             d = (double)*(float *)data;
             ndec = 8;
@@ -657,6 +689,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         }
         if (!DFINITE(d)) {
             char *rep;
+
             if (isnan(d))
                 rep = sign_bit(d) ? "-nan.0" : "+nan.0";
             else
@@ -673,8 +706,10 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             if (type == floatsym && !print_princ && !weak)
                 outc('f', f);
         } else {
+            int hasdec;
+
             snprint_real(buf, sizeof(buf), d, 0, ndec, 3, 10);
-            int hasdec = (strpbrk(buf, ".eE") != NULL);
+            hasdec = (strpbrk(buf, ".eE") != NULL);
             outs(buf, f);
             if (!hasdec)
                 outsn(".0", f, 2);
@@ -707,7 +742,8 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
     } else if (iscons(type)) {
         if (car_(type) == arraysym) {
             value_t eltype = car(cdr_(type));
-            size_t cnt, elsize;
+            size_t cnt, elsize, i;
+
             if (iscons(cdr_(cdr_(type)))) {
                 cnt = toulong(car_(cdr_(cdr_(type))), "length");
                 elsize = cnt ? len / cnt : 0;
@@ -735,7 +771,6 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                 // TODO wchar
             } else {
             }
-            size_t i;
             if (!weak) {
                 if (eltype == uint8sym) {
                     outsn("#vu8(", f, 5);
@@ -811,7 +846,9 @@ static void cvalue_print(struct ios *f, value_t v)
 
 static void set_print_width(void)
 {
-    value_t pw = symbol_value(printwidthsym);
+    value_t pw;
+
+    pw = symbol_value(printwidthsym);
     if (!isfixnum(pw))
         return;
     SCR_WIDTH = numval(pw);
@@ -819,12 +856,14 @@ static void set_print_width(void)
 
 void fl_print(struct ios *f, value_t v)
 {
+    value_t pl;
+
     print_pretty = (symbol_value(printprettysym) != FL_F);
     if (print_pretty)
         set_print_width();
     print_princ = (symbol_value(printreadablysym) == FL_F);
 
-    value_t pl = symbol_value(printlengthsym);
+    pl = symbol_value(printlengthsym);
     if (isfixnum(pl))
         print_length = numval(pl);
     else

@@ -54,15 +54,15 @@ static value_t bounded_vector_compare(value_t a, value_t b, int bound, int eq)
 static value_t bounded_compare(value_t a, value_t b, int bound, int eq)
 {
     value_t d;
+    int taga, tagb, c;
 
 compare_top:
     if (a == b)
         return fixnum(0);
     if (bound <= 0)
         return NIL;
-    int taga = tag(a);
-    int tagb = cmptag(b);
-    int c;
+    taga = tag(a);
+    tagb = cmptag(b);
     switch (taga) {
     case TAG_NUM:
     case TAG_NUM1:
@@ -143,10 +143,11 @@ compare_top:
 static value_t cyc_vector_compare(value_t a, value_t b, struct htable *table,
                                   int eq)
 {
-    size_t la = vector_size(a);
-    size_t lb = vector_size(b);
-    size_t m, i;
     value_t d, xa, xb, ca, cb;
+    size_t m, i, la, lb;
+
+    la = vector_size(a);
+    lb = vector_size(b);
 
     // first try to prove them different with no recursion
     if (eq && (la != lb))
@@ -193,6 +194,7 @@ static value_t cyc_vector_compare(value_t a, value_t b, struct htable *table,
 static value_t cyc_compare(value_t a, value_t b, struct htable *table, int eq)
 {
     value_t d, ca, cb;
+
 cyc_compare_top:
     if (a == b)
         return fixnum(0);
@@ -305,7 +307,6 @@ value_t fl_equal(value_t a, value_t b)
 // *oob: output argument, means we hit the limit specified by 'bound'
 static uintptr_t bounded_hash(value_t a, int bound, int *oob)
 {
-    *oob = 0;
     union {
         double d;
         int64_t i64;
@@ -315,8 +316,12 @@ static uintptr_t bounded_hash(value_t a, int bound, int *oob)
     struct cvalue *cv;
     struct cprim *cp;
     void *data;
-    uintptr_t h = 0;
-    int oob2, tg = tag(a);
+    uintptr_t h;
+    int oob2, tg;
+
+    *oob = 0;
+    h = 0;
+    tg = tag(a);
     switch (tg) {
     case TAG_NUM:
     case TAG_NUM1:

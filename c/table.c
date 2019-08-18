@@ -70,12 +70,14 @@ void free_htable(value_t self)
 
 void relocate_htable(value_t oldv, value_t newv)
 {
-    struct htable *oldh =
-    (struct htable *)cv_data((struct cvalue *)ptr(oldv));
-    struct htable *h = (struct htable *)cv_data((struct cvalue *)ptr(newv));
+    size_t i;
+    struct htable *oldh;
+    struct htable *h;
+
+    oldh = (struct htable *)cv_data((struct cvalue *)ptr(oldv));
+    h = (struct htable *)cv_data((struct cvalue *)ptr(newv));
     if (oldh->table == &oldh->_space[0])
         h->table = &h->_space[0];
-    size_t i;
     for (i = 0; i < h->size; i++) {
         if (h->table[i] != HT_NOTFOUND)
             h->table[i] = (void *)relocate_lispvalue((value_t)h->table[i]);
@@ -105,10 +107,14 @@ static struct htable *totable(value_t v, char *fname)
 
 value_t fl_table(value_t *args, uint32_t nargs)
 {
-    size_t cnt = (size_t)nargs;
+    struct htable *h;
+    value_t nt, k, arg;
+    size_t cnt;
+    uint32_t i;
+
+    cnt = (size_t)nargs;
     if (cnt & 1)
         lerror(ArgError, "table: arguments must come in pairs");
-    value_t nt;
     // prevent small tables from being added to finalizer list
     if (cnt <= HT_N_INLINE) {
         tabletype->vtable->finalize = NULL;
@@ -117,10 +123,10 @@ value_t fl_table(value_t *args, uint32_t nargs)
     } else {
         nt = cvalue(tabletype, 2 * sizeof(void *));
     }
-    struct htable *h = (struct htable *)cv_data((struct cvalue *)ptr(nt));
+    h = (struct htable *)cv_data((struct cvalue *)ptr(nt));
     htable_new(h, cnt / 2);
-    uint32_t i;
-    value_t k = FL_NIL, arg = FL_NIL;
+    k = FL_NIL;
+    arg = FL_NIL;
     FOR_ARGS(i, 0, arg, args)
     {
         if (i & 1)
@@ -134,9 +140,12 @@ value_t fl_table(value_t *args, uint32_t nargs)
 // (put! table key value)
 value_t fl_table_put(value_t *args, uint32_t nargs)
 {
+    struct htable *h;
+    void **table0;
+
     argcount("put!", nargs, 3);
-    struct htable *h = totable(args[0], "put!");
-    void **table0 = h->table;
+    h = totable(args[0], "put!");
+    table0 = h->table;
     equalhash_put(h, (void *)args[1], (void *)args[2]);
     // register finalizer if we outgrew inline space
     if (table0 == &h->_space[0] && h->table != &h->_space[0]) {
@@ -155,10 +164,13 @@ static void key_error(char *fname, value_t key)
 // (get table key [default])
 value_t fl_table_get(value_t *args, uint32_t nargs)
 {
+    struct htable *h;
+    value_t v;
+
     if (nargs != 3)
         argcount("get", nargs, 2);
-    struct htable *h = totable(args[0], "get");
-    value_t v = (value_t)equalhash_get(h, (void *)args[1]);
+    h = totable(args[0], "get");
+    v = (value_t)equalhash_get(h, (void *)args[1]);
     if (v == (value_t)HT_NOTFOUND) {
         if (nargs == 3)
             return args[2];
@@ -170,16 +182,20 @@ value_t fl_table_get(value_t *args, uint32_t nargs)
 // (has? table key)
 value_t fl_table_has(value_t *args, uint32_t nargs)
 {
+    struct htable *h;
+
     argcount("has", nargs, 2);
-    struct htable *h = totable(args[0], "has");
+    h = totable(args[0], "has");
     return equalhash_has(h, (void *)args[1]) ? FL_T : FL_F;
 }
 
 // (del! table key)
 value_t fl_table_del(value_t *args, uint32_t nargs)
 {
+    struct htable *h;
+
     argcount("del!", nargs, 2);
-    struct htable *h = totable(args[0], "del!");
+    h = totable(args[0], "del!");
     if (!equalhash_remove(h, (void *)args[1]))
         key_error("del!", args[1]);
     return args[0];
@@ -187,11 +203,18 @@ value_t fl_table_del(value_t *args, uint32_t nargs)
 
 value_t fl_table_foldl(value_t *args, uint32_t nargs)
 {
+    struct htable *h;
+    void **table;
+    size_t i, n;
+    value_t f, zero, t;
+
     argcount("table.foldl", nargs, 3);
-    value_t f = args[0], zero = args[1], t = args[2];
-    struct htable *h = totable(t, "table.foldl");
-    size_t i, n = h->size;
-    void **table = h->table;
+    f = args[0];
+    zero = args[1];
+    t = args[2];
+    h = totable(t, "table.foldl");
+    n = h->size;
+    table = h->table;
     fl_gc_handle(&f);
     fl_gc_handle(&zero);
     fl_gc_handle(&t);

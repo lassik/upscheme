@@ -479,6 +479,9 @@ size_t length,   /* length of the key */
 uint32_t *pc,    /* IN: primary initval, OUT: primary hash */
 uint32_t *pb)    /* IN: secondary initval, OUT: secondary hash */
 {
+#ifdef VALGRIND
+    const uint8_t *k8;
+#endif
     uint32_t a, b, c; /* internal state */
     union {
         const void *ptr;
@@ -492,7 +495,6 @@ uint32_t *pb)    /* IN: secondary initval, OUT: secondary hash */
     u.ptr = key;
     if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
         const uint32_t *k = (const uint32_t *)key; /* read 32-bit chunks */
-        const uint8_t *k8;
 
         /*------ all but last block: aligned reads and affect 32 bits of
          * (a,b,c) */
@@ -517,7 +519,6 @@ uint32_t *pb)    /* IN: secondary initval, OUT: secondary hash */
          * noticably faster for short strings (like English words).
          */
 #ifndef VALGRIND
-        (void)k8;
         switch (length) {
         case 12:
             c += k[2];

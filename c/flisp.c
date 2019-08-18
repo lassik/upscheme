@@ -189,6 +189,8 @@ void fl_restorestate(struct fl_exception_context *_ctx)
 
 void fl_raise(value_t e)
 {
+    struct fl_exception_context *thisctx;
+
     fl_lasterror = e;
     // unwind read state
     while (readstate != fl_ctx->rdst) {
@@ -198,7 +200,7 @@ void fl_raise(value_t e)
     if (fl_throwing_frame == 0)
         fl_throwing_frame = curr_frame;
     N_GCHND = fl_ctx->ngchnd;
-    struct fl_exception_context *thisctx = fl_ctx;
+    thisctx = fl_ctx;
     if (fl_ctx->prev)  // don't throw past toplevel
         fl_ctx = fl_ctx->prev;
     longjmp(thisctx->buf, 1);
@@ -207,6 +209,7 @@ void fl_raise(value_t e)
 static value_t make_error_msg(char *format, va_list args)
 {
     char msgbuf[512];
+
     vsnprintf(msgbuf, sizeof(msgbuf), format, args);
     return string_from_cstr(msgbuf);
 }
@@ -214,19 +217,22 @@ static value_t make_error_msg(char *format, va_list args)
 void lerrorf(value_t e, char *format, ...)
 {
     va_list args;
+    value_t msg;
+
     PUSH(e);
     va_start(args, format);
-    value_t msg = make_error_msg(format, args);
+    msg = make_error_msg(format, args);
     va_end(args);
-
     e = POP();
     fl_raise(fl_list2(e, msg));
 }
 
 void lerror(value_t e, const char *msg)
 {
+    value_t m;
+
     PUSH(e);
-    value_t m = cvalue_static_cstring(msg);
+    m = cvalue_static_cstring(msg);
     e = POP();
     fl_raise(fl_list2(e, m));
 }
@@ -245,12 +251,14 @@ void bounds_error(char *fname, value_t arr, value_t ind)
 // --------------------------------------------------------
 
 #define isstring fl_isstring
+// TODO: Remove the spurious return statement.
 #define SAFECAST_OP(type, ctype, cnvt)     \
     ctype to##type(value_t v, char *fname) \
     {                                      \
         if (is##type(v))                   \
             return (ctype)cnvt(v);         \
         type_error(fname, #type, v);       \
+        return (ctype)FL_NIL;              \
     }
 SAFECAST_OP(cons, struct cons *, ptr)
 SAFECAST_OP(symbol, struct symbol *, ptr)
@@ -325,10 +333,11 @@ static char gsname[2][16];
 static int gsnameno = 0;
 value_t fl_gensym(value_t *args, uint32_t nargs)
 {
-    argcount("gensym", nargs, 0);
+    struct gensym *gs;
+
     (void)args;
-    struct gensym *gs =
-    (struct gensym *)alloc_words(sizeof(struct gensym) / sizeof(void *));
+    argcount("gensym", nargs, 0);
+    gs = (struct gensym *)alloc_words(sizeof(struct gensym) / sizeof(void *));
     gs->id = _gensym_ctr++;
     gs->binding = UNBOUND;
     gs->isconst = 0;
@@ -346,11 +355,13 @@ static value_t fl_gensymp(value_t *args, uint32_t nargs)
 
 char *symbol_name(value_t v)
 {
+    struct gensym *gs;
+    char *n;
+
     if (ismanaged(v)) {
-        struct gensym *gs = (struct gensym *)ptr(v);
+        gs = (struct gensym *)ptr(v);
         gsnameno = 1 - gsnameno;
-        char *n =
-        uint2str(gsname[gsnameno] + 1, sizeof(gsname[0]) - 1, gs->id, 10);
+        n = uint2str(gsname[gsnameno] + 1, sizeof(gsname[0]) - 1, gs->id, 10);
         *(--n) = 'g';
         return n;
     }
@@ -402,13 +413,16 @@ static value_t the_empty_vector;
 
 value_t alloc_vector(size_t n, int init)
 {
+    value_t *c;
+    value_t v;
+    unsigned int i;
+
     if (n == 0)
         return the_empty_vector;
-    value_t *c = alloc_words(n + 1);
-    value_t v = tagptr(c, TAG_VECTOR);
+    c = alloc_words(n + 1);
+    v = tagptr(c, TAG_VECTOR);
     vector_setsize(v, n);
     if (init) {
-        unsigned int i;
         for (i = 0; i < n; i++)
             vector_elt(v, i) = FL_UNSPECIFIED;
     }
@@ -451,8 +465,9 @@ void fl_free_gc_handles(uint32_t n)
 static value_t relocate(value_t v)
 {
     value_t a, d, nc, first, *pcdr;
-    uintptr_t t = tag(v);
+    uintptr_t t;
 
+    t = tag(v);
     if (t == TAG_CONS) {
         // iterative implementation allows arbitrarily long cons chains
         pcdr = &first;
@@ -694,9 +709,10 @@ value_t fl_apply(value_t f, value_t l)
 value_t fl_applyn(uint32_t n, value_t f, ...)
 {
     va_list ap;
-    va_start(ap, f);
+    value_t v;
     size_t i;
 
+    va_start(ap, f);
     PUSH(f);
     while (SP + n > N_STACK)
         grow_stack();
@@ -704,7 +720,7 @@ value_t fl_applyn(uint32_t n, value_t f, ...)
         value_t a = va_arg(ap, value_t);
         PUSH(a);
     }
-    value_t v = _applyn(n);
+    v = _applyn(n);
     POPN(n + 1);
     va_end(ap);
     return v;
@@ -712,19 +728,22 @@ value_t fl_applyn(uint32_t n, value_t f, ...)
 
 value_t fl_listn(size_t n, ...)
 {
+    struct cons *c;
+    struct cons *l;
     va_list ap;
-    va_start(ap, n);
-    uint32_t si = SP;
+    uint32_t si;
     size_t i;
 
+    si = SP;
+    va_start(ap, n);
     while (SP + n > N_STACK)
         grow_stack();
     for (i = 0; i < n; i++) {
         value_t a = va_arg(ap, value_t);
         PUSH(a);
     }
-    struct cons *c = (struct cons *)alloc_words(n * 2);
-    struct cons *l = c;
+    c = (struct cons *)alloc_words(n * 2);
+    l = c;
     for (i = 0; i < n; i++) {
         c->car = Stack[si++];
         c->cdr = tagptr(c + 1, TAG_CONS);
@@ -739,9 +758,11 @@ value_t fl_listn(size_t n, ...)
 
 value_t fl_list2(value_t a, value_t b)
 {
+    struct cons *c;
+
     PUSH(a);
     PUSH(b);
-    struct cons *c = (struct cons *)alloc_words(4);
+    c = (struct cons *)alloc_words(4);
     b = POP();
     a = POP();
     c[0].car = a;
@@ -753,9 +774,11 @@ value_t fl_list2(value_t a, value_t b)
 
 value_t fl_cons(value_t a, value_t b)
 {
+    value_t c;
+
     PUSH(a);
     PUSH(b);
-    value_t c = mk_cons();
+    c = mk_cons();
     cdr_(c) = POP();
     car_(c) = POP();
     return c;
@@ -763,10 +786,12 @@ value_t fl_cons(value_t a, value_t b)
 
 int fl_isnumber(value_t v)
 {
+    struct cprim *c;
+
     if (isfixnum(v))
         return 1;
     if (iscprim(v)) {
-        struct cprim *c = (struct cprim *)ptr(v);
+        c = (struct cprim *)ptr(v);
         return c->type != wchartype;
     }
     return 0;
@@ -792,6 +817,7 @@ static value_t _list(value_t *args, uint32_t nargs, int star)
     struct cons *c;
     uint32_t i;
     value_t v;
+
     v = cons_reserve(nargs);
     c = (struct cons *)ptr(v);
     for (i = 0; i < nargs; i++) {
@@ -808,13 +834,16 @@ static value_t _list(value_t *args, uint32_t nargs, int star)
 
 static value_t copy_list(value_t L)
 {
+    value_t *plcons;
+    value_t *pL;
+    value_t c;
+
     if (!iscons(L))
         return NIL;
     PUSH(NIL);
     PUSH(L);
-    value_t *plcons = &Stack[SP - 2];
-    value_t *pL = &Stack[SP - 1];
-    value_t c;
+    plcons = &Stack[SP - 2];
+    pL = &Stack[SP - 1];
     c = mk_cons();
     PUSH(c);  // save first cons
     car_(c) = car_(*pL);
@@ -836,19 +865,22 @@ static value_t copy_list(value_t L)
 
 static value_t do_trycatch(void)
 {
-    uint32_t saveSP = SP;
-    value_t v;
-    value_t thunk = Stack[SP - 2];
+    value_t v, thunk;
+    uint32_t saveSP;
+
+    saveSP = SP;
+    thunk = Stack[SP - 2];
     Stack[SP - 2] = Stack[SP - 1];
     Stack[SP - 1] = thunk;
-
-    FL_TRY { v = apply_cl(0); }
-    FL_CATCH
     {
-        v = Stack[saveSP - 2];
-        PUSH(v);
-        PUSH(fl_lasterror);
-        v = apply_cl(1);
+        FL_TRY { v = apply_cl(0); }
+        FL_CATCH
+        {
+            v = Stack[saveSP - 2];
+            PUSH(v);
+            PUSH(fl_lasterror);
+            v = apply_cl(1);
+        }
     }
     SP = saveSP;
     return v;
@@ -862,14 +894,27 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
                              uint32_t nopt, uint32_t bp, uint32_t nargs,
                              int va)
 {
-    uint32_t extr = nopt + nkw;
-    uint32_t ntot = nreq + extr;
-    value_t args[extr], v;
-    uint32_t i, a = 0, nrestargs;
-    value_t s1 = Stack[SP - 1];
-    value_t s2 = Stack[SP - 2];
-    value_t s4 = Stack[SP - 4];
-    value_t s5 = Stack[SP - 5];
+    value_t hv;
+    uintptr_t x;
+    uintptr_t idx;
+    uintptr_t n;
+    uint32_t ntot;
+    value_t v;
+    uint32_t extr;
+    value_t *args;
+    uint32_t nrestargs, i, a;
+    value_t s1, s2, s4, s5;
+
+    extr = nopt + nkw;
+    ntot = nreq + extr;
+    if (!(args = calloc(extr, sizeof(*args)))) {
+        lerror(MemoryError, "out of memory");
+    }
+    a = 0;
+    s1 = Stack[SP - 1];
+    s2 = Stack[SP - 2];
+    s4 = Stack[SP - 4];
+    s5 = Stack[SP - 5];
     if (nargs < nreq)
         lerror(ArgError, "apply: too few arguments");
     for (i = 0; i < extr; i++)
@@ -885,16 +930,16 @@ static uint32_t process_keys(value_t kwtable, uint32_t nreq, uint32_t nkw,
     if (i >= nargs)
         goto no_kw;
     // now process keywords
-    uintptr_t n = vector_size(kwtable) / 2;
+    n = vector_size(kwtable) / 2;
     do {
         i++;
         if (i >= nargs)
             lerrorf(ArgError, "keyword %s requires an argument",
                     symbol_name(v));
-        value_t hv = fixnum(((struct symbol *)ptr(v))->hash);
-        uintptr_t x = 2 * (labs(numval(hv)) % n);
+        hv = fixnum(((struct symbol *)ptr(v))->hash);
+        x = 2 * (labs(numval(hv)) % n);
         if (vector_elt(kwtable, x) == v) {
-            uintptr_t idx = numval(vector_elt(kwtable, x + 1));
+            idx = numval(vector_elt(kwtable, x + 1));
             assert(idx < nkw);
             idx += nopt;
             if (args[idx] == UNBOUND) {
@@ -2305,6 +2350,13 @@ void assign_global_builtins(struct builtinspec *b)
 
 static value_t fl_function(value_t *args, uint32_t nargs)
 {
+    struct cvalue *arr;
+    char *data;
+    int swap;
+    uint32_t ms;
+    struct function *fn;
+    value_t fv;
+
     if (nargs == 1 && issymbol(args[0]))
         return fl_builtin(args, nargs);
     if (nargs < 2 || nargs > 4)
@@ -2313,10 +2365,10 @@ static value_t fl_function(value_t *args, uint32_t nargs)
         type_error("function", "string", args[0]);
     if (!isvector(args[1]))
         type_error("function", "vector", args[1]);
-    struct cvalue *arr = (struct cvalue *)ptr(args[0]);
+    arr = (struct cvalue *)ptr(args[0]);
     cv_pin(arr);
-    char *data = cv_data(arr);
-    int swap = 0;
+    data = cv_data(arr);
+    swap = 0;
     if ((uint8_t)data[4] >= N_OPCODES) {
         // read syntax, shifted 48 for compact text representation
         size_t i, sz = cv_len(arr);
@@ -2327,10 +2379,10 @@ static value_t fl_function(value_t *args, uint32_t nargs)
         swap = 1;
 #endif
     }
-    uint32_t ms = compute_maxstack((uint8_t *)data, cv_len(arr), swap);
+    ms = compute_maxstack((uint8_t *)data, cv_len(arr), swap);
     PUT_INT32(data, ms);
-    struct function *fn = (struct function *)alloc_words(4);
-    value_t fv = tagptr(fn, TAG_FUNCTION);
+    fn = (struct function *)alloc_words(4);
+    fv = tagptr(fn, TAG_FUNCTION);
     fn->bcode = args[0];
     fn->vals = args[1];
     fn->env = NIL;
@@ -2356,32 +2408,40 @@ static value_t fl_function(value_t *args, uint32_t nargs)
 
 static value_t fl_function_code(value_t *args, uint32_t nargs)
 {
+    value_t v;
+
     argcount("function:code", nargs, 1);
-    value_t v = args[0];
+    v = args[0];
     if (!isclosure(v))
         type_error("function:code", "function", v);
     return fn_bcode(v);
 }
 static value_t fl_function_vals(value_t *args, uint32_t nargs)
 {
+    value_t v;
+
     argcount("function:vals", nargs, 1);
-    value_t v = args[0];
+    v = args[0];
     if (!isclosure(v))
         type_error("function:vals", "function", v);
     return fn_vals(v);
 }
 static value_t fl_function_env(value_t *args, uint32_t nargs)
 {
+    value_t v;
+
     argcount("function:env", nargs, 1);
-    value_t v = args[0];
+    v = args[0];
     if (!isclosure(v))
         type_error("function:env", "function", v);
     return fn_env(v);
 }
 static value_t fl_function_name(value_t *args, uint32_t nargs)
 {
+    value_t v;
+
     argcount("function:name", nargs, 1);
-    value_t v = args[0];
+    v = args[0];
     if (!isclosure(v))
         type_error("function:name", "function", v);
     return fn_name(v);
@@ -2395,12 +2455,15 @@ value_t fl_copylist(value_t *args, uint32_t nargs)
 
 value_t fl_append(value_t *args, uint32_t nargs)
 {
+    value_t first, lst, lastcons;
+    uint32_t i;
+
     if (nargs == 0)
         return NIL;
-    value_t first = NIL, lst, lastcons = NIL;
+    first = lastcons = NIL;
     fl_gc_handle(&first);
     fl_gc_handle(&lastcons);
-    uint32_t i = 0;
+    i = 0;
     while (1) {
         lst = args[i++];
         if (i >= nargs)
@@ -2442,12 +2505,14 @@ value_t fl_stacktrace(value_t *args, uint32_t nargs)
 
 value_t fl_map1(value_t *args, uint32_t nargs)
 {
+    value_t first, last, v;
+    int64_t argSP;
+
     if (nargs < 2)
         lerror(ArgError, "map: too few arguments");
     if (!iscons(args[1]))
         return NIL;
-    value_t first, last, v;
-    int64_t argSP = args - Stack;
+    argSP = args - Stack;
     assert(argSP >= 0 && argSP < N_STACK);
     if (nargs == 2) {
         if (SP + 3 > N_STACK)
@@ -2479,6 +2544,7 @@ value_t fl_map1(value_t *args, uint32_t nargs)
         fl_free_gc_handles(2);
     } else {
         size_t i;
+
         while (SP + nargs + 1 > N_STACK)
             grow_stack();
         PUSH(Stack[argSP]);
@@ -2540,6 +2606,8 @@ extern void comparehash_init(void);
 
 static void lisp_init(size_t initial_heapsize)
 {
+    char buf[1024];
+    char *exename;
     int i;
 
     llt_init();
@@ -2632,8 +2700,7 @@ static void lisp_init(size_t initial_heapsize)
 
     cvalues_init();
 
-    char buf[1024];
-    char *exename = get_exename(buf, sizeof(buf));
+    exename = get_exename(buf, sizeof(buf));
     if (exename != NULL) {
         path_to_dirname(exename);
         setc(symbol("*install-dir*"), cvalue_static_cstring(strdup(exename)));
@@ -2669,36 +2736,38 @@ int fl_load_boot_image(void)
     ios_static_buffer(s, boot_image, sizeof(boot_image));
     PUSH(f);
     saveSP = SP;
-    FL_TRY
     {
-        while (1) {
-            e = fl_read_sexpr(Stack[SP - 1]);
-            if (ios_eof(value2c(struct ios *, Stack[SP - 1])))
-                break;
-            if (isfunction(e)) {
-                // stage 0 format: series of thunks
-                PUSH(e);
-                (void)_applyn(0);
-                SP = saveSP;
-            } else {
-                // stage 1 format: list alternating symbol/value
-                while (iscons(e)) {
-                    sym = tosymbol(car_(e), "bootstrap");
-                    e = cdr_(e);
-                    (void)tocons(e, "bootstrap");
-                    sym->binding = car_(e);
-                    e = cdr_(e);
+        FL_TRY
+        {
+            while (1) {
+                e = fl_read_sexpr(Stack[SP - 1]);
+                if (ios_eof(value2c(struct ios *, Stack[SP - 1])))
+                    break;
+                if (isfunction(e)) {
+                    // stage 0 format: series of thunks
+                    PUSH(e);
+                    (void)_applyn(0);
+                    SP = saveSP;
+                } else {
+                    // stage 1 format: list alternating symbol/value
+                    while (iscons(e)) {
+                        sym = tosymbol(car_(e), "bootstrap");
+                        e = cdr_(e);
+                        (void)tocons(e, "bootstrap");
+                        sym->binding = car_(e);
+                        e = cdr_(e);
+                    }
+                    break;
                 }
-                break;
             }
         }
-    }
-    FL_CATCH
-    {
-        ios_puts("fatal error during bootstrap:\n", ios_stderr);
-        fl_print(ios_stderr, fl_lasterror);
-        ios_putc('\n', ios_stderr);
-        return 1;
+        FL_CATCH
+        {
+            ios_puts("fatal error during bootstrap:\n", ios_stderr);
+            fl_print(ios_stderr, fl_lasterror);
+            ios_putc('\n', ios_stderr);
+            return 1;
+        }
     }
     ios_close(value2c(struct ios *, Stack[SP - 1]));
     POPN(1);

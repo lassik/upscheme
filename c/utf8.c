@@ -391,13 +391,16 @@ char read_escape_control_char(char c)
    returns number of input characters processed, 0 if error */
 size_t u8_read_escape_sequence(const char *str, size_t ssz, uint32_t *dest)
 {
-    assert(ssz > 0);
     uint32_t ch;
     char digs[10];
-    int dno = 0, ndig;
-    size_t i = 1;
-    char c0 = str[0];
+    int dno, ndig;
+    size_t i;
+    char c0;
 
+    assert(ssz > 0);
+    dno = 0;
+    i = 1;
+    c0 = str[0];
     if (octal_digit(c0)) {
         i = 0;
         do {
@@ -405,8 +408,19 @@ size_t u8_read_escape_sequence(const char *str, size_t ssz, uint32_t *dest)
         } while (i < ssz && octal_digit(str[i]) && dno < 3);
         digs[dno] = '\0';
         ch = strtol(digs, NULL, 8);
-    } else if ((c0 == 'x' && (ndig = 2)) || (c0 == 'u' && (ndig = 4)) ||
-               (c0 == 'U' && (ndig = 8))) {
+        *dest = ch;
+        return i;
+    }
+    if (c0 == 'x') {
+        ndig = 2;
+    } else if (c0 == 'u') {
+        ndig = 4;
+    } else if (c0 == 'U') {
+        ndig = 8;
+    } else {
+        ndig = 0;
+    }
+    if (ndig) {
         while (i < ssz && hex_digit(str[i]) && dno < ndig) {
             digs[dno++] = str[i++];
         }
@@ -418,7 +432,6 @@ size_t u8_read_escape_sequence(const char *str, size_t ssz, uint32_t *dest)
         ch = (uint32_t)read_escape_control_char(c0);
     }
     *dest = ch;
-
     return i;
 }
 
@@ -599,11 +612,13 @@ char *u8_memrchr(const char *s, uint32_t ch, size_t sz)
 
 int u8_is_locale_utf8(const char *locale)
 {
+    const char *cp;
+
     if (locale == NULL)
         return 0;
 
     /* this code based on libutf8 */
-    const char *cp = locale;
+    cp = locale;
 
     for (; *cp != '\0' && *cp != '@' && *cp != '+' && *cp != ','; cp++) {
         if (*cp == '.') {

@@ -15,6 +15,8 @@
 
 struct htable *htable_new(struct htable *h, size_t size)
 {
+    size_t i;
+
     if (size <= HT_N_INLINE / 2) {
         h->size = size = HT_N_INLINE;
         h->table = &h->_space[0];
@@ -27,7 +29,6 @@ struct htable *htable_new(struct htable *h, size_t size)
     }
     if (h->table == NULL)
         return NULL;
-    size_t i;
     for (i = 0; i < size; i++)
         h->table[i] = HT_NOTFOUND;
     return h;
@@ -42,6 +43,8 @@ void htable_free(struct htable *h)
 // empty and reduce size
 void htable_reset(struct htable *h, size_t sz)
 {
+    size_t i, hsz;
+
     sz = nextipow2(sz);
     if (h->size > sz * 4 && h->size > HT_N_INLINE) {
         size_t newsz = sz * 4;
@@ -52,7 +55,7 @@ void htable_reset(struct htable *h, size_t sz)
         h->size = newsz;
         h->table = newtab;
     }
-    size_t i, hsz = h->size;
+    hsz = h->size;
     for (i = 0; i < hsz; i++)
         h->table[i] = HT_NOTFOUND;
 }

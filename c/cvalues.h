@@ -119,10 +119,11 @@ void cv_autorelease(struct cvalue *cv) { autorelease(cv); }
 
 static value_t cprim(struct fltype *type, size_t sz)
 {
+    struct cprim *pcp;
+
     assert(!ismanaged((uintptr_t)type));
     assert(sz == type->size);
-    struct cprim *pcp =
-    (struct cprim *)alloc_words(CPRIM_NWORDS - 1 + NWORDS(sz));
+    pcp = (struct cprim *)alloc_words(CPRIM_NWORDS - 1 + NWORDS(sz));
     pcp->type = type;
     return tagptr(pcp, TAG_CPRIM);
 }
@@ -130,8 +131,9 @@ static value_t cprim(struct fltype *type, size_t sz)
 value_t cvalue(struct fltype *type, size_t sz)
 {
     struct cvalue *pcv;
-    int str = 0;
+    int str;
 
+    str = 0;
     if (valid_numtype(type->numtype)) {
         return cprim(type, sz);
     }
@@ -168,6 +170,7 @@ value_t cvalue(struct fltype *type, size_t sz)
 value_t cvalue_from_data(struct fltype *type, void *data, size_t sz)
 {
     value_t cv;
+
     cv = cvalue(type, sz);
     memcpy(cptr(cv), data, sz);
     return cv;
@@ -208,7 +211,9 @@ value_t cvalue_static_cstring(const char *str)
 
 value_t string_from_cstrn(const char *str, size_t n)
 {
-    value_t v = cvalue_string(n);
+    value_t v;
+
+    v = cvalue_string(n);
     memcpy(cvalue_data(v), str, n);
     return v;
 }
@@ -226,12 +231,15 @@ int fl_isstring(value_t v)
 // convert to malloc representation (fixed address)
 void cv_pin(struct cvalue *cv)
 {
+    size_t sz;
+    void *data;
+
     if (!isinlined(cv))
         return;
-    size_t sz = cv_len(cv);
+    sz = cv_len(cv);
     if (cv_isstr(cv))
         sz++;
-    void *data = malloc(sz);
+    data = malloc(sz);
     memcpy(data, cv_data(cv), sz);
     cv->data = data;
     autorelease(cv);
@@ -264,11 +272,12 @@ num_init(float, double, T_FLOAT) num_init(double, double, T_DOUBLE)
 #define num_ctor_init(typenam, ctype, tag)                           \
     value_t cvalue_##typenam(value_t *args, uint32_t nargs)          \
     {                                                                \
+        value_t cp;                                                  \
         if (nargs == 0) {                                            \
             PUSH(fixnum(0));                                         \
             args = &Stack[SP - 1];                                   \
         }                                                            \
-        value_t cp = cprim(typenam##type, sizeof(ctype##_t));        \
+        cp = cprim(typenam##type, sizeof(ctype##_t));                \
         if (cvalue_##ctype##_init(typenam##type, args[0],            \
                                   cp_data((struct cprim *)ptr(cp)))) \
             type_error(#typenam, "number", args[0]);                 \
@@ -352,10 +361,13 @@ static int cvalue_enum_init(struct fltype *ft, value_t arg, void *dest)
 
 value_t cvalue_enum(value_t *args, uint32_t nargs)
 {
+    value_t cv, type;
+    struct fltype *ft;
+
     argcount("enum", nargs, 2);
-    value_t type = fl_list2(enumsym, args[0]);
-    struct fltype *ft = get_type(type);
-    value_t cv = cvalue(ft, sizeof(int32_t));
+    type = fl_list2(enumsym, args[0]);
+    ft = get_type(type);
+    cv = cvalue(ft, sizeof(int32_t));
     cvalue_enum_init(ft, args[1], cp_data((struct cprim *)ptr(cv)));
     return cv;
 }
@@ -443,18 +455,20 @@ static int cvalue_array_init(struct fltype *ft, value_t arg, void *dest)
 value_t cvalue_array(value_t *args, uint32_t nargs)
 {
     size_t elsize, cnt, sz, i;
-    value_t arg;
+    value_t arg, cv;
+    struct fltype *type;
+    char *dest;
 
     if (nargs < 1)
         argcount("array", nargs, 1);
 
     cnt = nargs - 1;
-    struct fltype *type = get_array_type(args[0]);
+    type = get_array_type(args[0]);
     elsize = type->elsz;
     sz = elsize * cnt;
 
-    value_t cv = cvalue(type, sz);
-    char *dest = cv_data((struct cvalue *)ptr(cv));
+    cv = cvalue(type, sz);
+    dest = cv_data((struct cvalue *)ptr(cv));
     FOR_ARGS(i, 1, arg, args)
     {
         cvalue_init(type->eltype, arg, dest);
@@ -476,8 +490,8 @@ static size_t cvalue_struct_offs(value_t type, value_t field,
     value_t fld = car(cdr_(type));
     size_t fsz, ssz = 0;
     int al;
-    *palign = 0;
 
+    *palign = 0;
     while (iscons(fld)) {
         fsz = ctype_sizeof(car(cdr(car_(fld))), &al);
 
@@ -501,8 +515,8 @@ static size_t cvalue_union_size(value_t type, int *palign)
     value_t fld = car(cdr_(type));
     size_t fsz, usz = 0;
     int al;
-    *palign = 0;
 
+    *palign = 0;
     while (iscons(fld)) {
         fsz = ctype_sizeof(car(cdr(car_(fld))), &al);
         if (al > *palign)
@@ -517,6 +531,9 @@ static size_t cvalue_union_size(value_t type, int *palign)
 // *palign is an output argument giving the alignment required by type
 size_t ctype_sizeof(value_t type, int *palign)
 {
+    value_t hed, t, n;
+    size_t sz;
+
     if (type == int8sym || type == uint8sym || type == bytesym) {
         *palign = 1;
         return 1;
@@ -544,17 +561,17 @@ size_t ctype_sizeof(value_t type, int *palign)
 #endif
     }
     if (iscons(type)) {
-        value_t hed = car_(type);
+        hed = car_(type);
         if (hed == pointersym || hed == cfunctionsym) {
             *palign = ALIGNPTR;
             return sizeof(void *);
         }
         if (hed == arraysym) {
-            value_t t = car(cdr_(type));
+            t = car(cdr_(type));
             if (!iscons(cdr_(cdr_(type))))
                 lerror(ArgError, "sizeof: incomplete type");
-            value_t n = car_(cdr_(cdr_(type)));
-            size_t sz = toulong(n, "sizeof");
+            n = car_(cdr_(cdr_(type)));
+            sz = toulong(n, "sizeof");
             return sz * ctype_sizeof(t, palign);
         } else if (hed == structsym) {
             return cvalue_struct_offs(type, NIL, 1, palign);
@@ -597,13 +614,14 @@ void to_sized_ptr(value_t v, char *fname, char **pdata, size_t *psz)
 
 value_t cvalue_sizeof(value_t *args, uint32_t nargs)
 {
+    char *data;
+    size_t n;
+    int a;
+
     argcount("sizeof", nargs, 1);
     if (issymbol(args[0]) || iscons(args[0])) {
-        int a;
         return size_wrap(ctype_sizeof(args[0], &a));
     }
-    size_t n;
-    char *data;
     to_sized_ptr(args[0], "sizeof", &data, &n);
     return size_wrap(n);
 }
@@ -637,10 +655,11 @@ value_t cvalue_typeof(value_t *args, uint32_t nargs)
 
 static value_t cvalue_relocate(value_t v)
 {
-    size_t nw;
     struct cvalue *cv = (struct cvalue *)ptr(v);
     struct cvalue *nv;
+    struct fltype *t;
     value_t ncv;
+    size_t nw;
 
     nw = cv_nwords(cv);
     nv = (struct cvalue *)alloc_words(nw);
@@ -648,7 +667,7 @@ static value_t cvalue_relocate(value_t v)
     if (isinlined(cv))
         nv->data = &nv->_space[0];
     ncv = tagptr(nv, TAG_CVALUE);
-    struct fltype *t = cv_class(cv);
+    t = cv_class(cv);
     if (t->vtable != NULL && t->vtable->relocate != NULL)
         t->vtable->relocate(v, ncv);
     forward(v, ncv);
@@ -657,16 +676,20 @@ static value_t cvalue_relocate(value_t v)
 
 value_t cvalue_copy(value_t v)
 {
+    struct cvalue *ncv;
+    struct cvalue *cv;
+    size_t nw, len;
+
     assert(iscvalue(v));
     PUSH(v);
-    struct cvalue *cv = (struct cvalue *)ptr(v);
-    size_t nw = cv_nwords(cv);
-    struct cvalue *ncv = (struct cvalue *)alloc_words(nw);
+    cv = (struct cvalue *)ptr(v);
+    nw = cv_nwords(cv);
+    ncv = (struct cvalue *)alloc_words(nw);
     v = POP();
     cv = (struct cvalue *)ptr(v);
     memcpy(ncv, cv, nw * sizeof(value_t));
     if (!isinlined(cv)) {
-        size_t len = cv_len(cv);
+        len = cv_len(cv);
         if (cv_isstr(cv))
             len++;
         ncv->data = malloc(len);
@@ -762,16 +785,17 @@ static numerictype_t sym_to_numtype(value_t type)
 // type, including user-defined.
 value_t cvalue_new(value_t *args, uint32_t nargs)
 {
+    struct fltype *ft;
+    value_t cv, type;
+    size_t elsz, cnt;
+
     if (nargs < 1 || nargs > 2)
         argcount("c-value", nargs, 2);
-    value_t type = args[0];
-    struct fltype *ft = get_type(type);
-    value_t cv;
+    type = args[0];
+    ft = get_type(type);
     if (ft->eltype != NULL) {
         // special case to handle incomplete array types bla[]
-        size_t elsz = ft->elsz;
-        size_t cnt;
-
+        elsz = ft->elsz;
         if (iscons(cdr_(cdr_(type))))
             cnt = toulong(car_(cdr_(cdr_(type))), "array");
         else if (nargs == 2)
@@ -800,6 +824,7 @@ value_t cvalue_compare(value_t a, value_t b)
     size_t bsz = cv_len(cb);
     size_t minsz = asz < bsz ? asz : bsz;
     int diff = memcmp(adata, bdata, minsz);
+
     if (diff == 0) {
         if (asz > bsz)
             return fixnum(1);
@@ -813,7 +838,9 @@ static void check_addr_args(char *fname, value_t arr, value_t ind,
                             char **data, unsigned long *index)
 {
     size_t numel;
-    struct cvalue *cv = (struct cvalue *)ptr(arr);
+    struct cvalue *cv;
+
+    cv = (struct cvalue *)ptr(arr);
     *data = cv_data(cv);
     numel = cv_len(cv) / (cv_class(cv)->elsz);
     *index = toulong(ind, fname);
@@ -828,6 +855,9 @@ static value_t cvalue_array_aref(value_t *args)
     struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     value_t el = 0;
     numerictype_t nt = eltype->numtype;
+    char *dest;
+    size_t sz;
+
     if (nt >= T_INT32)
         el = cvalue(eltype, eltype->size);
     check_addr_args("aref", args[0], args[1], &data, &index);
@@ -840,8 +870,8 @@ static value_t cvalue_array_aref(value_t *args)
             return fixnum(((int16_t *)data)[index]);
         return fixnum(((uint16_t *)data)[index]);
     }
-    char *dest = cptr(el);
-    size_t sz = eltype->size;
+    dest = cptr(el);
+    sz = eltype->size;
     if (sz == 1)
         *dest = data[index];
     else if (sz == 2)
@@ -858,19 +888,24 @@ static value_t cvalue_array_aref(value_t *args)
 static value_t cvalue_array_aset(value_t *args)
 {
     char *data;
+    char *dest;
     unsigned long index;
-    struct fltype *eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
+    struct fltype *eltype;
+
+    eltype = cv_class((struct cvalue *)ptr(args[0]))->eltype;
     check_addr_args("aset!", args[0], args[1], &data, &index);
-    char *dest = data + index * eltype->size;
+    dest = data + index * eltype->size;
     cvalue_init(eltype, args[2], dest);
     return args[2];
 }
 
 value_t fl_builtin(value_t *args, uint32_t nargs)
 {
-    argcount("builtin", nargs, 1);
-    struct symbol *name = tosymbol(args[0], "builtin");
+    struct symbol *name;
     struct cvalue *cv;
+
+    argcount("builtin", nargs, 1);
+    name = tosymbol(args[0], "builtin");
     if (ismanaged(args[0]) || (cv = name->dlcache) == NULL) {
         lerrorf(ArgError, "builtin: function %s not found", name->name);
     }
@@ -879,17 +914,17 @@ value_t fl_builtin(value_t *args, uint32_t nargs)
 
 value_t cbuiltin(char *name, builtin_t f)
 {
-    struct cvalue *cv =
-    (struct cvalue *)malloc(CVALUE_NWORDS * sizeof(value_t));
+    struct cvalue *cv;
+    value_t sym;
+
+    cv = (struct cvalue *)malloc(CVALUE_NWORDS * sizeof(value_t));
     cv->type = builtintype;
     cv->data = &cv->_space[0];
     cv->len = sizeof(value_t);
     *(void **)cv->data = f;
-
-    value_t sym = symbol(name);
+    sym = symbol(name);
     ((struct symbol *)ptr(sym))->dlcache = cv;
     ptrhash_put(&reverse_dlsym_lookup_table, cv, (void *)sym);
-
     return tagptr(cv, TAG_CVALUE);
 }
 
@@ -1183,6 +1218,7 @@ static value_t fl_neg(value_t n)
         }
     }
     type_error("-", "number", n);
+    return FL_NIL;  // TODO: remove
 }
 
 static value_t fl_mul_any(value_t *args, uint32_t nargs, int64_t Saccum)
@@ -1555,14 +1591,15 @@ static value_t fl_logxor(value_t *args, uint32_t nargs)
 
 static value_t fl_lognot(value_t *args, uint32_t nargs)
 {
+    struct cprim *cp;
+    void *aptr;
+    value_t a;
+    int ta;
+
     argcount("lognot", nargs, 1);
-    value_t a = args[0];
+    a = args[0];
     if (isfixnum(a))
         return fixnum(~numval(a));
-    struct cprim *cp;
-    int ta;
-    void *aptr;
-
     if (iscprim(a)) {
         cp = (struct cprim *)ptr(a);
         ta = cp_numtype(cp);
@@ -1587,14 +1624,20 @@ static value_t fl_lognot(value_t *args, uint32_t nargs)
         }
     }
     type_error("lognot", "integer", a);
+    return FL_NIL;  // TODO: remove
 }
 
 static value_t fl_ash(value_t *args, uint32_t nargs)
 {
+    int64_t accum, i64;
+    value_t a;
     fixnum_t n;
-    int64_t accum;
+    struct cprim *cp;
+    void *aptr;
+    int ta;
+
     argcount("ash", nargs, 2);
-    value_t a = args[0];
+    a = args[0];
     n = tofixnum(args[1], "ash");
     if (isfixnum(a)) {
         if (n <= 0)
@@ -1605,9 +1648,6 @@ static value_t fl_ash(value_t *args, uint32_t nargs)
         else
             return return_from_int64(accum);
     }
-    struct cprim *cp;
-    int ta;
-    void *aptr;
     if (iscprim(a)) {
         if (n == 0)
             return a;
@@ -1638,7 +1678,7 @@ static value_t fl_ash(value_t *args, uint32_t nargs)
             if (ta == T_UINT64)
                 return return_from_uint64((*(uint64_t *)aptr) << n);
             else if (ta < T_FLOAT) {
-                int64_t i64 = conv_to_int64(aptr, ta);
+                i64 = conv_to_int64(aptr, ta);
                 return return_from_int64(i64 << n);
             }
         }

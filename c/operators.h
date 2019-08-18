@@ -272,11 +272,13 @@ int cmp_same_eq(void *a, void *b, numerictype_t tag)
 
 int cmp_lt(void *a, numerictype_t atag, void *b, numerictype_t btag)
 {
+    double da, db;
+
     if (atag == btag)
         return cmp_same_lt(a, b, atag);
 
-    double da = conv_to_double(a, atag);
-    double db = conv_to_double(b, btag);
+    da = conv_to_double(a, atag);
+    db = conv_to_double(b, btag);
 
     // casting to double will only get the wrong answer for big int64s
     // that differ in low bits
@@ -327,15 +329,17 @@ int cmp_lt(void *a, numerictype_t atag, void *b, numerictype_t btag)
 int cmp_eq(void *a, numerictype_t atag, void *b, numerictype_t btag,
            int equalnans)
 {
+    double da, db;
     union {
         double d;
         int64_t i64;
     } u, v;
+
     if (atag == btag && (!equalnans || atag < T_FLOAT))
         return cmp_same_eq(a, b, atag);
 
-    double da = conv_to_double(a, atag);
-    double db = conv_to_double(b, btag);
+    da = conv_to_double(a, atag);
+    db = conv_to_double(b, btag);
 
     if ((int)atag >= T_FLOAT && (int)btag >= T_FLOAT) {
         if (equalnans) {

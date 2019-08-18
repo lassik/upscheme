@@ -100,10 +100,10 @@
         size_t maxprobe = max_probe(sz);                                     \
         void **tab = h->table;                                               \
         size_t index = (uintptr_t)(HFUNC((uintptr_t)key) & (sz - 1)) * 2;    \
-        sz *= 2;                                                             \
         size_t orig = index;                                                 \
         size_t iter = 0;                                                     \
                                                                              \
+        sz *= 2;                                                             \
         do {                                                                 \
             if (tab[index] == HT_NOTFOUND)                                   \
                 return NULL;                                                 \

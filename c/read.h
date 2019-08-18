@@ -394,16 +394,24 @@ static uint32_t peek(void)
             tokval = fixnum(x);
         } else if (symchar(c)) {
             read_token(ch, 0);
-
-            if (((c == 'b' && (base = 2)) || (c == 'o' && (base = 8)) ||
-                 (c == 'd' && (base = 10)) || (c == 'x' && (base = 16))) &&
-                (isdigit_base(buf[1], base) || buf[1] == '-')) {
+            if (c == 'b') {
+                base = 2;
+            } else if (c == 'o') {
+                base = 8;
+            } else if (c == 'd') {
+                base = 10;
+            } else if (c == 'x') {
+                base = 16;
+            } else {
+                base = 0;
+            }
+            if (base && (isdigit_base(buf[1], base) || buf[1] == '-')) {
                 if (!read_numtok(&buf[1], &tokval, base))
                     lerrorf(ParseError, "read: invalid base %d constant",
                             base);
-                return (toktype = TOK_NUM);
+                toktype = TOK_NUM;
+                return toktype;
             }
-
             toktype = TOK_SHARPSYM;
             tokval = symbol(buf);
         } else {
@@ -439,11 +447,15 @@ static uint32_t peek(void)
 // reader, and requires at least 1 and up to 3 garbage collections!
 static value_t vector_grow(value_t v)
 {
-    size_t i, s = vector_size(v);
-    size_t d = vector_grow_amt(s);
+    value_t newv;
+    size_t i, s;
+    size_t d;
+
+    s = vector_size(v);
+    d = vector_grow_amt(s);
     PUSH(v);
     assert(s + d > s);
-    value_t newv = alloc_vector(s + d, 1);
+    newv = alloc_vector(s + d, 1);
     v = Stack[SP - 1];
     for (i = 0; i < s; i++)
         vector_elt(newv, i) = vector_elt(v, i);
@@ -459,8 +471,11 @@ static value_t vector_grow(value_t v)
 
 static value_t read_vector(value_t label, uint32_t closer)
 {
-    value_t v = the_empty_vector, elt;
-    uint32_t i = 0;
+    value_t v, elt;
+    uint32_t i;
+
+    v = the_empty_vector;
+    i = 0;
     PUSH(v);
     if (label != UNBOUND)
         ptrhash_put(&readstate->backrefs, (void *)label, (void *)v);
@@ -529,8 +544,17 @@ static value_t read_string(void)
                 wc = strtol(eseq, NULL, 8);
                 // \DDD and \xXX read bytes, not characters
                 buf[i++] = ((char)wc);
-            } else if ((c == 'x' && (ndig = 2)) || (c == 'u' && (ndig = 4)) ||
-                       (c == 'U' && (ndig = 8))) {
+            }
+            if (c == 'x') {
+                ndig = 2;
+            } else if (c == 'u') {
+                ndig = 4;
+            } else if (c == 'U') {
+                ndig = 8;
+            } else {
+                ndig = 0;
+            }
+            if (ndig) {
                 c = ios_getc(F);
                 while (hex_digit(c) && j < ndig && (c != IOS_EOF)) {
                     eseq[j++] = c;
