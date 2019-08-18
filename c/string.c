@@ -3,7 +3,6 @@
 */
 
 #include <sys/types.h>
-#include <sys/time.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -23,7 +22,6 @@
 #include "utf8.h"
 #include "ios.h"
 #include "socket.h"
-#include "timefuncs.h"
 #include "hashing.h"
 #include "htable.h"
 #include "htableh_inc.h"
