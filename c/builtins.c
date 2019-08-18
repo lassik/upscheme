@@ -2,7 +2,6 @@
   Extra femtoLisp builtin functions
 */
 
-#include <sys/time.h>
 #include <sys/types.h>
 
 #include <assert.h>
@@ -20,8 +19,6 @@
 #include "utils.h"
 #include "utf8.h"
 #include "ios.h"
-#include "socket.h"
-#include "timefuncs.h"
 #include "hashing.h"
 #include "htable.h"
 #include "htableh_inc.h"
@@ -336,13 +333,6 @@ static value_t fl_vector_alloc(value_t *args, uint32_t nargs)
     return v;
 }
 
-static value_t fl_time_now(value_t *args, uint32_t nargs)
-{
-    argcount("time.now", nargs, 0);
-    (void)args;
-    return mk_double(clock_now());
-}
-
 static double todouble(value_t a, char *fname)
 {
     if (isfixnum(a))
@@ -519,8 +509,6 @@ static struct builtinspec builtin_info[] = {
     { "length", fl_length },
 
     { "vector.alloc", fl_vector_alloc },
-
-    { "time.now", fl_time_now },
 
     { "rand", fl_rand },
     { "rand.uint32", fl_rand32 },

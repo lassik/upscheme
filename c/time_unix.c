@@ -28,14 +28,6 @@ uint64_t i64time(void)
     return a;
 }
 
-double clock_now(void)
-{
-    struct timeval now;
-
-    gettimeofday(&now, NULL);
-    return tv2float(&now);
-}
-
 void sleep_ms(int ms)
 {
     struct timeval timeout;
@@ -56,24 +48,4 @@ void timeparts(int32_t *buf, double t)
     localtime_r(&tme, &tm);
     tm.tm_year += 1900;
     memcpy(buf, (char *)&tm, sizeof(struct tm));
-}
-
-double parsetime(const char *str)
-{
-    char *fmt = "%c"; /* needed to suppress GCC warning */
-    char *res;
-    time_t t;
-    struct tm tm;
-
-    res = strptime(str, fmt, &tm);
-    if (res != NULL) {
-        tm.tm_isdst =
-        -1; /* Not set by strptime(); tells mktime() to determine
-              whether daylight saving time is in effect */
-        t = mktime(&tm);
-        if (t == ((time_t)-1))
-            return -1;
-        return (double)t;
-    }
-    return -1;
 }

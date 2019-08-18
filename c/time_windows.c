@@ -10,14 +10,6 @@ double tvals2float(struct tm *t, struct timeb *tstruct)
 }
 #endif
 
-double floattime(void)
-{
-    struct timeb tstruct;
-
-    ftime(&tstruct);
-    return (double)tstruct.time + (double)tstruct.millitm / 1.0e3;
-}
-
 uint64_t i64time(void)
 {
     uint64_t a;
@@ -27,8 +19,6 @@ uint64_t i64time(void)
     a = (((uint64_t)tstruct.time) << 32) + (uint64_t)tstruct.millitm;
     return a;
 }
-
-double clock_now(void) { return floattime(); }
 
 void sleep_ms(int ms)
 {
