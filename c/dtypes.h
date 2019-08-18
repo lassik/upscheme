@@ -16,6 +16,11 @@
 #undef BITS32   // TODO
 #define BITS64  // TODO
 
+#ifdef __WATCOMC__
+typedef float float_t;
+typedef double double_t;
+#endif
+
 #ifdef __GNUC__
 #define EXTERN_NORETURN(ret, args) extern ret args __attribute__((__noreturn__))
 #define STATIC_NORETURN(ret, args) static ret args __attribute__((__noreturn__))
