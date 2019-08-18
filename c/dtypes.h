@@ -13,12 +13,21 @@
   We assume the LP64 convention for 64-bit platforms.
 */
 
-#undef BITS32   // TODO
-#define BITS64  // TODO
+#undef BITS32
+#undef BITS64
 
 #ifdef __WATCOMC__
 typedef float float_t;
 typedef double double_t;
+#define __ORDER_BIG_ENDIAN__ 4321
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define BITS32
+#endif
+
+#ifndef __WATCOMC__
+#define BITS64
+#endif
 #endif
 
 #ifdef __GNUC__
