@@ -16,7 +16,6 @@
 #include <malloc.h>
 #include <io.h>
 #include <fcntl.h>
-#define fileno _fileno
 #else
 #include <unistd.h>
 #include <sys/time.h>
