@@ -107,13 +107,17 @@ static int ntz(uint32_t x)
 // returns n if no set bits.
 uint32_t bitvector_next(uint32_t *b, uint64_t n0, uint64_t n)
 {
+    uint32_t i;
+    uint32_t nb;
+    uint32_t nw;
+    uint32_t w;
+
     if (n0 >= n)
         return n;
 
-    uint32_t i = n0 >> 5;
-    uint32_t nb = n0 & 31;
-    uint32_t nw = (n + 31) >> 5;
-    uint32_t w;
+    i = n0 >> 5;
+    nb = n0 & 31;
+    nw = (n + 31) >> 5;
 
     if (i < nw - 1 || (n & 31) == 0)
         w = b[i] >> nb;
