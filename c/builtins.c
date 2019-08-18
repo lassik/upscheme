@@ -2,7 +2,6 @@
   Extra femtoLisp builtin functions
 */
 
-#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -346,17 +345,11 @@ static value_t fl_path_cwd(value_t *args, uint32_t nargs)
     return FL_T;
 }
 
-#ifdef _WIN32
-#define stat _stat
-#endif
 static value_t fl_path_exists(value_t *args, uint32_t nargs)
 {
     argcount("path.exists?", nargs, 1);
     char *str = tostring(args[0], "path.exists?");
-    struct stat sbuf;
-    if (stat(str, &sbuf) == -1)
-        return FL_F;
-    return FL_T;
+    return os_path_exists(str) ? FL_T : FL_F;
 }
 
 static value_t fl_os_getenv(value_t *args, uint32_t nargs)

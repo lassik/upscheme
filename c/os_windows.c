@@ -31,3 +31,13 @@ char *get_exename(char *buf, size_t size)
         return NULL;
     return buf;
 }
+
+int os_path_exists(const char *path)
+{
+    struct stat st;
+
+    if (_stat(path, &st) == -1) {
+        return FL_F;
+    }
+    return FL_T;
+}

@@ -1,5 +1,7 @@
 #include <sys/types.h>
 
+#include <sys/stat.h>
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -98,4 +100,14 @@ value_t builtin_user_real_uid(value_t *args, uint32_t nargs)
     (void)args;
     argcount("user-real-uid", nargs, 0);
     return fixnum(getuid());
+}
+
+int os_path_exists(const char *path)
+{
+    struct stat st;
+
+    if (stat(path, &st) == -1) {
+        return FL_F;
+    }
+    return FL_T;
 }
