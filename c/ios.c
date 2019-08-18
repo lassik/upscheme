@@ -62,11 +62,21 @@ static void _fd_poll(long fd, int forwrite)
 }
 #endif
 
+#ifdef _WIN32
+static int _enonfatal(int err)
+{
+    (void)err;
+    return 0;
+}
+#endif
+
+#ifndef _WIN32
 static int _enonfatal(int err)
 {
     return (err == EAGAIN || err == EINPROGRESS || err == EINTR ||
             err == EWOULDBLOCK);
 }
+#endif
 
 #define SLEEP_TIME 5  // ms
 
