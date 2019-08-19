@@ -28,7 +28,6 @@ typedef double double_t;
 #ifndef __WATCOMC__
 #define BITS64
 #endif
-#endif
 
 #ifdef __GNUC__
 #define EXTERN_NORETURN(ret, args) extern ret args __attribute__((__noreturn__))
