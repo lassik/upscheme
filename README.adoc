@@ -13,11 +13,11 @@ system C compiler. 64-bit executable only; 32-bit coming soon.
 * Windows (wcc)
 * MacOS (clang)
 * Linux
-  * Debian Linux (gcc)
-  * Alpine Linux (gcc)
-  * Void Linux (gcc)
+  ** Debian Linux (gcc)
+  ** Alpine Linux (gcc)
+  ** Void Linux (gcc)
 * BSD
-  * FreeBSD (clang)
-  * OpenBSD (clang)
-  * NetBSD (gcc)
-  * DragonFly BSD (gcc)
+  ** FreeBSD (clang)
+  ** OpenBSD (clang)
+  ** NetBSD (gcc)
+  ** DragonFly BSD (gcc)
