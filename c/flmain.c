@@ -42,20 +42,22 @@ static value_t argv_list(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     fl_init(512 * 1024);
-    FL_TRY_EXTERN
     {
-        if (fl_load_boot_image())
-            return 1;
+        FL_TRY_EXTERN
+        {
+            if (fl_load_boot_image())
+                return 1;
 
-        (void)fl_applyn(1, symbol_value(symbol("__start")),
-                        argv_list(argc, argv));
-    }
-    FL_CATCH_EXTERN
-    {
-        ios_puts("fatal error:\n", ios_stderr);
-        fl_print(ios_stderr, fl_lasterror);
-        ios_putc('\n', ios_stderr);
-        return 1;
+            (void)fl_applyn(1, symbol_value(symbol("__start")),
+                            argv_list(argc, argv));
+        }
+        FL_CATCH_EXTERN
+        {
+            ios_puts("fatal error:\n", ios_stderr);
+            fl_print(ios_stderr, fl_lasterror);
+            ios_putc('\n', ios_stderr);
+            return 1;
+        }
     }
     return 0;
 }
