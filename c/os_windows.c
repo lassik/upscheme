@@ -137,3 +137,10 @@ void os_setenv(const char *name, const char *value)
         }
     }
 }
+
+value_t builtin_spawn(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    (void)nargs;
+    return FL_F;
+}
