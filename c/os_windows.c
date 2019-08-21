@@ -2,6 +2,8 @@
 
 #include <sys/stat.h>
 
+#include <windows.h>
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -13,13 +15,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "dtypes.h"
 #include "utils.h"
 #include "utf8.h"
 #include "ios.h"
-#include "socket.h"
 #include "timefuncs.h"
 #include "hashing.h"
 #include "htable.h"
