@@ -5,4 +5,19 @@ Small scripting Scheme emphasizing portability and stability.
 Based on the excellent https://github.com/JeffBezanson/femtolisp/[FemtoLisp]
 interpreter by Jeff Bezanson.
 
-More info soon.
+== Platforms
+
+Builds in seconds with no warnings and no external dependencies using only the
+system C compiler. 64-bit executable only; 32-bit coming soon.
+
+* Windows (wcc)
+* MacOS (clang)
+* Linux
+  * Debian Linux (gcc)
+  * Alpine Linux (gcc)
+  * Void Linux (gcc)
+* BSD
+  * FreeBSD (clang)
+  * OpenBSD (clang)
+  * NetBSD (gcc)
+  * DragonFly BSD (gcc)
