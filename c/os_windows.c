@@ -66,6 +66,57 @@ char *get_exename(char *buf, size_t size)
     return buf;
 }
 
+value_t builtin_pid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("pid", nargs, 0);
+    return fixnum(GetCurrentProcessId());
+}
+
+value_t builtin_parent_pid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("parent-pid", nargs, 0);
+    // TODO: OpenProcess() to prevent parent pid from being reused if parent
+    // dies
+    return FL_F;
+}
+
+value_t builtin_process_group(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("process-group", nargs, 0);
+    return FL_F;
+}
+
+value_t builtin_user_effective_gid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("user-effective-gid", nargs, 0);
+    return FL_F;
+}
+
+value_t builtin_user_effective_uid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("user-effective-uid", nargs, 0);
+    return FL_F;
+}
+
+value_t builtin_user_real_gid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("user-real-gid", nargs, 0);
+    return FL_F;
+}
+
+value_t builtin_user_real_uid(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("user-real-uid", nargs, 0);
+    return FL_F;
+}
+
 int os_path_exists(const char *path)
 {
     struct stat st;
