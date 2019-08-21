@@ -391,21 +391,17 @@ static value_t fl_os_getenv(value_t *args, uint32_t nargs)
 
 static value_t fl_os_setenv(value_t *args, uint32_t nargs)
 {
-    char *name;
-    char *val;
-    int result;
+    const char *name;
+    const char *value;
 
     argcount("os.setenv", nargs, 2);
     name = tostring(args[0], "os.setenv");
     if (args[1] == FL_F) {
-        unsetenv(name);
+        value = 0;
     } else {
-        val = tostring(args[1], "os.setenv");
-        result = setenv(name, val, 1);
-        if (result != 0) {
-            lerror(ArgError, "os.setenv: invalid environment variable");
-        }
+        value = tostring(args[1], "os.setenv");
     }
+    os_setenv(name, value);
     return FL_T;
 }
 

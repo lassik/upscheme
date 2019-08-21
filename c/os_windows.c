@@ -32,6 +32,8 @@
 #include "flisp.h"
 
 #include "error.h"
+
+#include "argcount.h"
 #include "os.h"
 
 void path_to_dirname(char *path)
@@ -72,4 +74,15 @@ int os_path_exists(const char *path)
         return FL_F;
     }
     return FL_T;
+}
+
+void os_setenv(const char *name, const char *value)
+{
+    if (!SetEnvironmentVariable(name, value)) {
+        if (value) {
+            lerror(ArgError, "os.setenv: cannot set environment variable");
+        } else {
+            lerror(ArgError, "os.setenv: cannot unset environment variable");
+        }
+    }
 }

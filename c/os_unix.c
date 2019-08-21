@@ -113,3 +113,16 @@ int os_path_exists(const char *path)
     }
     return FL_T;
 }
+
+void os_setenv(const char *name, const char *value)
+{
+    if (value) {
+        if (setenv(name, value, 1) != 0) {
+            lerror(ArgError, "os.setenv: cannot set environment variable");
+        }
+    } else {
+        if (unsetenv(name) != 0) {
+            lerror(ArgError, "os.setenv: cannot unset environment variable");
+        }
+    }
+}
