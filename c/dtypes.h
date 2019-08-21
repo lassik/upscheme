@@ -29,22 +29,6 @@ typedef double double_t;
 #define BITS64
 #endif
 
-#ifdef __GNUC__
-#define EXTERN_NORETURN(ret, args) extern ret args __attribute__((__noreturn__))
-#define STATIC_NORETURN(ret, args) static ret args __attribute__((__noreturn__))
-#endif
-
-#ifdef _MSC_VER
-#define EXTERN_NORETURN(ret, args) __declspec(noreturn) extern ret args
-#define STATIC_NORETURN(ret, args) __declspec(noreturn) static ret args
-#endif
-
-#ifdef __WATCOMC__
-#pragma aux noreturn aborts;
-#define EXTERN_NORETURN(ret, args) extern ret __pragma("noreturn") args
-#define STATIC_NORETURN(ret, args) static ret __pragma("noreturn") args
-#endif
-
 #define LLT_ALLOC(n) malloc(n)
 #define LLT_REALLOC(p, n) realloc((p), (n))
 #define LLT_FREE(x) free(x)

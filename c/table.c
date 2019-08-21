@@ -25,6 +25,8 @@
 
 #include "flisp.h"
 
+#include "error.h"
+
 #include "argcount.h"
 #include "equalhash.h"
 

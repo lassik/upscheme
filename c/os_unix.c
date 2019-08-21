@@ -31,6 +31,8 @@
 
 #include "flisp.h"
 
+#include "error.h"
+
 #include "argcount.h"
 #include "os.h"
 

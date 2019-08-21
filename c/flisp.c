@@ -63,6 +63,8 @@
 
 #include "flisp.h"
 
+#include "error.h"
+
 #include "argcount.h"
 #include "env.h"
 #include "opcodes.h"
@@ -246,6 +248,8 @@ void bounds_error(char *fname, value_t arr, value_t ind)
 {
     fl_raise(fl_listn(4, BoundsError, symbol(fname), arr, ind));
 }
+
+void DivideByZeroError(void) { lerror(DivideError, "/: division by zero"); }
 
 // safe cast operators
 // --------------------------------------------------------

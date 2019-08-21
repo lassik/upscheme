@@ -32,6 +32,8 @@
 
 #include "flisp.h"
 
+#include "error.h"
+
 #include "argcount.h"
 
 static const struct utsname *get_global_uname(void)

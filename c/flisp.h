@@ -190,13 +190,8 @@ extern value_t fl_lasterror;
 #define FL_CATCH_EXTERN \
     else for (l__ca = 1; l__ca; l__ca = 0, fl_restorestate(&_ctx))
 
-EXTERN_NORETURN(void, lerrorf(value_t e, char *format, ...));
-EXTERN_NORETURN(void, lerror(value_t e, const char *msg));
 void fl_savestate(struct fl_exception_context *_ctx);
 void fl_restorestate(struct fl_exception_context *_ctx);
-EXTERN_NORETURN(void, fl_raise(value_t e));
-EXTERN_NORETURN(void, type_error(char *fname, char *expected, value_t got));
-EXTERN_NORETURN(void, bounds_error(char *fname, value_t arr, value_t ind));
 extern value_t ArgError, IOError, KeyError, MemoryError, EnumerationError;
 extern value_t UnboundError;
 

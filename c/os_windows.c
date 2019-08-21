@@ -31,6 +31,7 @@
 
 #include "flisp.h"
 
+#include "error.h"
 #include "os.h"
 
 void path_to_dirname(char *path)

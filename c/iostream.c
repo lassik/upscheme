@@ -25,6 +25,8 @@
 
 #include "flisp.h"
 
+#include "error.h"
+
 #include "argcount.h"
 
 static value_t iostreamsym, rdsym, wrsym, apsym, crsym, truncsym;

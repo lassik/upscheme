@@ -1363,13 +1363,6 @@ int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname)
     return 1;
 }
 
-STATIC_NORETURN(void, DivideByZeroError());
-
-static void DivideByZeroError(void)
-{
-    lerror(DivideError, "/: division by zero");
-}
-
 static value_t fl_div2(value_t a, value_t b)
 {
     double da, db;

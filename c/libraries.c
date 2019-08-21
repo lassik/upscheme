@@ -37,6 +37,7 @@
 
 #include "buf.h"
 #include "env.h"
+#include "error.h"
 #include "opcodes.h"
 
 #include "builtins.h"
