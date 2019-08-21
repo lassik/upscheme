@@ -13,6 +13,7 @@ system C compiler. 64-bit executable only; 32-bit coming soon.
 * Windows (wcc)
 * MacOS (clang)
 * Linux
+  ** Docker container (from scratch)
   ** Debian Linux (gcc)
   ** Alpine Linux (gcc)
   ** Void Linux (gcc)
