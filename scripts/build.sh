@@ -71,7 +71,7 @@ esac
 CC="${CC:-$default_cc}"
 CFLAGS="${CFLAGS:-$default_cflags}"
 LFLAGS="${LFLAGS:-$default_lflags}"
-builddir="build-$os-$(uname -m | tr A-Z- a-z_)"
+builddir="build-$os-$(uname -m | tr A-Z- a-z_)-$(basename "$CC")"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
 set -x
