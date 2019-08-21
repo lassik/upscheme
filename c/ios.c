@@ -992,43 +992,46 @@ char *ios_readline(struct ios *s)
     return ios_takebuf(&dest, &n);
 }
 
-int vasprintf(char **strp, const char *fmt, va_list ap);
-
 int ios_vprintf(struct ios *s, const char *format, va_list args)
 {
     char *str;
-    int c;
     va_list al;
     size_t avail;
+    int len;
     char *start;
 
-    str = NULL;
     va_copy(al, args);
     if (s->state == bst_wr && s->bpos < s->maxsize && s->bm != bm_none) {
         avail = s->maxsize - s->bpos;
         start = s->buf + s->bpos;
-        c = vsnprintf(start, avail, format, args);
-        if (c < 0) {
-            va_end(al);
-            return c;
+        len = vsnprintf(start, avail, format, args);
+        if (len < 0) {
+            goto done;
         }
-        if (avail > (size_t)c) {
-            s->bpos += (size_t)c;
+        if (avail > (size_t)len) {
+            s->bpos += (size_t)len;
             _write_update_pos(s);
             // TODO: only works right if newline is at end
-            if (s->bm == bm_line && our_memrchr(start, '\n', (size_t)c))
+            if (s->bm == bm_line && our_memrchr(start, '\n', (size_t)len)) {
                 ios_flush(s);
-            va_end(al);
-            return c;
+            }
+            goto done;
         }
     }
-    c = vasprintf(&str, format, al);
-    if (c >= 0) {
-        ios_write(s, str, c);
-        LLT_FREE(str);
+    len = vsnprintf(NULL, 0, format, al);
+    if (len <= 0) {
+        len = 0;
+        goto done;
     }
+    if (!(str = calloc(1, len + 1))) {
+        goto done;
+    }
+    len = vsnprintf(str, len, format, al);
+    ios_write(s, str, len);
+    LLT_FREE(str);
+done:
     va_end(al);
-    return c;
+    return len;
 }
 
 int ios_printf(struct ios *s, const char *format, ...)
