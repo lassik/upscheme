@@ -106,10 +106,14 @@ static struct builtin_procedure builtin_procedures[] = {
 };
 
 static struct builtin_library builtin_libraries[] = {
-    { "scheme/base", R7RS_BASE }, { "scheme/char", R7RS_CHAR },
-    { "scheme/cxr", R7RS_CXR },   { "scheme/file", R7RS_FILE },
-    { "srfi/13", SRFI_13 },       { "srfi/170", SRFI_170 },
-    { "upscheme/2019", UP_2019 }, { 0, 0 },
+    { "scheme/base", R7RS_BASE },
+    { "scheme/char", R7RS_CHAR },
+    { "scheme/cxr", R7RS_CXR },
+    { "scheme/file", R7RS_FILE },
+    { "srfi/13", SRFI_13 },
+    { "srfi/170", SRFI_170 },
+    { "upscheme/2019/unstable", UP_2019 },
+    { 0, 0 },
 };
 
 static struct builtin_library *builtin_library_by_path(const char *path)
