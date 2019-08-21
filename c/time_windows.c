@@ -1,5 +1,8 @@
 #include <windows.h>
 
+#include <stdint.h>
+#include <time.h>
+
 #include "timefuncs.h"
 
 #if 0
@@ -10,19 +13,11 @@ double tvals2float(struct tm *t, struct timeb *tstruct)
 }
 #endif
 
-uint64_t i64time(void)
-{
-    uint64_t a;
-    struct timeb tstruct;
-
-    ftime(&tstruct);
-    a = (((uint64_t)tstruct.time) << 32) + (uint64_t)tstruct.millitm;
-    return a;
-}
+uint64_t i64time(void) { return 0; }
 
 void sleep_ms(int ms)
 {
-    if (ms == 0) {
+    if (ms < 1) {
         return;
     }
     Sleep(ms);
