@@ -1,6 +1,11 @@
-extern double trunc(double x);
-
-static double fpart(double arg) { return arg - trunc(arg); }
+static double fpart(double arg)
+{
+    if (arg >= 0) {
+        return arg - floor(arg);
+    } else {
+        return arg - ceil(arg);
+    }
+}
 
 // given a number, determine an appropriate type for storing it
 #if 0

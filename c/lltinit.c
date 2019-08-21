@@ -24,6 +24,11 @@ float F_NINF;
 
 int locale_is_utf8;
 
+#ifdef __WATCOMC__
+static float purkka(const char *s, char **dummy) { return strtod(s, dummy); }
+#define strtof purkka
+#endif
+
 void llt_init()
 {
     locale_is_utf8 = u8_is_locale_utf8(setlocale(LC_ALL, ""));
@@ -36,6 +41,7 @@ void llt_init()
     D_NNAN = -strtod("+NaN", NULL);
     D_PINF = strtod("+Inf", NULL);
     D_NINF = strtod("-Inf", NULL);
+
     F_PNAN = strtof("+NaN", NULL);
     F_NNAN = -strtof("+NaN", NULL);
     F_PINF = strtof("+Inf", NULL);
