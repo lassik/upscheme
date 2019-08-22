@@ -1014,7 +1014,7 @@ int ios_printf(struct ios *s, const char *format, ...)
     if (len < 0) {
         len = 0;
     }
-    if (len > (int)sizeof(purkka)) {
+    if (len >= (int)sizeof(purkka)) {
         lerror(MemoryError, "out of memory in ios_printf buffer");
     }
     ios_write(s, purkka, len);
