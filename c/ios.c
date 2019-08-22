@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>  // for printf
@@ -24,10 +26,16 @@
 #include <fcntl.h>
 #endif
 
-#include "utils.h"
-#include "utf8.h"
+#include "htable.h"
+#include "htableh_inc.h"
 #include "ios.h"
+
+#include "flisp.h"
+
+#include "error.h"
 #include "timefuncs.h"
+#include "utf8.h"
+#include "utils.h"
 
 #define MOST_OF(x) ((x) - ((x) >> 4))
 
@@ -993,55 +1001,23 @@ char *ios_readline(struct ios *s)
     return ios_takebuf(&dest, &n);
 }
 
-int ios_vprintf(struct ios *s, const char *format, va_list args)
-{
-    char *str;
-    va_list al;
-    size_t avail;
-    int len;
-    char *start;
-
-    va_copy(al, args);
-    if (s->state == bst_wr && s->bpos < s->maxsize && s->bm != bm_none) {
-        avail = s->maxsize - s->bpos;
-        start = s->buf + s->bpos;
-        len = vsnprintf(start, avail, format, args);
-        if (len < 0) {
-            goto done;
-        }
-        if (avail > (size_t)len) {
-            s->bpos += (size_t)len;
-            _write_update_pos(s);
-            // TODO: only works right if newline is at end
-            if (s->bm == bm_line && our_memrchr(start, '\n', (size_t)len)) {
-                ios_flush(s);
-            }
-            goto done;
-        }
-    }
-    len = vsnprintf(NULL, 0, format, al);
-    if (len <= 0) {
-        len = 0;
-        goto done;
-    }
-    if (!(str = calloc(1, len + 1))) {
-        goto done;
-    }
-    len = vsnprintf(str, len, format, al);
-    ios_write(s, str, len);
-    LLT_FREE(str);
-done:
-    va_end(al);
-    return len;
-}
-
 int ios_printf(struct ios *s, const char *format, ...)
 {
+    static char purkka[4096];
     va_list args;
-    int c;
+    int len;
 
     va_start(args, format);
-    c = ios_vprintf(s, format, args);
+    ios_flush(s);
+    memset(purkka, 0, sizeof(purkka));
+    len = vsnprintf(purkka, sizeof(purkka), format, args);
+    if (len < 0) {
+        len = 0;
+    }
+    if (len > (int)sizeof(purkka)) {
+        lerror(MemoryError, "out of memory in ios_printf buffer");
+    }
+    ios_write(s, purkka, len);
     va_end(args);
-    return c;
+    return len;
 }
