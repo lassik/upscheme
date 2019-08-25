@@ -371,7 +371,7 @@ static void print_pair(struct ios *f, value_t v)
 
 static void cvalue_print(struct ios *f, value_t v);
 
-static int print_circle_prefix(struct ios *f, value_t v)
+static int write_cycle_prefix(struct ios *f, value_t v)
 {
     value_t label;
 
@@ -433,7 +433,7 @@ void fl_print_child(struct ios *f, value_t v)
                 char *data;
                 size_t i, sz;
 
-                if (print_circle_prefix(f, v))
+                if (write_cycle_prefix(f, v))
                     break;
                 fn = (struct function *)ptr(v);
                 outs("#fn(", f);
@@ -469,7 +469,7 @@ void fl_print_child(struct ios *f, value_t v)
     case TAG_CVALUE:
     case TAG_VECTOR:
     case TAG_CONS:
-        if (print_readably && print_circle_prefix(f, v))
+        if (print_readably && write_cycle_prefix(f, v))
             break;
         if (isvector(v)) {
             int newindent, est, sz, i;
