@@ -15,13 +15,11 @@ static fixnum_t print_length;
 // *print-level* -- print only the outermost N levels of nested structures
 static fixnum_t print_level;
 
-// Internals to keep track of circular structures
-static struct htable printconses;
-static uint32_t printlabel;
-
 static fixnum_t cur_line;
 static fixnum_t cur_column = 0;
 static fixnum_t cur_level;
+static uint32_t cycle_used_labels;
+static struct htable cycle_visited_pairs;
 
 static void outc(char c, struct ios *f)
 {
@@ -72,9 +70,9 @@ void print_traverse(value_t v)
 
     while (iscons(v)) {
         if (ismarked(v)) {
-            bp = (value_t *)ptrhash_bp(&printconses, (void *)v);
+            bp = (value_t *)ptrhash_bp(&cycle_visited_pairs, (void *)v);
             if (*bp == (value_t)HT_NOTFOUND)
-                *bp = fixnum(printlabel++);
+                *bp = fixnum(cycle_used_labels++);
             return;
         }
         mark_cons(v);
@@ -84,9 +82,9 @@ void print_traverse(value_t v)
     if (!ismanaged(v) || issymbol(v))
         return;
     if (ismarked(v)) {
-        bp = (value_t *)ptrhash_bp(&printconses, (void *)v);
+        bp = (value_t *)ptrhash_bp(&cycle_visited_pairs, (void *)v);
         if (*bp == (value_t)HT_NOTFOUND)
-            *bp = fixnum(printlabel++);
+            *bp = fixnum(cycle_used_labels++);
         return;
     }
     if (isvector(v)) {
@@ -283,7 +281,7 @@ static void print_pair(struct ios *f, value_t v)
 
     op = NULL;
     if (iscons(cdr_(v)) && cdr_(cdr_(v)) == NIL &&
-        !ptrhash_has(&printconses, (void *)cdr_(v)) &&
+        !ptrhash_has(&cycle_visited_pairs, (void *)cdr_(v)) &&
         (((car_(v) == QUOTE) && (op = "'")) ||
          ((car_(v) == BACKQUOTE) && (op = "`")) ||
          ((car_(v) == COMMA) && (op = ",")) ||
@@ -316,7 +314,7 @@ static void print_pair(struct ios *f, value_t v)
         last_line = cur_line;
         unmark_cons(v);
         fl_print_child(f, car_(v));
-        if (!iscons(cd) || ptrhash_has(&printconses, (void *)cd)) {
+        if (!iscons(cd) || ptrhash_has(&cycle_visited_pairs, (void *)cd)) {
             if (cd != NIL) {
                 outsn(" . ", f, 3);
                 fl_print_child(f, cd);
@@ -377,7 +375,7 @@ static int print_circle_prefix(struct ios *f, value_t v)
 {
     value_t label;
 
-    if ((label = (value_t)ptrhash_get(&printconses, (void *)v)) !=
+    if ((label = (value_t)ptrhash_get(&cycle_visited_pairs, (void *)v)) !=
         (value_t)HT_NOTFOUND) {
         if (!ismarked(v)) {
             cur_column += ios_printf(f, "#%ld#", numval(label));
@@ -892,7 +890,7 @@ void fl_print(struct ios *f, value_t v)
         print_level = -1;
     cur_level = 0;
 
-    printlabel = 0;
+    cycle_used_labels = 0;
     if (print_readably)
         print_traverse(v);
     cur_line = cur_column = 0;
@@ -906,6 +904,6 @@ void fl_print(struct ios *f, value_t v)
 
     if ((iscons(v) || isvector(v) || isfunction(v) || iscvalue(v)) &&
         !fl_isstring(v) && v != FL_T && v != FL_F && v != FL_NIL) {
-        htable_reset(&printconses, 32);
+        htable_reset(&cycle_visited_pairs, 32);
     }
 }

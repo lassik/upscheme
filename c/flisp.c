@@ -2562,7 +2562,7 @@ static void lisp_init(size_t initial_heapsize)
     curheap = fromspace;
     lim = curheap + heapsize - sizeof(struct cons);
     consflags = bitvector_new(heapsize / sizeof(struct cons), 1);
-    htable_new(&printconses, 32);
+    htable_new(&cycle_visited_pairs, 32);
     comparehash_init();
     N_STACK = 262144;
     Stack = malloc(N_STACK * sizeof(value_t));
