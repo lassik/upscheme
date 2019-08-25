@@ -2622,7 +2622,7 @@ static void lisp_init(size_t initial_heapsize)
     Fsym = symbol("F");
     set(printprettysym = symbol("*print-pretty*"), FL_T);
     set(printreadablysym = symbol("*print-readably*"), FL_T);
-    set(printwidthsym = symbol("*print-width*"), fixnum(print_width));
+    set(printwidthsym = symbol("*print-width*"), fixnum(80));
     set(printlengthsym = symbol("*print-length*"), FL_F);
     set(printlevelsym = symbol("*print-level*"), FL_F);
     builtins_table_sym = symbol("*builtins*");
