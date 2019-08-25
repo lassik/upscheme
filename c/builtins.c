@@ -485,6 +485,7 @@ MATH_FUNC_1ARG(atan)
 extern void stringfuncs_init(void);
 extern void table_init(void);
 extern void iostream_init(void);
+extern void print_init(void);
 
 static struct builtinspec builtin_info[] = {
     { "environment", fl_global_env },
@@ -541,4 +542,5 @@ void builtins_init(void)
     stringfuncs_init();
     table_init();
     iostream_init();
+    print_init();
 }

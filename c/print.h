@@ -1,7 +1,11 @@
 extern void *memrchr(const void *s, int c, size_t n);
+extern value_t instrsym;
+extern value_t outstrsym;
 
 struct printer_options {
     int display;      // Use `display` repr instead of `write` repr
+    int newline;      // Write a newline at the end.
+    int shared;       // 0=no cycle detection, 1=minimal cycles, 2=max cycles
     int indent;       // Write indented lines instead of one long line.
     int width;        // maximum line length when indenting, ignored when not
     fixnum_t length;  // truncate lists after N items and write "..."
@@ -391,6 +395,7 @@ void fl_print_child(struct ios *f, value_t v)
 {
     char *name;
 
+    // fprintf(stderr, "fl_print_child\n");
     if (pr.opts.level >= 0 && pr.level >= pr.opts.level &&
         (iscons(v) || isvector(v) || isclosure(v))) {
         outc('#', f);
@@ -862,13 +867,28 @@ void print_with_options(struct ios *f, value_t v,
                         struct printer_options *opts)
 {
     memcpy(&pr.opts, opts, sizeof(pr.opts));
+
+    // TODO
+    if (pr.opts.width < 80)
+        pr.opts.width = 80;
+
+    // TODO
+    pr.opts.level = -1;
+    pr.opts.length = -1;
+
     pr.level = 0;
     pr.cycle_labels = 0;
-    if (!pr.opts.display)
+    if (pr.opts.shared)
         print_traverse(v);
     pr.line = pr.column = 0;
 
     fl_print_child(f, v);
+
+    if (pr.opts.newline) {
+        ios_putc('\n', f);
+        pr.line++;
+        pr.column = 0;
+    }
 
     if (pr.opts.level >= 0 || pr.opts.length >= 0) {
         memset(consflags, 0,
@@ -879,6 +899,30 @@ void print_with_options(struct ios *f, value_t v,
         !fl_isstring(v) && v != FL_T && v != FL_F && v != FL_NIL) {
         htable_reset(&pr.cycle_traversed, 32);
     }
+}
+
+void display_defaults(struct ios *f, value_t v)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.display = 1;
+    opts.shared = 1;
+    opts.length = -1;
+    opts.level = -1;
+    print_with_options(f, v, &opts);
+}
+
+void write_defaults_indent(struct ios *f, value_t v)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.shared = 1;
+    opts.indent = 1;
+    opts.length = -1;
+    opts.level = -1;
+    print_with_options(f, v, &opts);
 }
 
 void fl_print(struct ios *f, value_t v)
@@ -899,9 +943,7 @@ void fl_print(struct ios *f, value_t v)
     if (isfixnum(pl))
         opts.width = numval(pl);
     else
-        opts.width = 80;
-    if (opts.width < 20)
-        opts.width = 20;
+        opts.width = -1;
 
     // *print-length*
     pl = symbol_value(printlengthsym);
@@ -918,4 +960,118 @@ void fl_print(struct ios *f, value_t v)
         opts.level = -1;
 
     print_with_options(f, v, &opts);
+}
+
+static value_t writelike(struct printer_options *opts, const char *proc_name,
+                         value_t *args, uint32_t nargs)
+{
+    value_t val;
+    struct ios *ios;
+
+    if (nargs < 1 || nargs > 2)
+        argcount(proc_name, nargs, 1);
+    val = args[0];
+    if (nargs == 2)
+        ios = fl_toiostream(args[1], proc_name);
+    else
+        ios = fl_toiostream(symbol_value(outstrsym), proc_name);
+    print_with_options(ios, val, opts);
+    return val;
+}
+
+static value_t builtin_display(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.display = 1;
+    opts.shared = 1;
+    return writelike(&opts, "display", args, nargs);
+}
+
+static value_t builtin_displayln(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.display = 1;
+    opts.shared = 1;
+    opts.newline = 1;
+    return writelike(&opts, "displayln", args, nargs);
+}
+
+static value_t builtin_write(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.shared = 1;
+    opts.display = (symbol_value(printreadablysym) == FL_F);
+    return writelike(&opts, "write", args, nargs);
+}
+
+static value_t builtin_writeln(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.shared = 1;
+    opts.newline = 1;
+    return writelike(&opts, "writeln", args, nargs);
+}
+
+static value_t builtin_write_shared(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    opts.shared = 2;
+    return writelike(&opts, "write-shared", args, nargs);
+}
+
+static value_t builtin_write_simple(value_t *args, uint32_t nargs)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    return writelike(&opts, "write-simple", args, nargs);
+}
+
+static value_t builtin_newline(value_t *args, uint32_t nargs)
+{
+    struct ios *ios;
+
+    if (nargs > 1)
+        argcount("newline", nargs, 1);
+    if (nargs == 1)
+        ios = fl_toiostream(args[0], "newline");
+    else
+        ios = fl_toiostream(symbol_value(outstrsym), "newline");
+    ios_putc('\n', ios);
+    return FL_T;
+}
+
+static struct builtinspec printfunc_info[] = {
+    { "display", builtin_display },
+    { "displayln", builtin_displayln },
+    { "write", builtin_write },
+    { "writeln", builtin_writeln },
+    { "write-shared", builtin_write_shared },
+    { "write-simple", builtin_write_simple },
+    { "newline", builtin_newline },
+
+    { "xdisplay", builtin_display },
+    { "xdisplayln", builtin_displayln },
+    { "xwrite", builtin_write },
+    { "xwriteln", builtin_writeln },
+    { "xwrite-shared", builtin_write_shared },
+    { "xwrite-simple", builtin_write_simple },
+    { "xnewline", builtin_newline },
+    { NULL, NULL }
+};
+
+void print_init(void)
+{
+    htable_new(&pr.cycle_traversed, 32);
+    assign_global_builtins(printfunc_info);
 }

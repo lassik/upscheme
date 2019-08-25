@@ -30,7 +30,7 @@
 #include "argcount.h"
 
 static value_t iostreamsym, rdsym, wrsym, apsym, crsym, truncsym;
-static value_t instrsym, outstrsym;
+value_t instrsym, outstrsym;
 struct fltype *iostreamtype;
 
 void print_iostream(value_t v, struct ios *f)
@@ -302,20 +302,6 @@ value_t fl_iopos(value_t *args, uint32_t nargs)
     return size_wrap((size_t)res);
 }
 
-value_t fl_write(value_t *args, uint32_t nargs)
-{
-    struct ios *s;
-
-    if (nargs < 1 || nargs > 2)
-        argcount("write", nargs, 1);
-    if (nargs == 2)
-        s = toiostream(args[1], "write");
-    else
-        s = toiostream(symbol_value(outstrsym), "write");
-    fl_print(s, args[0]);
-    return args[0];
-}
-
 value_t fl_ioread(value_t *args, uint32_t nargs)
 {
     struct fltype *ft;
@@ -530,7 +516,6 @@ static struct builtinspec iostreamfunc_info[] = {
     { "buffer", fl_buffer },
     { "read", fl_read },
     { "read-u8", builtin_read_u8 },
-    { "write", fl_write },
     { "io.flush", fl_ioflush },
     { "io.close", fl_ioclose },
     { "io.eof?", fl_ioeof },

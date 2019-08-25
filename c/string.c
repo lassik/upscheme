@@ -36,6 +36,8 @@
 
 #include "argcount.h"
 
+extern void display_defaults(struct ios *f, value_t v);
+
 value_t fl_stringp(value_t *args, uint32_t nargs)
 {
     argcount("string?", nargs, 1);
@@ -164,20 +166,14 @@ value_t fl_string(value_t *args, uint32_t nargs)
     value_t arg, buf;
     struct ios *s;
     uint32_t i;
-    value_t oldpr, oldpp, outp;
+    value_t outp;
 
     if (nargs == 1 && fl_isstring(args[0]))
         return args[0];
     buf = fl_buffer(NULL, 0);
     fl_gc_handle(&buf);
     s = value2c(struct ios *, buf);
-    oldpr = symbol_value(printreadablysym);
-    oldpp = symbol_value(printprettysym);
-    set(printreadablysym, FL_F);
-    set(printprettysym, FL_F);
-    FOR_ARGS(i, 0, arg, args) { fl_print(s, args[i]); }
-    set(printreadablysym, oldpr);
-    set(printprettysym, oldpp);
+    FOR_ARGS(i, 0, arg, args) { display_defaults(s, args[i]); }
     outp = stream_to_string(&buf);
     fl_free_gc_handles(1);
     return outp;

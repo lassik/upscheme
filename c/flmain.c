@@ -25,6 +25,8 @@
 
 #include "flisp.h"
 
+extern void write_defaults_indent(struct ios *f, value_t v);
+
 static value_t argv_list(int argc, char *argv[])
 {
     int i;
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
         FL_CATCH_EXTERN
         {
             ios_puts("fatal error:\n", ios_stderr);
-            fl_print(ios_stderr, fl_lasterror);
+            write_defaults_indent(ios_stderr, fl_lasterror);
             ios_putc('\n', ios_stderr);
             return 1;
         }

@@ -2562,7 +2562,6 @@ static void lisp_init(size_t initial_heapsize)
     curheap = fromspace;
     lim = curheap + heapsize - sizeof(struct cons);
     consflags = bitvector_new(heapsize / sizeof(struct cons), 1);
-    htable_new(&pr.cycle_traversed, 32);
     comparehash_init();
     N_STACK = 262144;
     Stack = malloc(N_STACK * sizeof(value_t));
@@ -2706,7 +2705,7 @@ int fl_load_boot_image(void)
         FL_CATCH
         {
             ios_puts("fatal error during bootstrap:\n", ios_stderr);
-            fl_print(ios_stderr, fl_lasterror);
+            write_defaults_indent(ios_stderr, fl_lasterror);
             ios_putc('\n', ios_stderr);
             return 1;
         }
