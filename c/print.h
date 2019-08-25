@@ -19,28 +19,29 @@ static fixnum_t print_level;
 static struct htable printconses;
 static uint32_t printlabel;
 
-static fixnum_t P_LEVEL;    // current indent level
-static int HPOS = 0, VPOS;  // current line and column number
+static fixnum_t cur_line;
+static fixnum_t cur_column = 0;
+static fixnum_t cur_level;
 
 static void outc(char c, struct ios *f)
 {
     ios_putc(c, f);
     if (c == '\n')
-        HPOS = 0;
+        cur_column = 0;
     else
-        HPOS++;
+        cur_column++;
 }
 
 static void outs(char *s, struct ios *f)
 {
     ios_puts(s, f);
-    HPOS += u8_strwidth(s);
+    cur_column += u8_strwidth(s);
 }
 
 static void outsn(char *s, struct ios *f, size_t n)
 {
     ios_write(f, s, n);
-    HPOS += u8_strwidth(s);
+    cur_column += u8_strwidth(s);
 }
 
 static int outindent(int n, struct ios *f)
@@ -52,8 +53,8 @@ static int outindent(int n, struct ios *f)
         n = 2;
     n0 = n;
     ios_putc('\n', f);
-    VPOS++;
-    HPOS = n;
+    cur_line++;
+    cur_column = n;
     while (n) {
         ios_putc(' ', f);
         n--;
@@ -276,8 +277,9 @@ static void print_pair(struct ios *f, value_t v)
 {
     value_t cd, head;
     char *op;
-    int startpos, newindent, blk, n_unindented;
-    int lastv, n, si, ind, est, always, nextsmall, thistiny, after2, after3;
+    fixnum_t last_line;
+    int startpos, newindent, blk, n_unindented, n, si, ind, est, always,
+    nextsmall, thistiny, after2, after3;
 
     op = NULL;
     if (iscons(cdr_(v)) && cdr_(cdr_(v)) == NIL &&
@@ -294,9 +296,9 @@ static void print_pair(struct ios *f, value_t v)
         fl_print_child(f, car_(cdr_(v)));
         return;
     }
-    startpos = HPOS;
+    startpos = cur_column;
     outc('(', f);
-    newindent = HPOS;
+    newindent = cur_column;
     blk = blockindent(v);
     n = ind = always = 0;
     if (!blk)
@@ -311,7 +313,7 @@ static void print_pair(struct ios *f, value_t v)
             outsn("...)", f, 4);
             break;
         }
-        lastv = VPOS;
+        last_line = cur_line;
         unmark_cons(v);
         fl_print_child(f, car_(v));
         if (!iscons(cd) || ptrhash_has(&printconses, (void *)cd)) {
@@ -330,22 +332,23 @@ static void print_pair(struct ios *f, value_t v)
             est = lengthestimate(car_(cd));
             nextsmall = smallp(car_(cd));
             thistiny = tinyp(car_(v));
-            ind = (((VPOS > lastv) || (HPOS > print_width / 2 && !nextsmall &&
-                                       !thistiny && n > 0)) ||
+            ind =
+            (((cur_line > last_line) || (cur_column > print_width / 2 &&
+                                         !nextsmall && !thistiny && n > 0)) ||
 
-                   (HPOS > print_width - 4) ||
+             (cur_column > print_width - 4) ||
 
-                   (est != -1 && (HPOS + est > print_width - 2)) ||
+             (est != -1 && (cur_column + est > print_width - 2)) ||
 
-                   ((head == LAMBDA) && !nextsmall) ||
+             ((head == LAMBDA) && !nextsmall) ||
 
-                   (n > 0 && always) ||
+             (n > 0 && always) ||
 
-                   (n == 2 && after3) || (n == 1 && after2) ||
+             (n == 2 && after3) || (n == 1 && after2) ||
 
-                   (n_unindented >= 3 && !nextsmall) ||
+             (n_unindented >= 3 && !nextsmall) ||
 
-                   (n == 0 && !smallp(head)));
+             (n == 0 && !smallp(head)));
         }
 
         if (ind) {
@@ -360,7 +363,7 @@ static void print_pair(struct ios *f, value_t v)
                 if (si != -1)
                     newindent = startpos + si;
                 else if (!blk)
-                    newindent = HPOS;
+                    newindent = cur_column;
             }
         }
         n++;
@@ -377,10 +380,10 @@ static int print_circle_prefix(struct ios *f, value_t v)
     if ((label = (value_t)ptrhash_get(&printconses, (void *)v)) !=
         (value_t)HT_NOTFOUND) {
         if (!ismarked(v)) {
-            HPOS += ios_printf(f, "#%ld#", numval(label));
+            cur_column += ios_printf(f, "#%ld#", numval(label));
             return 1;
         }
-        HPOS += ios_printf(f, "#%ld=", numval(label));
+        cur_column += ios_printf(f, "#%ld=", numval(label));
     }
     if (ismanaged(v))
         unmark_cons(v);
@@ -391,16 +394,16 @@ void fl_print_child(struct ios *f, value_t v)
 {
     char *name;
 
-    if (print_level >= 0 && P_LEVEL >= print_level &&
+    if (print_level >= 0 && cur_level >= print_level &&
         (iscons(v) || isvector(v) || isclosure(v))) {
         outc('#', f);
         return;
     }
-    P_LEVEL++;
+    cur_level++;
     switch (tag(v)) {
     case TAG_NUM:
     case TAG_NUM1:
-        HPOS += ios_printf(f, "%ld", numval(v));
+        cur_column += ios_printf(f, "%ld", numval(v));
         break;
     case TAG_SYM:
         name = symbol_name(v);
@@ -474,7 +477,7 @@ void fl_print_child(struct ios *f, value_t v)
             int newindent, est, sz, i;
 
             outc('[', f);
-            newindent = HPOS;
+            newindent = cur_column;
             sz = vector_size(v);
             for (i = 0; i < sz; i++) {
                 if (print_length >= 0 && i >= print_length && i < sz - 1) {
@@ -487,9 +490,10 @@ void fl_print_child(struct ios *f, value_t v)
                         outc(' ', f);
                     } else {
                         est = lengthestimate(vector_elt(v, i + 1));
-                        if (HPOS > print_width - 4 ||
-                            (est != -1 && (HPOS + est > print_width - 2)) ||
-                            (HPOS > print_width / 2 &&
+                        if (cur_column > print_width - 4 ||
+                            (est != -1 &&
+                             (cur_column + est > print_width - 2)) ||
+                            (cur_column > print_width / 2 &&
                              !smallp(vector_elt(v, i + 1)) &&
                              !tinyp(vector_elt(v, i))))
                             newindent = outindent(newindent, f);
@@ -507,7 +511,7 @@ void fl_print_child(struct ios *f, value_t v)
             print_pair(f, v);
         break;
     }
-    P_LEVEL--;
+    cur_level--;
 }
 
 static void print_string(struct ios *f, char *str, size_t sz)
@@ -642,9 +646,9 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         if (!print_readably)
             outc(ch, f);
         else if (weak)
-            HPOS += ios_printf(f, "#x%hhx", ch);
+            cur_column += ios_printf(f, "#x%hhx", ch);
         else
-            HPOS += ios_printf(f, "#byte(#x%hhx)", ch);
+            cur_column += ios_printf(f, "#byte(#x%hhx)", ch);
     } else if (type == wcharsym) {
         char seq[8];
         uint32_t wc = *(uint32_t *)data;
@@ -684,7 +688,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             else if (iswprint(wc))
                 outs(seq, f);
             else
-                HPOS += ios_printf(f, "x%04x", (int)wc);
+                cur_column += ios_printf(f, "x%04x", (int)wc);
         }
     } else if (type == floatsym || type == doublesym) {
         char buf[64];
@@ -706,7 +710,8 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             else
                 rep = sign_bit(d) ? "-inf.0" : "+inf.0";
             if (type == floatsym && print_readably && !weak)
-                HPOS += ios_printf(f, "#%s(%s)", symbol_name(type), rep);
+                cur_column +=
+                ios_printf(f, "#%s(%s)", symbol_name(type), rep);
             else
                 outs(rep, f);
         } else if (d == 0) {
@@ -734,21 +739,22 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
     ) {
         uint64_t ui64 = *(uint64_t *)data;
         if (weak || !print_readably)
-            HPOS += ios_printf(f, "%llu", ui64);
+            cur_column += ios_printf(f, "%llu", ui64);
         else
-            HPOS += ios_printf(f, "#%s(%llu)", symbol_name(type), ui64);
+            cur_column += ios_printf(f, "#%s(%llu)", symbol_name(type), ui64);
     } else if (issymbol(type)) {
         // handle other integer prims. we know it's smaller than uint64
         // at this point, so int64 is big enough to capture everything.
         numerictype_t nt = sym_to_numtype(type);
         if (nt == N_NUMTYPES) {
-            HPOS += ios_printf(f, "#<%s>", symbol_name(type));
+            cur_column += ios_printf(f, "#<%s>", symbol_name(type));
         } else {
             int64_t i64 = conv_to_int64(data, nt);
             if (weak || !print_readably)
-                HPOS += ios_printf(f, "%lld", i64);
+                cur_column += ios_printf(f, "%lld", i64);
             else
-                HPOS += ios_printf(f, "#%s(%lld)", symbol_name(type), i64);
+                cur_column +=
+                ios_printf(f, "#%s(%lld)", symbol_name(type), i64);
         }
     } else if (iscons(type)) {
         if (car_(type) == arraysym) {
@@ -770,9 +776,9 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                     /*
                     char *nl = memrchr(data, '\n', len);
                     if (nl)
-                        HPOS = u8_strwidth(nl+1);
+                        cur_column = u8_strwidth(nl+1);
                     else
-                        HPOS += u8_strwidth(data);
+                        cur_column += u8_strwidth(data);
                     */
                 } else {
                     print_string(f, (char *)data, len);
@@ -834,7 +840,7 @@ static void cvalue_print(struct ios *f, value_t v)
         void *fptr = *(void **)data;
         label = (value_t)ptrhash_get(&reverse_dlsym_lookup_table, cv);
         if (label == (value_t)HT_NOTFOUND) {
-            HPOS +=
+            cur_column +=
             ios_printf(f, "#<builtin @#x%08zx>", (size_t)(builtin_t)fptr);
         } else {
             if (!print_readably) {
@@ -884,12 +890,12 @@ void fl_print(struct ios *f, value_t v)
         print_level = numval(pl);
     else
         print_level = -1;
-    P_LEVEL = 0;
+    cur_level = 0;
 
     printlabel = 0;
     if (print_readably)
         print_traverse(v);
-    HPOS = VPOS = 0;
+    cur_line = cur_column = 0;
 
     fl_print_child(f, v);
 
