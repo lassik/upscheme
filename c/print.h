@@ -7,7 +7,7 @@ static int print_readably;
 static int print_pretty;
 
 // *print-width* -- maximum line length when indenting, ignored when not
-static int print_width = 80;
+static int print_width;
 
 // *print-length* -- truncate lists after N items and write "..."
 static fixnum_t print_length;
@@ -859,23 +859,11 @@ static void cvalue_print(struct ios *f, value_t v)
     }
 }
 
-static void set_print_width(void)
-{
-    value_t pw;
-
-    pw = symbol_value(printwidthsym);
-    if (!isfixnum(pw))
-        return;
-    print_width = numval(pw);
-}
-
 void fl_print(struct ios *f, value_t v)
 {
     value_t pl;
 
     print_pretty = (symbol_value(printprettysym) != FL_F);
-    if (print_pretty)
-        set_print_width();
     print_readably = (symbol_value(printreadablysym) != FL_F);
 
     pl = symbol_value(printlengthsym);
@@ -883,13 +871,22 @@ void fl_print(struct ios *f, value_t v)
         print_length = numval(pl);
     else
         print_length = -1;
+
     pl = symbol_value(printlevelsym);
     if (isfixnum(pl))
         print_level = numval(pl);
     else
         print_level = -1;
-    cur_level = 0;
 
+    pl = symbol_value(printwidthsym);
+    if (isfixnum(pl))
+        print_width = numval(pl);
+    else
+        print_width = 80;
+    if (print_width < 20)
+        print_width = 20;
+
+    cur_level = 0;
     cycle_used_labels = 0;
     if (print_readably)
         print_traverse(v);
