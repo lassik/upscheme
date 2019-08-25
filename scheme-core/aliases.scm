@@ -139,11 +139,6 @@
   ; TODO
   1)
 
-(define get-datum read)
-(define (put-datum port x)
-  (with-bindings ((*print-readably* #t))
-                 (write x port)))
-
 (define (put-u8 port o) (io.write port (uint8 o)))
 (define (put-string port s (start 0) (count #f))
   (let* ((start (string.inc s 0 start))
