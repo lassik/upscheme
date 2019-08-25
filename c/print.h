@@ -1,5 +1,14 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
+// Printer state
+static struct printer {
+    int line;
+    int column;
+    unsigned int level;
+    unsigned int cycle_labels;
+    struct htable cycle_traversed;
+} pr;
+
 // *print-readably* -- use `write` repr instead of `display` repr
 static int print_readably;
 
@@ -15,31 +24,25 @@ static fixnum_t print_length;
 // *print-level* -- print only the outermost N levels of nested structures
 static fixnum_t print_level;
 
-static fixnum_t cur_line;
-static fixnum_t cur_column = 0;
-static fixnum_t cur_level;
-static uint32_t cycle_used_labels;
-static struct htable cycle_visited_pairs;
-
 static void outc(char c, struct ios *f)
 {
     ios_putc(c, f);
     if (c == '\n')
-        cur_column = 0;
+        pr.column = 0;
     else
-        cur_column++;
+        pr.column++;
 }
 
 static void outs(char *s, struct ios *f)
 {
     ios_puts(s, f);
-    cur_column += u8_strwidth(s);
+    pr.column += u8_strwidth(s);
 }
 
 static void outsn(char *s, struct ios *f, size_t n)
 {
     ios_write(f, s, n);
-    cur_column += u8_strwidth(s);
+    pr.column += u8_strwidth(s);
 }
 
 static int outindent(int n, struct ios *f)
@@ -51,8 +54,8 @@ static int outindent(int n, struct ios *f)
         n = 2;
     n0 = n;
     ios_putc('\n', f);
-    cur_line++;
-    cur_column = n;
+    pr.line++;
+    pr.column = n;
     while (n) {
         ios_putc(' ', f);
         n--;
@@ -70,9 +73,9 @@ void print_traverse(value_t v)
 
     while (iscons(v)) {
         if (ismarked(v)) {
-            bp = (value_t *)ptrhash_bp(&cycle_visited_pairs, (void *)v);
+            bp = (value_t *)ptrhash_bp(&pr.cycle_traversed, (void *)v);
             if (*bp == (value_t)HT_NOTFOUND)
-                *bp = fixnum(cycle_used_labels++);
+                *bp = fixnum(pr.cycle_labels++);
             return;
         }
         mark_cons(v);
@@ -82,9 +85,9 @@ void print_traverse(value_t v)
     if (!ismanaged(v) || issymbol(v))
         return;
     if (ismarked(v)) {
-        bp = (value_t *)ptrhash_bp(&cycle_visited_pairs, (void *)v);
+        bp = (value_t *)ptrhash_bp(&pr.cycle_traversed, (void *)v);
         if (*bp == (value_t)HT_NOTFOUND)
-            *bp = fixnum(cycle_used_labels++);
+            *bp = fixnum(pr.cycle_labels++);
         return;
     }
     if (isvector(v)) {
@@ -281,7 +284,7 @@ static void print_pair(struct ios *f, value_t v)
 
     op = NULL;
     if (iscons(cdr_(v)) && cdr_(cdr_(v)) == NIL &&
-        !ptrhash_has(&cycle_visited_pairs, (void *)cdr_(v)) &&
+        !ptrhash_has(&pr.cycle_traversed, (void *)cdr_(v)) &&
         (((car_(v) == QUOTE) && (op = "'")) ||
          ((car_(v) == BACKQUOTE) && (op = "`")) ||
          ((car_(v) == COMMA) && (op = ",")) ||
@@ -294,9 +297,9 @@ static void print_pair(struct ios *f, value_t v)
         fl_print_child(f, car_(cdr_(v)));
         return;
     }
-    startpos = cur_column;
+    startpos = pr.column;
     outc('(', f);
-    newindent = cur_column;
+    newindent = pr.column;
     blk = blockindent(v);
     n = ind = always = 0;
     if (!blk)
@@ -311,10 +314,10 @@ static void print_pair(struct ios *f, value_t v)
             outsn("...)", f, 4);
             break;
         }
-        last_line = cur_line;
+        last_line = pr.line;
         unmark_cons(v);
         fl_print_child(f, car_(v));
-        if (!iscons(cd) || ptrhash_has(&cycle_visited_pairs, (void *)cd)) {
+        if (!iscons(cd) || ptrhash_has(&pr.cycle_traversed, (void *)cd)) {
             if (cd != NIL) {
                 outsn(" . ", f, 3);
                 fl_print_child(f, cd);
@@ -331,12 +334,12 @@ static void print_pair(struct ios *f, value_t v)
             nextsmall = smallp(car_(cd));
             thistiny = tinyp(car_(v));
             ind =
-            (((cur_line > last_line) || (cur_column > print_width / 2 &&
-                                         !nextsmall && !thistiny && n > 0)) ||
+            (((pr.line > last_line) || (pr.column > print_width / 2 &&
+                                        !nextsmall && !thistiny && n > 0)) ||
 
-             (cur_column > print_width - 4) ||
+             (pr.column > print_width - 4) ||
 
-             (est != -1 && (cur_column + est > print_width - 2)) ||
+             (est != -1 && (pr.column + est > print_width - 2)) ||
 
              ((head == LAMBDA) && !nextsmall) ||
 
@@ -361,7 +364,7 @@ static void print_pair(struct ios *f, value_t v)
                 if (si != -1)
                     newindent = startpos + si;
                 else if (!blk)
-                    newindent = cur_column;
+                    newindent = pr.column;
             }
         }
         n++;
@@ -375,13 +378,13 @@ static int write_cycle_prefix(struct ios *f, value_t v)
 {
     value_t label;
 
-    if ((label = (value_t)ptrhash_get(&cycle_visited_pairs, (void *)v)) !=
+    if ((label = (value_t)ptrhash_get(&pr.cycle_traversed, (void *)v)) !=
         (value_t)HT_NOTFOUND) {
         if (!ismarked(v)) {
-            cur_column += ios_printf(f, "#%ld#", numval(label));
+            pr.column += ios_printf(f, "#%ld#", numval(label));
             return 1;
         }
-        cur_column += ios_printf(f, "#%ld=", numval(label));
+        pr.column += ios_printf(f, "#%ld=", numval(label));
     }
     if (ismanaged(v))
         unmark_cons(v);
@@ -392,16 +395,16 @@ void fl_print_child(struct ios *f, value_t v)
 {
     char *name;
 
-    if (print_level >= 0 && cur_level >= print_level &&
+    if (print_level >= 0 && pr.level >= print_level &&
         (iscons(v) || isvector(v) || isclosure(v))) {
         outc('#', f);
         return;
     }
-    cur_level++;
+    pr.level++;
     switch (tag(v)) {
     case TAG_NUM:
     case TAG_NUM1:
-        cur_column += ios_printf(f, "%ld", numval(v));
+        pr.column += ios_printf(f, "%ld", numval(v));
         break;
     case TAG_SYM:
         name = symbol_name(v);
@@ -475,7 +478,7 @@ void fl_print_child(struct ios *f, value_t v)
             int newindent, est, sz, i;
 
             outc('[', f);
-            newindent = cur_column;
+            newindent = pr.column;
             sz = vector_size(v);
             for (i = 0; i < sz; i++) {
                 if (print_length >= 0 && i >= print_length && i < sz - 1) {
@@ -488,10 +491,10 @@ void fl_print_child(struct ios *f, value_t v)
                         outc(' ', f);
                     } else {
                         est = lengthestimate(vector_elt(v, i + 1));
-                        if (cur_column > print_width - 4 ||
+                        if (pr.column > print_width - 4 ||
                             (est != -1 &&
-                             (cur_column + est > print_width - 2)) ||
-                            (cur_column > print_width / 2 &&
+                             (pr.column + est > print_width - 2)) ||
+                            (pr.column > print_width / 2 &&
                              !smallp(vector_elt(v, i + 1)) &&
                              !tinyp(vector_elt(v, i))))
                             newindent = outindent(newindent, f);
@@ -509,7 +512,7 @@ void fl_print_child(struct ios *f, value_t v)
             print_pair(f, v);
         break;
     }
-    cur_level--;
+    pr.level--;
 }
 
 static void print_string(struct ios *f, char *str, size_t sz)
@@ -644,9 +647,9 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         if (!print_readably)
             outc(ch, f);
         else if (weak)
-            cur_column += ios_printf(f, "#x%hhx", ch);
+            pr.column += ios_printf(f, "#x%hhx", ch);
         else
-            cur_column += ios_printf(f, "#byte(#x%hhx)", ch);
+            pr.column += ios_printf(f, "#byte(#x%hhx)", ch);
     } else if (type == wcharsym) {
         char seq[8];
         uint32_t wc = *(uint32_t *)data;
@@ -686,7 +689,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             else if (iswprint(wc))
                 outs(seq, f);
             else
-                cur_column += ios_printf(f, "x%04x", (int)wc);
+                pr.column += ios_printf(f, "x%04x", (int)wc);
         }
     } else if (type == floatsym || type == doublesym) {
         char buf[64];
@@ -708,8 +711,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             else
                 rep = sign_bit(d) ? "-inf.0" : "+inf.0";
             if (type == floatsym && print_readably && !weak)
-                cur_column +=
-                ios_printf(f, "#%s(%s)", symbol_name(type), rep);
+                pr.column += ios_printf(f, "#%s(%s)", symbol_name(type), rep);
             else
                 outs(rep, f);
         } else if (d == 0) {
@@ -737,21 +739,21 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
     ) {
         uint64_t ui64 = *(uint64_t *)data;
         if (weak || !print_readably)
-            cur_column += ios_printf(f, "%llu", ui64);
+            pr.column += ios_printf(f, "%llu", ui64);
         else
-            cur_column += ios_printf(f, "#%s(%llu)", symbol_name(type), ui64);
+            pr.column += ios_printf(f, "#%s(%llu)", symbol_name(type), ui64);
     } else if (issymbol(type)) {
         // handle other integer prims. we know it's smaller than uint64
         // at this point, so int64 is big enough to capture everything.
         numerictype_t nt = sym_to_numtype(type);
         if (nt == N_NUMTYPES) {
-            cur_column += ios_printf(f, "#<%s>", symbol_name(type));
+            pr.column += ios_printf(f, "#<%s>", symbol_name(type));
         } else {
             int64_t i64 = conv_to_int64(data, nt);
             if (weak || !print_readably)
-                cur_column += ios_printf(f, "%lld", i64);
+                pr.column += ios_printf(f, "%lld", i64);
             else
-                cur_column +=
+                pr.column +=
                 ios_printf(f, "#%s(%lld)", symbol_name(type), i64);
         }
     } else if (iscons(type)) {
@@ -774,9 +776,9 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                     /*
                     char *nl = memrchr(data, '\n', len);
                     if (nl)
-                        cur_column = u8_strwidth(nl+1);
+                        pr.column = u8_strwidth(nl+1);
                     else
-                        cur_column += u8_strwidth(data);
+                        pr.column += u8_strwidth(data);
                     */
                 } else {
                     print_string(f, (char *)data, len);
@@ -838,7 +840,7 @@ static void cvalue_print(struct ios *f, value_t v)
         void *fptr = *(void **)data;
         label = (value_t)ptrhash_get(&reverse_dlsym_lookup_table, cv);
         if (label == (value_t)HT_NOTFOUND) {
-            cur_column +=
+            pr.column +=
             ios_printf(f, "#<builtin @#x%08zx>", (size_t)(builtin_t)fptr);
         } else {
             if (!print_readably) {
@@ -886,11 +888,11 @@ void fl_print(struct ios *f, value_t v)
     if (print_width < 20)
         print_width = 20;
 
-    cur_level = 0;
-    cycle_used_labels = 0;
+    pr.level = 0;
+    pr.cycle_labels = 0;
     if (print_readably)
         print_traverse(v);
-    cur_line = cur_column = 0;
+    pr.line = pr.column = 0;
 
     fl_print_child(f, v);
 
@@ -901,6 +903,6 @@ void fl_print(struct ios *f, value_t v)
 
     if ((iscons(v) || isvector(v) || isfunction(v) || iscvalue(v)) &&
         !fl_isstring(v) && v != FL_T && v != FL_F && v != FL_NIL) {
-        htable_reset(&cycle_visited_pairs, 32);
+        htable_reset(&pr.cycle_traversed, 32);
     }
 }
