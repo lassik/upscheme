@@ -1,12 +1,8 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
 struct printer_options {
-
     int display;  // Use `display` repr instead of `write` repr
-
-    // *print-pretty* -- indent instead of printing everything on one
-    // *long line
-    int pretty;
+    int indent;   // Write indented lines instead of one long line.
 
     // *print-width* -- maximum line length when indenting, ignored when not
     int width;
@@ -332,7 +328,7 @@ static void print_pair(struct ios *f, value_t v)
             break;
         }
 
-        if (!pr.opts.pretty || ((head == LAMBDA) && n == 0)) {
+        if (!pr.opts.indent || ((head == LAMBDA) && n == 0)) {
             // never break line before lambda-list
             ind = 0;
         } else {
@@ -494,7 +490,7 @@ void fl_print_child(struct ios *f, value_t v)
                 }
                 fl_print_child(f, vector_elt(v, i));
                 if (i < sz - 1) {
-                    if (!pr.opts.pretty) {
+                    if (!pr.opts.indent) {
                         outc(' ', f);
                     } else {
                         est = lengthestimate(vector_elt(v, i + 1));
@@ -899,7 +895,8 @@ void fl_print(struct ios *f, value_t v)
     // *print-readably*
     opts.display = (symbol_value(printreadablysym) == FL_F);
 
-    opts.pretty = (symbol_value(printprettysym) != FL_F);
+    // *print-pretty*
+    opts.indent = (symbol_value(printprettysym) != FL_F);
 
     pl = symbol_value(printlengthsym);
     if (isfixnum(pl))
