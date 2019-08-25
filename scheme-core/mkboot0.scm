@@ -13,7 +13,7 @@
     (let next ((E (read in)))
       (if (not (io.eof? in))
           (begin (write (compile-thunk (expand E)) out)
-                 (newline out)
+                 (xnewline out)
                  (next (read in)))))
     (io.close in)
     (io.seek out 0)

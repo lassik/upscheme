@@ -179,18 +179,17 @@
 (define (delete-file name) (void)) ; TODO
 
 (define (display x (port *output-stream*))
-  (with-output-to port (princ x))
-  #t)
+  (xdisplay x port))
 
 (define assertion-violation
   (lambda args
-    (display 'assertion-violation)
-    (newline)
-    (display args)
-    (newline)
+    (xdisplay 'assertion-violation)
+    (xnewline)
+    (xdisplay args)
+    (xnewline)
     (car #f)))
 
-(define pretty-print write)
+(define pretty-print xwrite)
 
 (define (memp proc ls)
   (cond ((null? ls) #f)

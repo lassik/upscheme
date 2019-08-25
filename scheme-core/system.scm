@@ -584,8 +584,8 @@
 (define-macro (assert expr) `(if ,expr #t (raise '(assert-failed ,expr))))
 
 (define traced?
-  (letrec ((sample-traced-lambda (lambda args (begin (write (cons 'x args))
-                                                     (newline)
+  (letrec ((sample-traced-lambda (lambda args (begin (xwrite (cons 'x args))
+                                                     (xnewline)
                                                      (apply #.apply args)))))
     (lambda (f)
       (and (closure? f)
@@ -599,8 +599,8 @@
         (set-top-level-value! sym
                               (eval
                                `(lambda ,args
-                                  (begin (write (cons ',sym ,args))
-                                         (newline)
+                                  (begin (xwrite (cons ',sym ,args))
+                                         (xnewline)
                                          (apply ',func ,args)))))))
   'ok)
 
@@ -615,18 +615,21 @@
     `(let ((,t0 (time.now)))
        (prog1
         ,expr
-        (princ "Elapsed time: " (- (time.now) ,t0) " seconds\n")))))
+        (xdisplay "Elapsed time: ")
+        (xdisplay (- (time.now) ,t0))
+        (xdisplay " seconds")
+        (xnewline)))))
 
 ; text I/O -------------------------------------------------------------------
 
-(define (print . args) (for-each write args))
+(define (print . args)
+  (for-each xwrite args))
+
 (define (princ . args)
-  (with-bindings ((*print-readably* #f))
-                 (for-each write args)))
+  (for-each xdisplay args))
 
 (define (newline (port *output-stream*))
-  (io.write port *linefeed*)
-  #t)
+  (xnewline port))
 
 (define (io.readline s) (io.readuntil s #\linefeed))
 
@@ -747,7 +750,7 @@
 
 (define (print-to-string v)
   (let ((b (buffer)))
-    (write v b)
+    (xwrite v b)
     (io.tostring! b)))
 
 (define (string.join strlist sep)
@@ -924,24 +927,25 @@ Up Scheme
 
 (define (repl)
   (define (prompt)
-    (princ "up> ") (io.flush *output-stream*)
+    (xdisplay "up> ")
+    (io.flush *output-stream*)
     (let ((v (trycatch (read)
                        (lambda (e) (begin (io.discardbuffer *input-stream*)
                                           (raise e))))))
       (and (not (io.eof? *input-stream*))
            (let ((V (load-process v)))
-             (print V)
+             (xwrite V)
              (set! that V)
              #t))))
   (define (reploop)
-    (when (trycatch (and (prompt) (newline))
+    (when (trycatch (and (prompt) (xnewline))
                     (lambda (e)
                       (top-level-exception-handler e)
                       #t))
-          (begin (newline)
+          (begin (xnewline)
                  (reploop))))
   (reploop)
-  (newline))
+  (xnewline))
 
 (define (top-level-exception-handler e)
   (with-output-to *stderr*
@@ -974,10 +978,12 @@ Up Scheme
         (n 0))
     (for-each
      (lambda (f)
-       (princ "#" n " ")
-       (print (cons (fn-name (aref f 0) e)
-                    (cdr (vector->list f))))
-       (newline)
+       (xdisplay "#")
+       (xdisplay n)
+       (xdisplay " ")
+       (xwrite (cons (fn-name (aref f 0) e)
+                     (cdr (vector->list f))))
+       (xnewline)
        (set! n (+ n 1)))
      st)))
 
@@ -985,43 +991,52 @@ Up Scheme
   (cond ((and (pair? e)
               (eq? (car e) 'type-error)
               (length= e 4))
-         (princ "type error: " (cadr e) ": expected " (caddr e) ", got ")
-         (print (cadddr e)))
-
+         (xdisplay "type error: ")
+         (xdisplay (cadr e))
+         (xdisplay ": expected ")
+         (xdisplay (caddr e))
+         (xdisplay ", got ")
+         (xwrite (cadddr e)))
+        
         ((and (pair? e)
               (eq? (car e) 'bounds-error)
               (length= e 4))
-         (princ (cadr e) ": index " (cadddr e) " out of bounds for ")
-         (print (caddr e)))
+         (xdisplay (cadr e))
+         (xdisplay ": index ")
+         (xdisplay (cadddr e))
+         (xdisplay " out of bounds for ")
+         (xwrite (caddr e)))
 
         ((and (pair? e)
               (eq? (car e) 'unbound-error)
               (pair? (cdr e)))
-         (princ "eval: variable " (cadr e) " has no value"))
+         (xdisplay "eval: variable ")
+         (xdisplay (cadr e))
+         (xdisplay " has no value"))
 
         ((and (pair? e)
               (eq? (car e) 'error))
-         (princ "error: ")
-         (apply princ (cdr e)))
+         (xdisplay "error: ")
+         (for-each xdisplay (cdr e)))
 
         ((and (pair? e)
               (eq? (car e) 'load-error))
          (print-exception (caddr e))
-         (princ "in file " (cadr e)))
+         (xdisplay "in file " (cadr e)))
 
         ((and (list? e)
               (length= e 2))
-         (print (car e))
-         (princ ": ")
+         (xwrite (car e))
+         (xdisplay ": ")
          (let ((msg (cadr e)))
            ((if (or (string? msg) (symbol? msg))
-                princ print)
+                xdisplay xwrite)
             msg)))
 
-        (else (princ "*** Unhandled exception: ")
-              (print e)))
+        (else (xdisplay "*** Unhandled exception: ")
+              (xwrite e)))
 
-  (princ *linefeed*))
+  (xdisplay *linefeed*))
 
 (define (simple-sort l)
   (if (or (null? l) (null? (cdr l))) l
@@ -1078,6 +1093,6 @@ Up Scheme
              (__script (cadr argv)))
       (begin (set! *argv* argv)
              (set! *interactive* #t)
-             (princ *banner*)
+             (xdisplay *banner*)
              (repl)))
   (exit 0))
