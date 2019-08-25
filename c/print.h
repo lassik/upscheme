@@ -1,8 +1,8 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
 struct printer_options {
-    // *print-readably* -- use `write` repr instead of `display` repr
-    int readably;
+
+    int display;  // Use `display` repr instead of `write` repr
 
     // *print-pretty* -- indent instead of printing everything on one
     // *long line
@@ -414,7 +414,7 @@ void fl_print_child(struct ios *f, value_t v)
         break;
     case TAG_SYM:
         name = symbol_name(v);
-        if (!pr.opts.readably)
+        if (pr.opts.display)
             outs(name, f);
         else if (ismanaged(v)) {
             outsn("#:", f, 2);
@@ -432,12 +432,12 @@ void fl_print_child(struct ios *f, value_t v)
         } else if (v == FL_EOF) {
             outsn("#<eof>", f, 6);
         } else if (isbuiltin(v)) {
-            if (pr.opts.readably)
+            if (!pr.opts.display)
                 outsn("#.", f, 2);
             outs(builtin_names[uintval(v)], f);
         } else {
             assert(isclosure(v));
-            if (pr.opts.readably) {
+            if (!pr.opts.display) {
                 struct function *fn;
                 char *data;
                 size_t i, sz;
@@ -478,7 +478,7 @@ void fl_print_child(struct ios *f, value_t v)
     case TAG_CVALUE:
     case TAG_VECTOR:
     case TAG_CONS:
-        if (pr.opts.readably && write_cycle_prefix(f, v))
+        if (!pr.opts.display && write_cycle_prefix(f, v))
             break;
         if (isvector(v)) {
             int newindent, est, sz, i;
@@ -651,7 +651,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
 {
     if (type == bytesym) {
         unsigned char ch = *(unsigned char *)data;
-        if (!pr.opts.readably)
+        if (pr.opts.display)
             outc(ch, f);
         else if (weak)
             pr.column += ios_printf(f, "#x%hhx", ch);
@@ -663,7 +663,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
         size_t nb = u8_toutf8(seq, sizeof(seq), &wc, 1);
 
         seq[nb] = '\0';
-        if (!pr.opts.readably) {
+        if (pr.opts.display) {
             // TODO: better multibyte handling
             if (wc == 0)
                 ios_putc(0, f);
@@ -717,7 +717,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                 rep = sign_bit(d) ? "-nan.0" : "+nan.0";
             else
                 rep = sign_bit(d) ? "-inf.0" : "+inf.0";
-            if (type == floatsym && pr.opts.readably && !weak)
+            if (type == floatsym && !pr.opts.display && !weak)
                 pr.column += ios_printf(f, "#%s(%s)", symbol_name(type), rep);
             else
                 outs(rep, f);
@@ -726,7 +726,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                 outsn("-0.0", f, 4);
             else
                 outsn("0.0", f, 3);
-            if (type == floatsym && pr.opts.readably && !weak)
+            if (type == floatsym && !pr.opts.display && !weak)
                 outc('f', f);
         } else {
             int hasdec;
@@ -736,7 +736,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             outs(buf, f);
             if (!hasdec)
                 outsn(".0", f, 2);
-            if (type == floatsym && pr.opts.readably && !weak)
+            if (type == floatsym && !pr.opts.display && !weak)
                 outc('f', f);
         }
     } else if (type == uint64sym
@@ -745,7 +745,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
 #endif
     ) {
         uint64_t ui64 = *(uint64_t *)data;
-        if (weak || !pr.opts.readably)
+        if (weak || pr.opts.display)
             pr.column += ios_printf(f, "%llu", ui64);
         else
             pr.column += ios_printf(f, "#%s(%llu)", symbol_name(type), ui64);
@@ -757,7 +757,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
             pr.column += ios_printf(f, "#<%s>", symbol_name(type));
         } else {
             int64_t i64 = conv_to_int64(data, nt);
-            if (weak || !pr.opts.readably)
+            if (weak || pr.opts.display)
                 pr.column += ios_printf(f, "%lld", i64);
             else
                 pr.column +=
@@ -778,7 +778,7 @@ static void cvalue_printdata(struct ios *f, void *data, size_t len,
                 cnt = elsize ? len / elsize : 0;
             }
             if (eltype == bytesym) {
-                if (!pr.opts.readably) {
+                if (pr.opts.display) {
                     ios_write(f, data, len);
                     /*
                     char *nl = memrchr(data, '\n', len);
@@ -850,7 +850,7 @@ static void cvalue_print(struct ios *f, value_t v)
             pr.column +=
             ios_printf(f, "#<builtin @#x%08zx>", (size_t)(builtin_t)fptr);
         } else {
-            if (!pr.opts.readably) {
+            if (pr.opts.display) {
                 outs(symbol_name(label), f);
             } else {
                 outsn("#fn(", f, 4);
@@ -874,7 +874,7 @@ void print_with_options(struct ios *f, value_t v,
     memcpy(&pr.opts, opts, sizeof(pr.opts));
     pr.level = 0;
     pr.cycle_labels = 0;
-    if (pr.opts.readably)
+    if (!pr.opts.display)
         print_traverse(v);
     pr.line = pr.column = 0;
 
@@ -896,8 +896,10 @@ void fl_print(struct ios *f, value_t v)
     struct printer_options opts;
     value_t pl;
 
+    // *print-readably*
+    opts.display = (symbol_value(printreadablysym) == FL_F);
+
     opts.pretty = (symbol_value(printprettysym) != FL_F);
-    opts.readably = (symbol_value(printreadablysym) != FL_F);
 
     pl = symbol_value(printlengthsym);
     if (isfixnum(pl))
