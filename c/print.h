@@ -1,15 +1,26 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
-static struct htable printconses;
-static uint32_t printlabel;
-static int print_pretty;
+// not *print-readably* -- use `display` repr instead of `write` repr
 static int print_princ;
-static fixnum_t print_length;
-static fixnum_t print_level;
-static fixnum_t P_LEVEL;
+
+// *print-pretty* -- indent instead of printing everything on one long line
+static int print_pretty;
+
+// *print-width* -- maximum line length when indenting, ignored when not
 static int SCR_WIDTH = 80;
 
-static int HPOS = 0, VPOS;
+// *print-length* -- truncate lists after N items and write "..."
+static fixnum_t print_length;
+
+// *print-level* -- print only the outermost N levels of nested structures
+static fixnum_t print_level;
+
+// Internals to keep track of circular structures
+static struct htable printconses;
+static uint32_t printlabel;
+
+static fixnum_t P_LEVEL;    // current indent level
+static int HPOS = 0, VPOS;  // current line and column number
 
 static void outc(char c, struct ios *f)
 {
