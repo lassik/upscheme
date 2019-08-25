@@ -7,7 +7,7 @@ static int print_princ;
 static int print_pretty;
 
 // *print-width* -- maximum line length when indenting, ignored when not
-static int SCR_WIDTH = 80;
+static int print_width = 80;
 
 // *print-length* -- truncate lists after N items and write "..."
 static fixnum_t print_length;
@@ -48,7 +48,7 @@ static int outindent(int n, struct ios *f)
     int n0;
 
     // move back to left margin if we get too indented
-    if (n > SCR_WIDTH - 12)
+    if (n > print_width - 12)
         n = 2;
     n0 = n;
     ios_putc('\n', f);
@@ -330,12 +330,12 @@ static void print_pair(struct ios *f, value_t v)
             est = lengthestimate(car_(cd));
             nextsmall = smallp(car_(cd));
             thistiny = tinyp(car_(v));
-            ind = (((VPOS > lastv) || (HPOS > SCR_WIDTH / 2 && !nextsmall &&
+            ind = (((VPOS > lastv) || (HPOS > print_width / 2 && !nextsmall &&
                                        !thistiny && n > 0)) ||
 
-                   (HPOS > SCR_WIDTH - 4) ||
+                   (HPOS > print_width - 4) ||
 
-                   (est != -1 && (HPOS + est > SCR_WIDTH - 2)) ||
+                   (est != -1 && (HPOS + est > print_width - 2)) ||
 
                    ((head == LAMBDA) && !nextsmall) ||
 
@@ -487,9 +487,9 @@ void fl_print_child(struct ios *f, value_t v)
                         outc(' ', f);
                     } else {
                         est = lengthestimate(vector_elt(v, i + 1));
-                        if (HPOS > SCR_WIDTH - 4 ||
-                            (est != -1 && (HPOS + est > SCR_WIDTH - 2)) ||
-                            (HPOS > SCR_WIDTH / 2 &&
+                        if (HPOS > print_width - 4 ||
+                            (est != -1 && (HPOS + est > print_width - 2)) ||
+                            (HPOS > print_width / 2 &&
                              !smallp(vector_elt(v, i + 1)) &&
                              !tinyp(vector_elt(v, i))))
                             newindent = outindent(newindent, f);
@@ -862,7 +862,7 @@ static void set_print_width(void)
     pw = symbol_value(printwidthsym);
     if (!isfixnum(pw))
         return;
-    SCR_WIDTH = numval(pw);
+    print_width = numval(pw);
 }
 
 void fl_print(struct ios *f, value_t v)
