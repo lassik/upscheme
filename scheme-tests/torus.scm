@@ -37,7 +37,7 @@
         (set! b (cdr b))))
     l))
 
-(time (begin (print (torus 100 100)) ()))
+(time (begin (write (torus 100 100)) ()))
 ;(time (dotimes (i 1) (load "100x100.scm")))
 ; with ltable
 ; printing time: 0.415sec

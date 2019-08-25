@@ -19,7 +19,5 @@
               s))
 
 (for-each (lambda (n)
-            (begin
-              (princ (bin-draw (string.lpad (number->string n 2) 63 #\0)))
-              (newline)))
+            (displayln (bin-draw (string.lpad (number->string n 2) 63 #\0))))
           (nestlist rule30-step (uint64 #x0000000080000000) 32))

@@ -178,18 +178,13 @@
 (define (file-exists? f) (path.exists? f))
 (define (delete-file name) (void)) ; TODO
 
-(define (display x (port *output-stream*))
-  (xdisplay x port))
-
 (define assertion-violation
   (lambda args
-    (xdisplay 'assertion-violation)
-    (xnewline)
-    (xdisplay args)
-    (xnewline)
+    (displayln 'assertion-violation)
+    (displayln args)
     (car #f)))
 
-(define pretty-print xwrite)
+(define pretty-print write)
 
 (define (memp proc ls)
   (cond ((null? ls) #f)

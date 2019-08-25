@@ -1,1 +1,1 @@
-(print *argv*) (princ "\n")
+(writeln *argv*)

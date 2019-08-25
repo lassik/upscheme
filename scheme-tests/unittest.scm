@@ -297,10 +297,10 @@
     (io.tostring! b)))
 
 (let ((c #\a))
-  (assert (equal? (with-output-to-string #f (lambda () (xwrite (list c c))))
+  (assert (equal? (with-output-to-string #f (lambda () (write (list c c))))
                   "(#\\a #\\a)")))
 
 (assert-fail (eval '(set! (car (cons 1 2)) 3)))
 
-(xdisplay "all tests pass\n")
+(display "all tests pass\n")
 #t

@@ -295,14 +295,14 @@ todo:
 
  (let ((x 0))
    (while (< x 10)
-     (begin (print x) (set! x (+ 1 x)))))
+     (begin (write x) (set! x (+ 1 x)))))
  =>
   (let ((x 0))
     (reset
      (let ((l #f))
        (let ((k (shift k (k k))))
          (if (< x 10)
-             (begin (set! l (begin (print x)
+             (begin (set! l (begin (write x)
                                    (set! x (+ 1 x))))
                     (k k))
            l)))))
