@@ -40,16 +40,6 @@ struct ios {
     // again any number of times. usually only true for files and strings.
     unsigned char rereadable : 1;
 
-    // this enables "stenciled writes". you can alternately write and
-    // seek without flushing in between. this performs read-before-write
-    // to populate the buffer, so "rereadable" capability is required.
-    // this is off by default.
-    // unsigned char stenciled:1;
-
-    // request durable writes (fsync)
-    // unsigned char durable:1;
-
-    // todo: mutex
     char local[IOS_INLSIZE];
 };
 
