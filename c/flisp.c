@@ -208,7 +208,7 @@ void fl_raise(value_t e)
     longjmp(thisctx->buf, 1);
 }
 
-static value_t make_error_msg(char *format, va_list args)
+static value_t make_error_msg(const char *format, va_list args)
 {
     char msgbuf[512];
 
@@ -216,7 +216,7 @@ static value_t make_error_msg(char *format, va_list args)
     return string_from_cstr(msgbuf);
 }
 
-void lerrorf(value_t e, char *format, ...)
+void lerrorf(value_t e, const char *format, ...)
 {
     va_list args;
     value_t msg;
@@ -239,12 +239,12 @@ void lerror(value_t e, const char *msg)
     fl_raise(fl_list2(e, m));
 }
 
-void type_error(char *fname, char *expected, value_t got)
+void type_error(const char *fname, const char *expected, value_t got)
 {
     fl_raise(fl_listn(4, TypeError, symbol(fname), symbol(expected), got));
 }
 
-void bounds_error(char *fname, value_t arr, value_t ind)
+void bounds_error(const char *fname, value_t arr, value_t ind)
 {
     fl_raise(fl_listn(4, BoundsError, symbol(fname), arr, ind));
 }

@@ -81,14 +81,14 @@ value_t fl_eof_objectp(value_t *args, uint32_t nargs)
     return (FL_EOF == args[0]) ? FL_T : FL_F;
 }
 
-static struct ios *toiostream(value_t v, char *fname)
+static struct ios *toiostream(value_t v, const char *fname)
 {
     if (!fl_isiostream(v))
         type_error(fname, "iostream", v);
     return value2c(struct ios *, v);
 }
 
-struct ios *fl_toiostream(value_t v, char *fname)
+struct ios *fl_toiostream(value_t v, const char *fname)
 {
     return toiostream(v, fname);
 }

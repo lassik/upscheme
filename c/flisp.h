@@ -335,7 +335,7 @@ int fl_isstring(value_t v);
 int fl_isnumber(value_t v);
 int fl_isgensym(value_t v);
 int fl_isiostream(value_t v);
-struct ios *fl_toiostream(value_t v, char *fname);
+struct ios *fl_toiostream(value_t v, const char *fname);
 value_t cvalue_compare(value_t a, value_t b);
 int numeric_compare(value_t a, value_t b, int eq, int eqnans, char *fname);
 
