@@ -1,17 +1,11 @@
 extern void *memrchr(const void *s, int c, size_t n);
 
 struct printer_options {
-    int display;  // Use `display` repr instead of `write` repr
-    int indent;   // Write indented lines instead of one long line.
-
-    // *print-width* -- maximum line length when indenting, ignored when not
-    int width;
-
-    // *print-length* -- truncate lists after N items and write "..."
-    fixnum_t length;
-
-    // *print-level* -- print only the outermost N levels of nested structures
-    fixnum_t level;
+    int display;      // Use `display` repr instead of `write` repr
+    int indent;       // Write indented lines instead of one long line.
+    int width;        // maximum line length when indenting, ignored when not
+    fixnum_t length;  // truncate lists after N items and write "..."
+    fixnum_t level;   // print only the outermost N levels of nested structure
 };
 
 struct printer {
@@ -892,24 +886,15 @@ void fl_print(struct ios *f, value_t v)
     struct printer_options opts;
     value_t pl;
 
+    memset(&opts, 0, sizeof(opts));
+
     // *print-readably*
     opts.display = (symbol_value(printreadablysym) == FL_F);
 
     // *print-pretty*
     opts.indent = (symbol_value(printprettysym) != FL_F);
 
-    pl = symbol_value(printlengthsym);
-    if (isfixnum(pl))
-        opts.length = numval(pl);
-    else
-        opts.length = -1;
-
-    pl = symbol_value(printlevelsym);
-    if (isfixnum(pl))
-        opts.level = numval(pl);
-    else
-        opts.level = -1;
-
+    // *print-width*
     pl = symbol_value(printwidthsym);
     if (isfixnum(pl))
         opts.width = numval(pl);
@@ -917,6 +902,20 @@ void fl_print(struct ios *f, value_t v)
         opts.width = 80;
     if (opts.width < 20)
         opts.width = 20;
+
+    // *print-length*
+    pl = symbol_value(printlengthsym);
+    if (isfixnum(pl))
+        opts.length = numval(pl);
+    else
+        opts.length = -1;
+
+    // *print-level*
+    pl = symbol_value(printlevelsym);
+    if (isfixnum(pl))
+        opts.level = numval(pl);
+    else
+        opts.level = -1;
 
     print_with_options(f, v, &opts);
 }
