@@ -1059,14 +1059,6 @@ static struct builtinspec printfunc_info[] = {
     { "write-shared", builtin_write_shared },
     { "write-simple", builtin_write_simple },
     { "newline", builtin_newline },
-
-    { "xdisplay", builtin_display },
-    { "xdisplayln", builtin_displayln },
-    { "xwrite", builtin_write },
-    { "xwriteln", builtin_writeln },
-    { "xwrite-shared", builtin_write_shared },
-    { "xwrite-simple", builtin_write_simple },
-    { "xnewline", builtin_newline },
     { NULL, NULL }
 };
 
