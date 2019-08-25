@@ -5,6 +5,9 @@
 
 (define (void) #t)  ; the unspecified value
 
+(define princ #f)
+(define print #f)
+
 (define *builtins*
   (vector
    0 0 0 0 0 0 0 0 0 0 0 0
