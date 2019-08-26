@@ -177,11 +177,11 @@ static char *_buf_realloc(struct ios *s, size_t sz)
         // if we own the buffer we're free to resize it
         // always allocate 1 bigger in case user wants to add a NUL
         // terminator after taking over the buffer
-        temp = LLT_REALLOC(s->buf, sz + 1);
+        temp = realloc(s->buf, sz + 1);
         if (temp == NULL)
             return NULL;
     } else {
-        temp = LLT_ALLOC(sz + 1);
+        temp = malloc(sz + 1);
         if (temp == NULL)
             return NULL;
         s->ownbuf = 1;
@@ -578,7 +578,7 @@ void ios_close(struct ios *s)
         close(s->fd);
     s->fd = -1;
     if (s->buf != NULL && s->ownbuf && s->buf != &s->local[0])
-        LLT_FREE(s->buf);
+        free(s->buf);
     s->buf = NULL;
     s->size = s->maxsize = s->bpos = 0;
 }
@@ -603,7 +603,7 @@ char *ios_takebuf(struct ios *s, size_t *psize)
     ios_flush(s);
 
     if (s->buf == &s->local[0]) {
-        buf = LLT_ALLOC(s->size + 1);
+        buf = malloc(s->size + 1);
         if (buf == NULL)
             return NULL;
         if (s->size)
@@ -636,7 +636,7 @@ int ios_setbuf(struct ios *s, char *buf, size_t size, int own)
     s->size = nvalid;
 
     if (s->buf != NULL && s->ownbuf && s->buf != &s->local[0])
-        LLT_FREE(s->buf);
+        free(s->buf);
     s->buf = buf;
     s->maxsize = size;
     s->ownbuf = own;
@@ -833,14 +833,14 @@ struct ios *ios_stderr = NULL;
 
 void ios_init_stdstreams()
 {
-    ios_stdin = LLT_ALLOC(sizeof(struct ios));
+    ios_stdin = malloc(sizeof(struct ios));
     ios_fd(ios_stdin, STDIN_FILENO, 0, 0);
 
-    ios_stdout = LLT_ALLOC(sizeof(struct ios));
+    ios_stdout = malloc(sizeof(struct ios));
     ios_fd(ios_stdout, STDOUT_FILENO, 0, 0);
     ios_stdout->bm = bm_line;
 
-    ios_stderr = LLT_ALLOC(sizeof(struct ios));
+    ios_stderr = malloc(sizeof(struct ios));
     ios_fd(ios_stderr, STDERR_FILENO, 0, 0);
     ios_stderr->bm = bm_none;
 }

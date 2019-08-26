@@ -54,7 +54,7 @@
         else                                                                 \
             newsz = sz << 2;                                                 \
         /*printf("trying to allocate %d words.\n", newsz); fflush(stdout);*/ \
-        tab = (void **)LLT_ALLOC(newsz * sizeof(void *));                    \
+        tab = (void **)malloc(newsz * sizeof(void *));                       \
         if (tab == NULL)                                                     \
             return NULL;                                                     \
         for (i = 0; i < newsz; i++)                                          \
@@ -67,7 +67,7 @@
             }                                                                \
         }                                                                    \
         if (ol != &h->_space[0])                                             \
-            LLT_FREE(ol);                                                    \
+            free(ol);                                                        \
                                                                              \
         sz = hash_size(h);                                                   \
         maxprobe = max_probe(sz);                                            \

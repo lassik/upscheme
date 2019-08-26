@@ -371,7 +371,7 @@ static value_t *alloc_words(int n)
     value_t *first;
 
     assert(n > 0);
-    n = LLT_ALIGN(n, 2);  // only allocate multiples of 2 words
+    n = ALIGN(n, 2);  // only allocate multiples of 2 words
     if (__unlikely((value_t *)curheap > ((value_t *)lim) + 2 - n)) {
         gc(0);
         while ((value_t *)curheap > ((value_t *)lim) + 2 - n) {
@@ -618,7 +618,7 @@ void gc(int mustgrow)
     // more space to fill next time. if we grew tospace last time,
     // grow the other half of the heap this time to catch up.
     if (grew || ((lim - curheap) < (int)(heapsize / 5)) || mustgrow) {
-        temp = LLT_REALLOC(tospace, heapsize * 2);
+        temp = realloc(tospace, heapsize * 2);
         if (temp == NULL)
             fl_raise(memory_exception_value);
         tospace = temp;
@@ -2535,8 +2535,8 @@ static void lisp_init(size_t initial_heapsize)
 
     heapsize = initial_heapsize;
 
-    fromspace = LLT_ALLOC(heapsize);
-    tospace = LLT_ALLOC(heapsize);
+    fromspace = malloc(heapsize);
+    tospace = malloc(heapsize);
     curheap = fromspace;
     lim = curheap + heapsize - sizeof(struct cons);
     consflags = bitvector_new(heapsize / sizeof(struct cons), 1);

@@ -31,10 +31,6 @@
 #include "scheme_compiler_watcomc.h"
 #endif
 
-#define LLT_ALLOC(n) malloc(n)
-#define LLT_REALLOC(p, n) realloc((p), (n))
-#define LLT_FREE(x) free(x)
-
 #ifdef BITS64
 #define TOP_BIT 0x8000000000000000
 #define NBITS 64
@@ -43,7 +39,7 @@
 #define NBITS 32
 #endif
 
-#define LLT_ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
+#define ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
 
 extern double D_PNAN;
 extern double D_NNAN;

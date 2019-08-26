@@ -25,7 +25,7 @@ struct htable *htable_new(struct htable *h, size_t size)
         size *= 2;  // 2 pointers per key/value pair
         size *= 2;  // aim for 50% occupancy
         h->size = size;
-        h->table = (void **)LLT_ALLOC(size * sizeof(void *));
+        h->table = (void **)malloc(size * sizeof(void *));
     }
     if (h->table == NULL)
         return NULL;
@@ -37,7 +37,7 @@ struct htable *htable_new(struct htable *h, size_t size)
 void htable_free(struct htable *h)
 {
     if (h->table != &h->_space[0])
-        LLT_FREE(h->table);
+        free(h->table);
 }
 
 // empty and reduce size
@@ -48,8 +48,7 @@ void htable_reset(struct htable *h, size_t sz)
     sz = nextipow2(sz);
     if (h->size > sz * 4 && h->size > HT_N_INLINE) {
         size_t newsz = sz * 4;
-        void **newtab =
-        (void **)LLT_REALLOC(h->table, newsz * sizeof(void *));
+        void **newtab = (void **)realloc(h->table, newsz * sizeof(void *));
         if (newtab == NULL)
             return;
         h->size = newsz;

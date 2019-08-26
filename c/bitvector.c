@@ -50,7 +50,7 @@ uint32_t *bitvector_resize(uint32_t *b, uint64_t oldsz, uint64_t newsz,
 {
     uint32_t *p;
     size_t sz = ((newsz + 31) >> 5) * sizeof(uint32_t);
-    p = LLT_REALLOC(b, sz);
+    p = realloc(b, sz);
     if (p == NULL)
         return NULL;
     if (initzero && newsz > oldsz) {
