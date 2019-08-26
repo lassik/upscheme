@@ -292,6 +292,34 @@ value_t builtin_char_downcase(value_t *args, uint32_t nargs)
     return mk_wchar(towlower(*(int32_t *)cp_data(cp)));
 }
 
+value_t string_map_chars(int (*mapfun)(int), char *os)
+{
+    char *ns;
+    value_t nv;
+    size_t n, i;
+
+    n = strlen(os);
+    nv = cvalue_string(n);
+    ns = cv_data((struct cvalue *)ptr(nv));
+    memcpy(ns, os, n);
+    for (i = 0; i < n; i++) {
+        ns[i] = mapfun(ns[i]);
+    }
+    return nv;
+}
+
+value_t builtin_string_upcase(value_t *args, uint32_t nargs)
+{
+    argcount("string-upcase", nargs, 1);
+    return string_map_chars(toupper, tostring(args[0], "string-upcase"));
+}
+
+value_t builtin_string_downcase(value_t *args, uint32_t nargs)
+{
+    argcount("string-downcase", nargs, 1);
+    return string_map_chars(tolower, tostring(args[0], "string-downcase"));
+}
+
 value_t builtin_char_alphabetic(value_t *args, uint32_t nargs)
 {
     struct cprim *cp;
@@ -500,6 +528,9 @@ static struct builtinspec stringfunc_info[] = {
     { "char-upcase", builtin_char_upcase },
     { "char-downcase", builtin_char_downcase },
     { "char-alphabetic?", builtin_char_alphabetic },
+
+    { "string-upcase", builtin_string_upcase },
+    { "string-downcase", builtin_string_downcase },
 
     { "number->string", fl_numbertostring },
     { "string->number", fl_stringtonumber },
