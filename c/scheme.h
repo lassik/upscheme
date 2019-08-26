@@ -18,6 +18,31 @@
 #undef BITS32
 #undef BITS64
 
+typedef uintptr_t value_t;
+typedef uintptr_t ufixnum_t;
+typedef intptr_t fixnum_t;
+#ifdef BITS64
+#define T_FIXNUM T_INT64
+#else
+#define T_FIXNUM T_INT32
+#endif
+
+#ifdef __DMC__
+#include "error_dmc.h"
+#endif
+
+#ifdef __GNUC__
+#include "error_gnuc.h"
+#endif
+
+#ifdef _MSC_VER
+#include "error_msc.h"
+#endif
+
+#ifdef __WATCOMC__
+#include "error_watcomc.h"
+#endif
+
 #ifdef __WATCOMC__
 typedef float float_t;
 typedef double double_t;
@@ -589,15 +614,6 @@ union ieee854_long_double {
 
 //// #include "flisp.h"
 
-typedef uintptr_t value_t;
-typedef uintptr_t ufixnum_t;
-typedef intptr_t fixnum_t;
-#ifdef BITS64
-#define T_FIXNUM T_INT64
-#else
-#define T_FIXNUM T_INT32
-#endif
-
 struct cons {
     value_t car;
     value_t cdr;
@@ -975,24 +991,6 @@ value_t cvalue_wchar(value_t *args, uint32_t nargs);
 void fl_init(size_t initial_heapsize);
 int fl_load_boot_image(void);
 
-//// #include "error.h"
-
-#ifdef __DMC__
-#include "error_dmc.h"
-#endif
-
-#ifdef __GNUC__
-#include "error_gnuc.h"
-#endif
-
-#ifdef _MSC_VER
-#include "error_msc.h"
-#endif
-
-#ifdef __WATCOMC__
-#include "error_watcomc.h"
-#endif
-
 //// #include "buf.h"
 
 struct buf {
@@ -1031,10 +1029,6 @@ const char *env_get_os_name(void);
 
 value_t builtin_environment_stack(value_t *args, uint32_t nargs);
 
-#include "opcodes.h"
-
-#include "htableh_inc.h"
-
 //// #include "libraries.h"
 
 value_t builtin_import(value_t *args, uint32_t nargs);
@@ -1064,3 +1058,7 @@ value_t builtin_color_name_to_rgb24(value_t *args, uint32_t nargs);
 value_t fl_stringp(value_t *args, uint32_t nargs);
 value_t fl_string_reverse(value_t *args, uint32_t nargs);
 value_t fl_string_sub(value_t *args, uint32_t nargs);
+
+#include "opcodes.h"
+
+#include "htableh_inc.h"
