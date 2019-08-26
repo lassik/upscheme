@@ -7,6 +7,9 @@ value_t builtin_user_effective_uid(value_t *args, uint32_t nargs);
 value_t builtin_user_real_gid(value_t *args, uint32_t nargs);
 value_t builtin_user_real_uid(value_t *args, uint32_t nargs);
 
+value_t builtin_term_init(value_t *args, uint32_t nargs);
+value_t builtin_term_exit(value_t *args, uint32_t nargs);
+
 value_t builtin_spawn(value_t *args, uint32_t nargs);
 
 value_t builtin_read_ini_file(value_t *args, uint32_t nargs);

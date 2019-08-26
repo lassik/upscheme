@@ -98,6 +98,9 @@ static struct builtin_procedure builtin_procedures[] = {
     { "user-real-gid", builtin_user_real_gid, SRFI_170 | UP_2019 },
     { "user-real-uid", builtin_user_real_uid, SRFI_170 | UP_2019 },
 
+    { "term-init", builtin_term_init, UP_2019 },
+    { "term-exit", builtin_term_exit, UP_2019 },
+
     { "spawn", builtin_spawn, SRFI_170 | UP_2019 },
 
     { "color-name->rgb24", builtin_color_name_to_rgb24, UP_2019 },

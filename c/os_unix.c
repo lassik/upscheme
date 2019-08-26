@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <termios.h>
 #include <unistd.h>
 
 #include "dtypes.h"
@@ -125,4 +126,37 @@ void os_setenv(const char *name, const char *value)
             lerror(ArgError, "os.setenv: cannot unset environment variable");
         }
     }
+}
+
+// TODO: cleanup
+static struct termios term_mode_orig;
+static struct termios term_mode_raw;
+
+static void term_mode_init(void)
+{
+    static int done;
+
+    if (!done) {
+        done = 1;
+        tcgetattr(0, &term_mode_orig);
+        cfmakeraw(&term_mode_raw);
+    }
+}
+
+value_t builtin_term_init(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("term-init", nargs, 0);
+    term_mode_init();
+    tcsetattr(0, TCSAFLUSH, &term_mode_raw);
+    return FL_T;
+}
+
+value_t builtin_term_exit(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("term-exit", nargs, 0);
+    term_mode_init();
+    tcsetattr(0, TCSAFLUSH, &term_mode_orig);
+    return FL_T;
 }
