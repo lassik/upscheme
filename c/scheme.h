@@ -2,22 +2,18 @@
 // Copyright 2019 Lassi Kortela
 // SPDX-License-Identifier: BSD-3-Clause
 
-//// #include "dtypes.h"
-
-/*
-  This file defines sane integer types for our target platforms. This
-  library only runs on machines with the following characteristics:
-
-  - supports integer word sizes of 8, 16, 32, and 64 bits
-  - uses unsigned and signed 2's complement representations
-  - all pointer types are the same size
-  - there is an integer type with the same size as a pointer
-
-  Some features require:
-  - IEEE 754 single- and double-precision floating point
-
-  We assume the LP64 convention for 64-bit platforms.
-*/
+// This Scheme only runs on machines with the following characteristics:
+//
+// - supports integer word sizes of 8, 16, 32, and 64 bits
+// - uses unsigned and signed 2's complement representations
+// - all pointer types are the same size
+// - there is an integer type with the same size as a pointer
+//
+// Some features require:
+//
+// - IEEE 754 single- and double-precision floating point
+//
+// We assume the LP64 convention for 64-bit platforms.
 
 #undef BITS32
 #undef BITS64
@@ -99,113 +95,113 @@ extern int locale_is_utf8;
 extern int wcwidth(uint32_t);
 #endif
 
-/* is c the start of a utf8 sequence? */
+// is c the start of a utf8 sequence?
 #define isutf(c) (((c)&0xC0) != 0x80)
 
 #define UEOF ((uint32_t)-1)
 
-/* convert UTF-8 data to wide character */
+// convert UTF-8 data to wide character
 size_t u8_toucs(uint32_t *dest, size_t sz, const char *src, size_t srcsz);
 
-/* the opposite conversion */
+// the opposite conversion
 size_t u8_toutf8(char *dest, size_t sz, const uint32_t *src, size_t srcsz);
 
-/* single character to UTF-8, returns # bytes written */
+// single character to UTF-8, returns # bytes written
 size_t u8_wc_toutf8(char *dest, uint32_t ch);
 
-/* character number to byte offset */
+// character number to byte offset
 size_t u8_offset(const char *str, size_t charnum);
 
-/* byte offset to character number */
+// byte offset to character number
 size_t u8_charnum(const char *s, size_t offset);
 
-/* return next character, updating an index variable */
+// return next character, updating an index variable
 uint32_t u8_nextchar(const char *s, size_t *i);
 
-/* next character without NUL character terminator */
+// next character without NUL character terminator
 uint32_t u8_nextmemchar(const char *s, size_t *i);
 
-/* move to next character */
+// move to next character
 void u8_inc(const char *s, size_t *i);
 
-/* move to previous character */
+// move to previous character
 void u8_dec(const char *s, size_t *i);
 
-/* returns length of next utf-8 sequence */
+// returns length of next utf-8 sequence
 size_t u8_seqlen(const char *s);
 
-/* returns the # of bytes needed to encode a certain character */
+// returns the # of bytes needed to encode a certain character
 size_t u8_charlen(uint32_t ch);
 
-/* computes the # of bytes needed to encode a WC string as UTF-8 */
+// computes the # of bytes needed to encode a WC string as UTF-8
 size_t u8_codingsize(uint32_t *wcstr, size_t n);
 
 char read_escape_control_char(char c);
 
-/* assuming src points to the character after a backslash, read an
-   escape sequence, storing the result in dest and returning the number of
-   input characters processed */
+// assuming src points to the character after a backslash, read an
+// escape sequence, storing the result in dest and returning the number of
+// input characters processed
 size_t u8_read_escape_sequence(const char *src, size_t ssz, uint32_t *dest);
 
-/* given a wide character, convert it to an ASCII escape sequence stored in
-   buf, where buf is "sz" bytes. returns the number of characters output.
-   sz must be at least 3. */
+// given a wide character, convert it to an ASCII escape sequence stored in
+// buf, where buf is "sz" bytes. returns the number of characters output.
+// sz must be at least 3.
 int u8_escape_wchar(char *buf, size_t sz, uint32_t ch);
 
-/* convert a string "src" containing escape sequences to UTF-8 */
+// convert a string "src" containing escape sequences to UTF-8
 size_t u8_unescape(char *buf, size_t sz, const char *src);
 
-/* convert UTF-8 "src" to escape sequences.
-
-   sz is buf size in bytes. must be at least 12.
-
-   if escape_quotes is nonzero, quote characters will be escaped.
-
-   if ascii is nonzero, the output is 7-bit ASCII, no UTF-8 survives.
-
-   starts at src[*pi], updates *pi to point to the first unprocessed
-   byte of the input.
-
-   end is one more than the last allowable value of *pi.
-
-   returns number of bytes placed in buf, including a NUL terminator.
-*/
+// convert UTF-8 "src" to escape sequences.
+//
+//   sz is buf size in bytes. must be at least 12.
+//
+//   if escape_quotes is nonzero, quote characters will be escaped.
+//
+//   if ascii is nonzero, the output is 7-bit ASCII, no UTF-8 survives.
+//
+//   starts at src[*pi], updates *pi to point to the first unprocessed
+//   byte of the input.
+//
+//   end is one more than the last allowable value of *pi.
+//
+//   returns number of bytes placed in buf, including a NUL terminator.
+//
 size_t u8_escape(char *buf, size_t sz, const char *src, size_t *pi,
                  size_t end, int escape_quotes, int ascii);
 
-/* utility predicates used by the above */
+// utility predicates used by the above
 int octal_digit(char c);
 int hex_digit(char c);
 
-/* return a pointer to the first occurrence of ch in s, or NULL if not
-   found. character index of found character returned in *charn. */
+// return a pointer to the first occurrence of ch in s, or NULL if not
+// found. character index of found character returned in *charn.
 char *u8_strchr(const char *s, uint32_t ch, size_t *charn);
 
-/* same as the above, but searches a buffer of a given size instead of
-   a NUL-terminated string. */
+// same as the above, but searches a buffer of a given size instead of
+// a NUL-terminated string.
 char *u8_memchr(const char *s, uint32_t ch, size_t sz, size_t *charn);
 
 char *u8_memrchr(const char *s, uint32_t ch, size_t sz);
 
-/* count the number of characters in a UTF-8 string */
+// count the number of characters in a UTF-8 string
 size_t u8_strlen(const char *s);
 
-/* number of columns occupied by a string */
+// number of columns occupied by a string
 size_t u8_strwidth(const char *s);
 
 int u8_is_locale_utf8(const char *locale);
 
-/* printf where the format string and arguments may be in UTF-8.
-   you can avoid this function and just use ordinary printf() if the current
-   locale is UTF-8. */
+// printf where the format string and arguments may be in UTF-8.
+// you can avoid this function and just use ordinary printf() if the current
+// locale is UTF-8.
 size_t u8_vprintf(const char *fmt, va_list ap);
 size_t u8_printf(const char *fmt, ...);
 
-/* determine whether a sequence of bytes is valid UTF-8. length is in bytes */
+// determine whether a sequence of bytes is valid UTF-8. length is in bytes
 int u8_isvalid(const char *str, int length);
 
-/* reverse a UTF-8 string. len is length in bytes. dest and src must both
-   be allocated to at least len+1 bytes. returns 1 for error, 0 otherwise */
+// reverse a UTF-8 string. len is length in bytes. dest and src must both
+// be allocated to at least len+1 bytes. returns 1 for error, 0 otherwise
 int u8_reverse(char *dest, char *src, size_t len);
 
 //// #include "ios.h"
@@ -255,7 +251,7 @@ struct ios {
     char local[IOS_INLSIZE];
 };
 
-/* low-level interface functions */
+// low-level interface functions
 size_t ios_read(struct ios *s, char *dest, size_t n);
 size_t ios_readall(struct ios *s, char *dest, size_t n);
 size_t ios_write(struct ios *s, char *data, size_t n);
@@ -282,7 +278,7 @@ size_t ios_readprep(struct ios *from, size_t n);
 // int struct iosrylock(struct ios *s);
 // int ios_unlock(struct ios *s);
 
-/* stream creation */
+// stream creation
 struct ios *ios_file(struct ios *s, char *fname, int rd, int wr, int create,
                      int trunc);
 struct ios *ios_mem(struct ios *s, size_t initsize);
@@ -295,7 +291,7 @@ extern struct ios *ios_stdout;
 extern struct ios *ios_stderr;
 void ios_init_stdstreams();
 
-/* high-level functions - output */
+// high-level functions - output
 int ios_putnum(struct ios *s, char *data, uint32_t type);
 int ios_putint(struct ios *s, int n);
 int ios_pututf8(struct ios *s, uint32_t wc);
@@ -306,7 +302,7 @@ int ios_vprintf(struct ios *s, const char *format, va_list args);
 void hexdump(struct ios *dest, const char *buffer, size_t len,
              size_t startoffs);
 
-/* high-level stream functions - input */
+// high-level stream functions - input
 int ios_getnum(struct ios *s, char *data, uint32_t type);
 int ios_getutf8(struct ios *s, uint32_t *pwc);
 int ios_peekutf8(struct ios *s, uint32_t *pwc);
@@ -323,7 +319,7 @@ void ios_purge(struct ios *s);
 int ios_nextutf8(struct ios *s);
 int ios_prevutf8(struct ios *s);
 
-/* stdio-style functions */
+// stdio-style functions
 #define IOS_EOF (-1)
 int ios_putc(int c, struct ios *s);
 // wint_t ios_putwc(struct ios *s, wchar_t wc);
@@ -334,75 +330,73 @@ int ios_ungetc(int c, struct ios *s);
 // wint_t ios_ungetwc(struct ios *s, wint_t wc);
 #define ios_puts(str, s) ios_write(s, str, strlen(str))
 
-/*
-  With memory streams, mixed reads and writes are equivalent to performing
-  sequences of *p++, as either an lvalue or rvalue. File streams behave
-  similarly, but other streams might not support this. Using unbuffered
-  mode makes this more predictable.
-
-  Note on "unget" functions:
-  There are two kinds of functions here: those that operate on sized
-  blocks of bytes and those that operate on logical units like "character"
-  or "integer". The "unget" functions only work on logical units. There
-  is no "unget n bytes". You can only do an unget after a matching get.
-  However, data pushed back by an unget is available to all read operations.
-  The reason for this is that unget is defined in terms of its effect on
-  the underlying buffer (namely, it rebuffers data as if it had been
-  buffered but not read yet). IOS reserves the right to perform large block
-  operations directly, bypassing the buffer. In such a case data was
-  never buffered, so "rebuffering" has no meaning (i.e. there is no
-  correspondence between the buffer and the physical stream).
-
-  Single-bit I/O is able to write partial bytes ONLY IF the stream supports
-  seeking. Also, line buffering is not well-defined in the context of
-  single-bit I/O, so it might not do what you expect.
-
-  implementation notes:
-  in order to know where we are in a file, we must ensure the buffer
-  is only populated from the underlying stream starting with p==buf.
-
-  to switch from writing to reading: flush, set p=buf, cnt=0
-  to switch from reading to writing: seek backwards cnt bytes, p=buf, cnt=0
-
-  when writing: buf starts at curr. physical stream pos, p - buf is how
-  many bytes we've written logically. cnt==0
-
-  dirty == (bitpos>0 && state==iost_wr), EXCEPT right after switching from
-  reading to writing, where we might be in the middle of a byte without
-  having changed it.
-
-  to write a bit: if !dirty, read up to maxsize-(p-buf) into buffer, then
-  seek back by the same amount (undo it). write onto those bits. now set
-  the dirty bit. in this state, we can bit-read up to the end of the byte,
-  then formally switch to the read state using flush.
-
-  design points:
-  - data-source independence, including memory streams
-  - expose buffer to user, allow user-owned buffers
-  - allow direct I/O, don't always go through buffer
-  - buffer-internal seeking. makes seeking back 1-2 bytes very fast,
-    and makes it possible for sockets where it otherwise wouldn't be
-  - tries to allow switching between reading and writing
-  - support 64-bit and large files
-  - efficient, low-latency buffering
-  - special support for utf8
-  - type-aware functions with byte-order swapping service
-  - position counter for meaningful data offsets with sockets
-
-  theory of operation:
-
-  the buffer is a view of part of a file/stream. you can seek, read, and
-  write around in it as much as you like, as if it were just a string.
-
-  we keep track of the part of the buffer that's invalid (written to).
-  we remember whether the position of the underlying stream is aligned
-  with the end of the buffer (reading mode) or the beginning (writing mode).
-
-  based on this info, we might have to seek back before doing a flush.
-
-  as optimizations, we do no writing if the buffer isn't "dirty", and we
-  do no reading if the data will only be overwritten.
-*/
+//  With memory streams, mixed reads and writes are equivalent to performing
+//  sequences of *p++, as either an lvalue or rvalue. File streams behave
+//  similarly, but other streams might not support this. Using unbuffered
+//  mode makes this more predictable.
+//
+//  Note on "unget" functions:
+//  There are two kinds of functions here: those that operate on sized
+//  blocks of bytes and those that operate on logical units like "character"
+//  or "integer". The "unget" functions only work on logical units. There
+//  is no "unget n bytes". You can only do an unget after a matching get.
+//  However, data pushed back by an unget is available to all read operations.
+//  The reason for this is that unget is defined in terms of its effect on
+//  the underlying buffer (namely, it rebuffers data as if it had been
+//  buffered but not read yet). IOS reserves the right to perform large block
+//  operations directly, bypassing the buffer. In such a case data was
+//  never buffered, so "rebuffering" has no meaning (i.e. there is no
+//  correspondence between the buffer and the physical stream).
+//
+//  Single-bit I/O is able to write partial bytes ONLY IF the stream supports
+//  seeking. Also, line buffering is not well-defined in the context of
+//  single-bit I/O, so it might not do what you expect.
+//
+//  implementation notes:
+//  in order to know where we are in a file, we must ensure the buffer
+//  is only populated from the underlying stream starting with p==buf.
+//
+//  to switch from writing to reading: flush, set p=buf, cnt=0
+//  to switch from reading to writing: seek backwards cnt bytes, p=buf, cnt=0
+//
+//  when writing: buf starts at curr. physical stream pos, p - buf is how
+//  many bytes we've written logically. cnt==0
+//
+//  dirty == (bitpos>0 && state==iost_wr), EXCEPT right after switching from
+//  reading to writing, where we might be in the middle of a byte without
+//  having changed it.
+//
+//  to write a bit: if !dirty, read up to maxsize-(p-buf) into buffer, then
+//  seek back by the same amount (undo it). write onto those bits. now set
+//  the dirty bit. in this state, we can bit-read up to the end of the byte,
+//  then formally switch to the read state using flush.
+//
+//  design points:
+//  - data-source independence, including memory streams
+//  - expose buffer to user, allow user-owned buffers
+//  - allow direct I/O, don't always go through buffer
+//  - buffer-internal seeking. makes seeking back 1-2 bytes very fast,
+//    and makes it possible for sockets where it otherwise wouldn't be
+//  - tries to allow switching between reading and writing
+//  - support 64-bit and large files
+//  - efficient, low-latency buffering
+//  - special support for utf8
+//  - type-aware functions with byte-order swapping service
+//  - position counter for meaningful data offsets with sockets
+//
+//  theory of operation:
+//
+//  the buffer is a view of part of a file/stream. you can seek, read, and
+//  write around in it as much as you like, as if it were just a string.
+//
+//  we keep track of the part of the buffer that's invalid (written to).
+//  we remember whether the position of the underlying stream is aligned
+//  with the end of the buffer (reading mode) or the beginning (writing mode).
+//
+//  based on this info, we might have to seek back before doing a flush.
+//
+//  as optimizations, we do no writing if the buffer isn't "dirty", and we
+//  do no reading if the data will only be overwritten.
 
 //// #include "socket.h"
 
@@ -725,7 +719,7 @@ extern value_t FL_NIL, FL_T, FL_F, FL_EOF;
 
 #define FL_UNSPECIFIED FL_T
 
-/* read, eval, print main entry points */
+// read, eval, print main entry points
 value_t fl_read_sexpr(value_t f);
 void fl_print(struct ios *f, value_t v);
 value_t fl_toplevel_eval(value_t expr);
@@ -734,7 +728,7 @@ value_t fl_applyn(uint32_t n, value_t f, ...);
 
 extern value_t printprettysym, printreadablysym, printwidthsym;
 
-/* object model manipulation */
+// object model manipulation
 value_t fl_cons(value_t a, value_t b);
 value_t fl_list2(value_t a, value_t b);
 value_t fl_listn(size_t n, ...);
@@ -749,13 +743,13 @@ int equal_lispvalue(value_t a, value_t b);
 uintptr_t hash_lispvalue(value_t a);
 int isnumtok_base(char *tok, value_t *pval, int base);
 
-/* safe casts */
+// safe casts
 struct cons *tocons(value_t v, char *fname);
 struct symbol *tosymbol(value_t v, char *fname);
 fixnum_t tofixnum(value_t v, char *fname);
 char *tostring(value_t v, char *fname);
 
-/* error handling */
+// error handling
 struct fl_readstate {
     struct htable backrefs;
     struct htable gensyms;
@@ -799,7 +793,7 @@ struct cvtable {
     void (*print_traverse)(value_t self);
 };
 
-/* functions needed to implement the value interface (struct cvtable) */
+// functions needed to implement the value interface (struct cvtable)
 typedef enum {
     T_INT8,
     T_UINT8,
@@ -973,7 +967,7 @@ struct builtinspec {
 
 void assign_global_builtins(struct builtinspec *b);
 
-/* builtins */
+// builtins
 value_t fl_hash(value_t *args, uint32_t nargs);
 value_t cvalue_byte(value_t *args, uint32_t nargs);
 value_t cvalue_wchar(value_t *args, uint32_t nargs);
