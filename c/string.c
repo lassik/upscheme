@@ -270,7 +270,7 @@ value_t fl_string_char(value_t *args, uint32_t nargs)
     return mk_wchar(u8_nextchar(s, &i));
 }
 
-value_t fl_char_upcase(value_t *args, uint32_t nargs)
+value_t builtin_char_upcase(value_t *args, uint32_t nargs)
 {
     struct cprim *cp;
 
@@ -280,7 +280,8 @@ value_t fl_char_upcase(value_t *args, uint32_t nargs)
         type_error("char.upcase", "wchar", args[0]);
     return mk_wchar(towupper(*(int32_t *)cp_data(cp)));
 }
-value_t fl_char_downcase(value_t *args, uint32_t nargs)
+
+value_t builtin_char_downcase(value_t *args, uint32_t nargs)
 {
     struct cprim *cp;
 
@@ -291,7 +292,7 @@ value_t fl_char_downcase(value_t *args, uint32_t nargs)
     return mk_wchar(towlower(*(int32_t *)cp_data(cp)));
 }
 
-value_t fl_char_alpha(value_t *args, uint32_t nargs)
+value_t builtin_char_alphabetic(value_t *args, uint32_t nargs)
 {
     struct cprim *cp;
 
@@ -496,9 +497,13 @@ static struct builtinspec stringfunc_info[] = {
     { "string.decode", fl_string_decode },
     { "string.isutf8", fl_string_isutf8 },
 
-    { "char.upcase", fl_char_upcase },
-    { "char.downcase", fl_char_downcase },
-    { "char-alphabetic?", fl_char_alpha },
+    { "char-upcase", builtin_char_upcase },
+    { "char-downcase", builtin_char_downcase },
+    { "char-alphabetic?", builtin_char_alphabetic },
+
+    { "char.upcase", builtin_char_upcase },
+    { "char.downcase", builtin_char_downcase },
+    { "char.alphabetic?", builtin_char_alphabetic },
 
     { "number->string", fl_numbertostring },
     { "string->number", fl_stringtonumber },

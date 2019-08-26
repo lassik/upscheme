@@ -66,8 +66,8 @@
 
 (define (char->integer c) (fixnum c))
 (define (integer->char i) (wchar i))
-(define char-upcase char.upcase)
-(define char-downcase char.downcase)
+;(define char-upcase #f)
+;(define char-downcase #f)
 (define char=? eqv?)
 (define char<? <)
 (define char>? >)
