@@ -9,15 +9,15 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <math.h>
 #include <netdb.h>
+#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "dtypes.h"
-
-#include "socket.h"
+#include "scheme.h"
 
 int mysocket(int domain, int type, int protocol)
 {

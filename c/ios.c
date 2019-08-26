@@ -12,8 +12,6 @@
 #include <string.h>
 #include <wchar.h>
 
-#include "dtypes.h"
-
 #ifdef _WIN32
 #include <malloc.h>
 #include <io.h>
@@ -26,16 +24,7 @@
 #include <fcntl.h>
 #endif
 
-#include "htable.h"
-#include "htableh_inc.h"
-#include "ios.h"
-
-#include "flisp.h"
-
-#include "error.h"
-#include "timefuncs.h"
-#include "utf8.h"
-#include "utils.h"
+#include "scheme.h"
 
 #define MOST_OF(x) ((x) - ((x) >> 4))
 

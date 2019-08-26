@@ -4,14 +4,14 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
+#include <setjmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "dtypes.h"
-#include "htable.h"
-#include "hashing.h"
+#include "scheme.h"
 
 struct htable *htable_new(struct htable *h, size_t size)
 {

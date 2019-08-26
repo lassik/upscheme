@@ -5,17 +5,14 @@
 #include <sys/types.h>
 
 #include <math.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#include "dtypes.h"
-#include "utils.h"
-#include "hashing.h"
-#include "timefuncs.h"
-#include "ios.h"
-#include "random.h"
+#include "scheme.h"
 
 uintptr_t nextipow2(uintptr_t i)
 {

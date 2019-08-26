@@ -17,32 +17,7 @@
 #include <string.h>
 #include <wctype.h>
 
-#include "dtypes.h"
-#include "utils.h"
-#include "utf8.h"
-#include "ios.h"
-#include "socket.h"
-#include "timefuncs.h"
-#include "hashing.h"
-#include "htable.h"
-#include "htableh_inc.h"
-#include "bitvector.h"
-#include "os.h"
-#include "random.h"
-#include "llt.h"
-
-#include "ieee754.h"
-
-#include "flisp.h"
-
-#include "buf.h"
-#include "env.h"
-#include "error.h"
-#include "opcodes.h"
-
-#include "builtins.h"
-#include "libraries.h"
-#include "stringfuncs.h"
+#include "scheme.h"
 
 struct builtin_procedure {
     char *name;

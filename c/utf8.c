@@ -14,6 +14,8 @@
 */
 
 #include <assert.h>
+#include <math.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -28,9 +30,7 @@
 #define snprintf _snprintf
 #endif
 
-#include "dtypes.h"
-
-#include "utf8.h"
+#include "scheme.h"
 
 static const uint32_t offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL,
                                              0x000E2080UL, 0x03C82080UL,

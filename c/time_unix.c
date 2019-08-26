@@ -1,12 +1,15 @@
 #include <sys/time.h>
 
+#include <math.h>
 #include <poll.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
 
-#include "timefuncs.h"
+#include "scheme.h"
 
 double tv2float(struct timeval *tv)
 {

@@ -3,15 +3,12 @@
 */
 
 #include <math.h>
+#include <setjmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dtypes.h"
-#include "ieee754.h"
-#include "utils.h"
-#include "random.h"
-#include "timefuncs.h"
+#include "scheme.h"
 
 #include "mt19937ar.h"
 

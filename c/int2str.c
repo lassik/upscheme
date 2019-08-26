@@ -1,8 +1,12 @@
+#include <sys/types.h>
+
+#include <math.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "dtypes.h"
-#include "utils.h"
+#include "scheme.h"
 
 char *uint2str(char *dest, size_t len, uint64_t num, uint32_t base)
 {

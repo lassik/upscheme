@@ -4,16 +4,15 @@
 #include <sys/types.h>
 
 #include <inttypes.h>
+#include <math.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "dtypes.h"
-#include "ios.h"
-
-#include "buf.h"
+#include "scheme.h"
 
 struct buf *buf_new(void) { return calloc(1, sizeof(struct buf)); }
 

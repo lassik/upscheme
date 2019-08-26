@@ -29,7 +29,12 @@
   and_to, or_to, and xor_to allow overlap.
 */
 
+#include <sys/types.h>
+
 #include <assert.h>
+#include <math.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,8 +43,7 @@
 #include <malloc.h>
 #endif
 
-#include "dtypes.h"
-#include "bitvector.h"
+#include "scheme.h"
 
 uint32_t *bitvector_resize(uint32_t *b, uint64_t oldsz, uint64_t newsz,
                            int initzero)

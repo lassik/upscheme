@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#include "timefuncs.h"
+#include "scheme.h"
 
 #if 0
 double tvals2float(struct tm *t, struct timeb *tstruct)

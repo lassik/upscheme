@@ -2,16 +2,13 @@
 
 #include <locale.h>
 #include <math.h>
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dtypes.h"
-#include "timefuncs.h"
-#include "ios.h"
-#include "random.h"
-#include "utf8.h"
+#include "scheme.h"
 
 double D_PNAN;
 double D_NNAN;

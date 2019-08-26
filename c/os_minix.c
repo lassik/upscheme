@@ -1,6 +1,6 @@
 #include <unistd.h>
 
-#include "os.h"
+#include "scheme.h"
 
 char *get_exename(char *buf, size_t size)
 {

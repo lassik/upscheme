@@ -1,4 +1,9 @@
+#include <sys/types.h>
+
 #include <assert.h>
+#include <math.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +12,7 @@
 #include <malloc.h>
 #endif
 
-#include "dtypes.h"
-#include "bitvector.h"
+#include "scheme.h"
 
 #ifdef __INTEL_COMPILER
 #define count_bits(b) _popcnt32(b)
