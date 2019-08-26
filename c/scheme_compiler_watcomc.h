@@ -1,3 +1,12 @@
+#ifdef __WATCOMC__
+typedef float float_t;
+typedef double double_t;
+#define __ORDER_BIG_ENDIAN__ 4321
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#define BITS32
+#endif
+
 #pragma aux DivideByZeroError aborts;
 extern void DivideByZeroError(void);
 

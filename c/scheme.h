@@ -15,18 +15,6 @@
 //
 // We assume the LP64 convention for 64-bit platforms.
 
-#undef BITS32
-#undef BITS64
-
-typedef uintptr_t value_t;
-typedef uintptr_t ufixnum_t;
-typedef intptr_t fixnum_t;
-#ifdef BITS64
-#define T_FIXNUM T_INT64
-#else
-#define T_FIXNUM T_INT32
-#endif
-
 #ifdef __DMC__
 #include "scheme_compiler_dmc.h"
 #endif
@@ -41,19 +29,6 @@ typedef intptr_t fixnum_t;
 
 #ifdef __WATCOMC__
 #include "scheme_compiler_watcomc.h"
-#endif
-
-#ifdef __WATCOMC__
-typedef float float_t;
-typedef double double_t;
-#define __ORDER_BIG_ENDIAN__ 4321
-#define __ORDER_LITTLE_ENDIAN__ 1234
-#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
-#define BITS32
-#endif
-
-#ifndef __WATCOMC__
-#define BITS64
 #endif
 
 #define LLT_ALLOC(n) malloc(n)
@@ -71,31 +46,6 @@ typedef int bool_t;
 #endif
 
 #define LLT_ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
-
-// branch prediction annotations
-#ifdef __GNUC__
-#define __unlikely(x) __builtin_expect(!!(x), 0)
-#define __likely(x) __builtin_expect(!!(x), 1)
-#else
-#define __unlikely(x) (x)
-#define __likely(x) (x)
-#endif
-
-#define DBL_MAXINT 9007199254740992LL
-#define FLT_MAXINT 16777216
-#define U64_MAX 18446744073709551615ULL
-#define S64_MAX 9223372036854775807LL
-#define S64_MIN (-S64_MAX - 1LL)
-#define BIT63 0x8000000000000000LL
-#define BIT31 0x80000000
-
-#define LOG2_10 3.3219280948873626
-#define sign_bit(r) ((*(int64_t *)&(r)) & BIT63)
-#define LABS(n) (((n) ^ ((n) >> (NBITS - 1))) - ((n) >> (NBITS - 1)))
-#define NBABS(n, nb) (((n) ^ ((n) >> ((nb)-1))) - ((n) >> ((nb)-1)))
-#define DFINITE(d) \
-    (((*(int64_t *)&(d)) & 0x7ff0000000000000LL) != 0x7ff0000000000000LL)
-#define DNAN(d) ((d) != (d))
 
 extern double D_PNAN;
 extern double D_NNAN;
