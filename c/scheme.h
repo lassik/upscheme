@@ -769,14 +769,6 @@ typedef enum {
 
 #define N_NUMTYPES ((int)T_DOUBLE + 1)
 
-#ifdef BITS64
-#define T_LONG T_INT64
-#define T_ULONG T_UINT64
-#else
-#define T_LONG T_INT32
-#define T_ULONG T_UINT32
-#endif
-
 value_t relocate_lispvalue(value_t v);
 void print_traverse(value_t v);
 void fl_print_chr(char c, struct ios *f);
