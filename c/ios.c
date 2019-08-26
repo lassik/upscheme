@@ -662,7 +662,7 @@ void ios_set_readonly(struct ios *s)
 }
 
 static size_t ios_copy_(struct ios *to, struct ios *from, size_t nbytes,
-                        bool_t all)
+                        int all)
 {
     size_t total, avail, written, ntowrite;
 

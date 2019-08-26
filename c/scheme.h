@@ -35,8 +35,6 @@
 #define LLT_REALLOC(p, n) realloc((p), (n))
 #define LLT_FREE(x) free(x)
 
-typedef int bool_t;
-
 #ifdef BITS64
 #define TOP_BIT 0x8000000000000000
 #define NBITS 64
@@ -270,7 +268,7 @@ void ios_init_stdstreams();
 int ios_putnum(struct ios *s, char *data, uint32_t type);
 int ios_putint(struct ios *s, int n);
 int ios_pututf8(struct ios *s, uint32_t wc);
-int ios_putstringz(struct ios *s, char *str, bool_t do_write_nulterm);
+int ios_putstringz(struct ios *s, char *str, int do_write_nulterm);
 int ios_printf(struct ios *s, const char *format, ...);
 int ios_vprintf(struct ios *s, const char *format, va_list args);
 
@@ -449,7 +447,7 @@ void bitvector_shr(uint32_t *b, size_t n, uint32_t s);
 void bitvector_shr_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s);
 void bitvector_shl(uint32_t *b, size_t n, uint32_t s);
 void bitvector_shl_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s,
-                      bool_t scrap);
+                      int scrap);
 void bitvector_fill(uint32_t *b, uint32_t offs, uint32_t c, uint32_t nbits);
 void bitvector_copy(uint32_t *dest, uint32_t doffs, uint32_t *a,
                     uint32_t aoffs, uint32_t nbits);

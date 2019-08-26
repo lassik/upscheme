@@ -129,7 +129,7 @@ void bitvector_shl(uint32_t *b, size_t n, uint32_t s)
 // if dest has more space than source, set scrap to true to keep the
 // top bits that would otherwise be shifted out
 void bitvector_shl_to(uint32_t *dest, uint32_t *b, size_t n, uint32_t s,
-                      bool_t scrap)
+                      int scrap)
 {
     uint32_t i, j, sc = 0;
     if (n == 0)
