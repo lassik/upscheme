@@ -28,19 +28,19 @@ typedef intptr_t fixnum_t;
 #endif
 
 #ifdef __DMC__
-#include "error_dmc.h"
+#include "scheme_compiler_dmc.h"
 #endif
 
 #ifdef __GNUC__
-#include "error_gnuc.h"
+#include "scheme_compiler_gnuc.h"
 #endif
 
 #ifdef _MSC_VER
-#include "error_msc.h"
+#include "scheme_compiler_msc.h"
 #endif
 
 #ifdef __WATCOMC__
-#include "error_watcomc.h"
+#include "scheme_compiler_watcomc.h"
 #endif
 
 #ifdef __WATCOMC__
