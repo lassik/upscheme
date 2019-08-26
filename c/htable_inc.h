@@ -1,5 +1,3 @@
-//-*- mode:c -*-
-
 /*
   include this file and call HTIMPL to generate an implementation
 */

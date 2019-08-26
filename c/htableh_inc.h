@@ -1,5 +1,3 @@
-//-*- mode:c -*-
-
 #define HTPROT(HTNAME)                                            \
     void *HTNAME##_get(struct htable *h, void *key);              \
     void HTNAME##_put(struct htable *h, void *key, void *val);    \
