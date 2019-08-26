@@ -501,10 +501,6 @@ static struct builtinspec stringfunc_info[] = {
     { "char-downcase", builtin_char_downcase },
     { "char-alphabetic?", builtin_char_alphabetic },
 
-    { "char.upcase", builtin_char_upcase },
-    { "char.downcase", builtin_char_downcase },
-    { "char.alphabetic?", builtin_char_alphabetic },
-
     { "number->string", fl_numbertostring },
     { "string->number", fl_stringtonumber },
 
