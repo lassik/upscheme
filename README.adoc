@@ -1,5 +1,7 @@
 = Up Scheme
 
+image::https://api.cirrus-ci.com/github/lassik/upscheme.svg[Build Status, link=https://cirrus-ci.com/github/lassik/upscheme]
+
 Small scripting Scheme emphasizing portability and stability.
 
 Based on the excellent https://github.com/JeffBezanson/femtolisp/[FemtoLisp]
