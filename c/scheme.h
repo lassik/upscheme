@@ -15,6 +15,10 @@
 //
 // We assume the LP64 convention for 64-bit platforms.
 
+#ifdef __DJGPP__
+#include "scheme_compiler_djgpp.h"
+#endif
+
 #ifdef __DMC__
 #include "scheme_compiler_dmc.h"
 #endif
@@ -29,14 +33,6 @@
 
 #ifdef __WATCOMC__
 #include "scheme_compiler_watcomc.h"
-#endif
-
-#ifdef BITS64
-#define TOP_BIT 0x8000000000000000
-#define NBITS 64
-#else
-#define TOP_BIT 0x80000000
-#define NBITS 32
 #endif
 
 #define ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
@@ -769,6 +765,12 @@ typedef enum {
 
 #define N_NUMTYPES ((int)T_DOUBLE + 1)
 
+#ifdef BITS64
+#define T_FIXNUM T_INT64
+#else
+#define T_FIXNUM T_INT32
+#endif
+
 value_t relocate_lispvalue(value_t v);
 void print_traverse(value_t v);
 void fl_print_chr(char c, struct ios *f);
@@ -994,7 +996,5 @@ value_t builtin_color_name_to_rgb24(value_t *args, uint32_t nargs);
 value_t fl_stringp(value_t *args, uint32_t nargs);
 value_t fl_string_reverse(value_t *args, uint32_t nargs);
 value_t fl_string_sub(value_t *args, uint32_t nargs);
-
-#include "opcodes.h"
 
 #include "htableh_inc.h"

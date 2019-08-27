@@ -47,6 +47,8 @@
 
 #include "scheme.h"
 
+#include "opcodes.h"
+
 #include "../scheme-boot/boot_image.h"
 
 static char *builtin_names[] = {
