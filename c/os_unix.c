@@ -28,7 +28,12 @@ void path_to_dirname(char *path)
     *p = '\0';
 }
 
-void get_cwd(char *buf, size_t size) { getcwd(buf, size); }
+void get_cwd(char *buf, size_t size)
+{
+    if (!getcwd(buf, size)) {
+        memset(buf, 0, size);
+    }
+}
 
 int set_cwd(char *buf)
 {
