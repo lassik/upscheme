@@ -55,6 +55,17 @@ static value_t envst_language(void)
     return head;
 }
 
+static value_t envst_language_c(void)
+{
+    value_t head, tail;
+
+    head = tail = fl_cons(symbol("language"), FL_NIL);
+    push_pair(&tail, "implementation-name", string_from_cstr(
+                  SCHEME_C_COMPILER_NAME));
+    push_pair(&tail, "implementation-version",
+              string_from_cstr(SCHEME_C_COMPILER_VERSION));
+    return head;
+}
 static value_t envst_os(void)
 {
     value_t head, tail;
@@ -94,8 +105,8 @@ value_t builtin_environment_stack(value_t *args, uint32_t nargs)
 
     (void)args;
     argcount("environment-stack", nargs, 0);
-
     head = tail = fl_cons(envst_language(), FL_NIL);
+    push(&tail, envst_language_c());
     push(&tail, envst_os());
     push(&tail, envst_computer());
     return head;

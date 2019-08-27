@@ -3,6 +3,8 @@ typedef uintptr_t ufixnum_t;
 typedef intptr_t fixnum_t;
 
 #define BITS64
+#define SCHEME_C_COMPILER_NAME "GCC"  // TODO: wrong
+#define SCHEME_C_COMPILER_VERSION __VERSION__
 
 #ifdef BITS64
 #define UINT64_TOP_BIT 0x8000000000000000ULL
