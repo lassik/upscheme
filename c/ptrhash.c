@@ -24,16 +24,16 @@
 #define OP_EQ(x, y) ((x) == (y))
 
 #ifdef BITS64
-static uint64_t _pinthash(uint64_t key)
+static uint64_t _pinthash(uint64_t a)
 {
-    key = (~key) + (key << 21);  // key = (key << 21) - key - 1;
-    key = key ^ (key >> 24);
-    key = (key + (key << 3)) + (key << 8);  // key * 265
-    key = key ^ (key >> 14);
-    key = (key + (key << 2)) + (key << 4);  // key * 21
-    key = key ^ (key >> 28);
-    key = key + (key << 31);
-    return key;
+    a = (~a) + (a << 21);  // a = (a << 21) - a - 1;
+    a = a ^ (a >> 24);
+    a = (a + (a << 3)) + (a << 8);  // a * 265
+    a = a ^ (a >> 14);
+    a = (a + (a << 2)) + (a << 4);  // a * 21
+    a = a ^ (a >> 28);
+    a = a + (a << 31);
+    return a;
 }
 #else
 static uint32_t _pinthash(uint32_t a)
