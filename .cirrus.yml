@@ -5,6 +5,13 @@ alpine_task:
     - apk update
     - apk add build-base
   compile_script: scripts/build.sh
+archlinux_task:
+  container:
+    image: archlinux/base
+  setup_script:
+    - pacman --noconfirm -Sy
+    - pacman --noconfirm -S gcc
+  compile_script: scripts/build.sh
 centos_task:
   container:
     image: centos
