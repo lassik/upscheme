@@ -49,8 +49,6 @@
 
 #include "opcodes.h"
 
-#include "../scheme-boot/boot_image.h"
-
 static char *builtin_names[] = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     // predicates
@@ -2654,7 +2652,7 @@ int fl_load_boot_image(void)
 
     f = cvalue(iostreamtype, sizeof(struct ios));
     s = value2c(struct ios *, f);
-    ios_static_buffer(s, boot_image, sizeof(boot_image));
+    ios_static_buffer(s, boot_image, boot_image_size);
     PUSH(f);
     saveSP = SP;
     {

@@ -6,6 +6,7 @@ o_files="$o_files algo_color.o"
 o_files="$o_files argcount.o"
 o_files="$o_files bitvector-ops.o"
 o_files="$o_files bitvector.o"
+o_files="$o_files boot_image.o"
 o_files="$o_files buf.o"
 o_files="$o_files builtins.o"
 o_files="$o_files dump.o"
@@ -94,6 +95,7 @@ $CC $CFLAGS -c ../c/builtins.c
 $CC $CFLAGS -c ../c/dump.c
 $CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c
+$CC $CFLAGS -c ../c/flisp.c
 $CC $CFLAGS -c ../c/flmain.c
 $CC $CFLAGS -c ../c/hashing.c
 $CC $CFLAGS -c ../c/htable.c
@@ -114,7 +116,7 @@ $CC $CFLAGS -c ../c/text_ini.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 
-$CC $CFLAGS -c ../c/flisp.c
+$CC $CFLAGS -c ../c/boot_image.c
 $CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
@@ -131,7 +133,7 @@ cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
 
-$CC $CFLAGS -c ../c/flisp.c
+$CC $CFLAGS -c ../c/boot_image.c
 $CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null
@@ -148,7 +150,7 @@ cd ../"$builddir"
 echo "Entering directory '$PWD'"
 set -x
 
-$CC $CFLAGS -c ../c/flisp.c
+$CC $CFLAGS -c ../c/boot_image.c
 $CC $LFLAGS -o upscheme $o_files
 
 { set +x; } 2>/dev/null

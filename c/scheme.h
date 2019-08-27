@@ -997,4 +997,9 @@ value_t fl_stringp(value_t *args, uint32_t nargs);
 value_t fl_string_reverse(value_t *args, uint32_t nargs);
 value_t fl_string_sub(value_t *args, uint32_t nargs);
 
+// boot_image.c
+
+extern char boot_image[];
+extern const size_t boot_image_size;
+
 #include "htableh_inc.h"
