@@ -117,7 +117,7 @@ $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
 
 $CC $CFLAGS -c ../c/boot_image.c
-$CC $LFLAGS -o upscheme $o_files
+$CC -o upscheme $o_files $LFLAGS
 
 { set +x; } 2>/dev/null
 cd ../scheme-core
@@ -134,7 +134,7 @@ echo "Entering directory '$PWD'"
 set -x
 
 $CC $CFLAGS -c ../c/boot_image.c
-$CC $LFLAGS -o upscheme $o_files
+$CC -o upscheme $o_files $LFLAGS
 
 { set +x; } 2>/dev/null
 cd ../scheme-core
@@ -151,7 +151,7 @@ echo "Entering directory '$PWD'"
 set -x
 
 $CC $CFLAGS -c ../c/boot_image.c
-$CC $LFLAGS -o upscheme $o_files
+$CC -o upscheme $o_files $LFLAGS
 
 { set +x; } 2>/dev/null
 cd ../scheme-tests
