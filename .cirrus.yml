@@ -19,6 +19,13 @@ debian_task:
     - apt update
     - apt install -y gcc libc-dev
   compile_script: scripts/build.sh
+ubuntu_task:
+  container:
+    image: ubuntu
+  setup_script:
+    - apt update
+    - apt install -y gcc libc-dev
+  compile_script: scripts/build.sh
 freebsd_task:
   freebsd_instance:
     image: freebsd-12-0-release-amd64
