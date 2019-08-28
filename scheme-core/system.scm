@@ -1040,7 +1040,7 @@
          (display (caddr e))
          (display ", got ")
          (write (cadddr e)))
-        
+
         ((and (pair? e)
               (eq? (car e) 'bounds-error)
               (length= e 4))
