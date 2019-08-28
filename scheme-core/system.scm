@@ -946,7 +946,7 @@ Up Scheme
 
 (define (repl)
   (define (prompt)
-    (display "up> ")
+    (display (string-append (sgr bold (fg cyan)) "up>" (sgr) " "))
     (io.flush *output-stream*)
     (let ((v (trycatch (read)
                        (lambda (e) (begin (io.discardbuffer *input-stream*)
