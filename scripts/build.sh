@@ -38,7 +38,7 @@ o_files="$o_files text_ini.o"
 o_files="$o_files time_unix.o"
 o_files="$o_files utf8.o"
 o_files="$o_files util.o"
-default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO -Wextra -std=gnu99 -Wno-strict-aliasing"
+default_cflags="-Wall -Werror -Wextra -O2 -D NDEBUG -D USE_COMPUTED_GOTO -std=gnu99 -Wno-strict-aliasing"
 default_lflags="-lm"
 case "$os" in
 darwin)
