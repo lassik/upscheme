@@ -162,16 +162,16 @@ value_t fl_string(value_t *args, uint32_t nargs)
     return outp;
 }
 
-value_t fl_string_split(value_t *args, uint32_t nargs)
+value_t builtin_string_split(value_t *args, uint32_t nargs)
 {
     char *s;
     char *delim;
     size_t len, dlen, ssz, tokend, tokstart, i, junk;
     value_t first, c, last;
 
-    argcount("string.split", nargs, 2);
-    s = tostring(args[0], "string.split");
-    delim = tostring(args[1], "string.split");
+    argcount("string-split", nargs, 2);
+    s = tostring(args[0], "string-split");
+    delim = tostring(args[1], "string-split");
     len = cv_len((struct cvalue *)ptr(args[0]));
     dlen = cv_len((struct cvalue *)ptr(args[1]));
     tokend = tokstart = i = 0;
@@ -497,7 +497,6 @@ static struct builtinspec stringfunc_info[] = {
     { "string?", fl_stringp },
     { "string.count", fl_string_count },
     { "string.width", fl_string_width },
-    { "string.split", fl_string_split },
     { "string.sub", fl_string_sub },
     { "string.find", fl_string_find },
     { "string.char", fl_string_char },
