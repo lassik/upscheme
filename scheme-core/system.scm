@@ -912,10 +912,6 @@
          (io.close F)
          (raise `(load-error ,filename ,e)))))))
 
-(define *banner* (string.tail "
-Up Scheme
-" 1))
-
 (define (sgr . ns)
   (let ((out (open-output-string)))
     (display "\x1b[" out)
@@ -952,17 +948,23 @@ Up Scheme
                        (lambda (e) (begin (io.discardbuffer *input-stream*)
                                           (raise e))))))
       (and (not (io.eof? *input-stream*))
-           (let ((V (load-process v)))
-             (write V)
-             (set! that V)
-             #t))))
+           (begin (trycatch (let ((V (load-process v)))
+                              (writeln V)
+                              (set! that V)
+                              #t)
+                            (lambda (e)
+                              (top-level-exception-handler e)
+                              #t))
+                  (when (or (eqv? 'help v) (eqv? 'exit v))
+                    (newline)
+                    (displayln "Type (help) for help or (exit) to exit."))
+                  #t))))
   (define (reploop)
-    (when (trycatch (and (prompt) (newline))
+    (when (trycatch (prompt)
                     (lambda (e)
                       (top-level-exception-handler e)
                       #t))
-          (begin (newline)
-                 (reploop))))
+      (reploop)))
   (reploop)
   (newline))
 
@@ -1096,6 +1098,12 @@ Up Scheme
                 (symbol->string sym))))
             (apply apropos-list args)))
 
+(define-macro (help . args)
+  `(apply help* ',args))
+
+(define (display-banner)
+  (displayln (string-append (sgr (fg cyan)) "Up Scheme" (sgr))))
+
 (define (system-image->buffer)
   (let ((out (buffer))
         (excludes '(*linefeed* *directory-separator* *argv* that
@@ -1142,6 +1150,6 @@ Up Scheme
              (__script (cadr argv)))
       (begin (set! *argv* argv)
              (set! *interactive* #t)
-             (display *banner*)
+             (display-banner)
              (repl)))
   (exit 0))

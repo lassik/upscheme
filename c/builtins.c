@@ -489,6 +489,21 @@ MATH_FUNC_1ARG(asin)
 MATH_FUNC_1ARG(acos)
 MATH_FUNC_1ARG(atan)
 
+static const char help_text[] =
+""
+"----------------------------------------------------------------------\n"
+"You are in Up Scheme.\n"
+"Type (exit) to exit.\n"
+"----------------------------------------------------------------------\n";
+
+static value_t builtin_help_star(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    (void)nargs;
+    ios_puts(help_text, ios_stdout);
+    return FL_T;
+}
+
 extern void stringfuncs_init(void);
 extern void table_init(void);
 extern void iostream_init(void);
@@ -536,6 +551,8 @@ static struct builtinspec builtin_info[] = {
     { "path.exists?", fl_path_exists },
 
     { "os.getenv", builtin_get_environment_variable },  // TODO: remove
+
+    { "help*", builtin_help_star },
 
     { "import-procedure", builtin_import },
 
