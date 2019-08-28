@@ -1106,10 +1106,13 @@
               (cond ((string? key) key)
                     ((symbol? key) (symbol->string key))
                     (else (error "Please give a string or symbol key"))))))
-    (sort (filter (λ (sym)
-                    (string.find (string-downcase (symbol->string sym)) key))
-                  (environment))
-          string<? symbol->string)))
+    (if (= 0 (string-length key))
+        '()
+        (sort (filter (λ (sym)
+                        (string.find
+                         (string-downcase (symbol->string sym)) key))
+                      (environment))
+              string<? symbol->string))))
 
 (define (apropos . args)
   (for-each (λ (sym)
