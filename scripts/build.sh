@@ -1,6 +1,11 @@
 #!/bin/sh
 set -eu
 os="$(uname | tr A-Z- a-z_)"
+case $os in
+cygwin*)
+    os=linux
+    ;;
+esac
 o_files=""
 o_files="$o_files algo_color.o"
 o_files="$o_files argcount.o"
