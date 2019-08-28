@@ -1092,14 +1092,16 @@
                         (simple-sort grtr))))))
 
 (define (sort l (less? <) (key identity))
-  (if (or (null? l) (null? (cdr l))) l
-      (let ((piv (car l)))
-        (receive (less grtr)
-                 (separate (lambda (x) (less? (key x) (key piv)))
-                           (cdr l))
-                 (nconc (sort less)
-                        (list piv)
-                        (sort grtr))))))
+  (let sort ((l l))
+    (if (or (null? l) (null? (cdr l)))
+        l
+        (let ((piv (car l)))
+          (receive (less grtr)
+              (separate (lambda (x) (less? (key x) (key piv)))
+                        (cdr l))
+            (nconc (sort less)
+                   (list piv)
+                   (sort grtr)))))))
 
 (define (apropos-list key)
   (let ((key (string-downcase
