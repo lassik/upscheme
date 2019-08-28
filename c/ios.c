@@ -117,7 +117,7 @@ static int _os_read_all(long fd, void *buf, size_t n, size_t *nread)
     return 0;
 }
 
-static int _os_write(long fd, void *buf, size_t n, size_t *nwritten)
+static int _os_write(long fd, const void *buf, size_t n, size_t *nwritten)
 {
     ssize_t r;
 
@@ -136,9 +136,9 @@ static int _os_write(long fd, void *buf, size_t n, size_t *nwritten)
     return 0;
 }
 
-static int _os_write_all(long fd, void *buf, size_t n, size_t *nwritten)
+static int _os_write_all(long fd, const void *buf, size_t n, size_t *nwritten)
 {
-    unsigned char *ubuf;
+    const unsigned char *ubuf;
     size_t wrote;
     int err;
 
@@ -196,7 +196,7 @@ static char *_buf_realloc(struct ios *s, size_t sz)
 
 // write a block of data into the buffer at the current position, resizing
 // if necessary. returns # written.
-static size_t _write_grow(struct ios *s, char *data, size_t n)
+static size_t _write_grow(struct ios *s, const char *data, size_t n)
 {
     size_t amt;
     size_t newsize;
@@ -343,7 +343,7 @@ static void _write_update_pos(struct ios *s)
         s->size = s->bpos;
 }
 
-size_t ios_write(struct ios *s, char *data, size_t n)
+size_t ios_write(struct ios *s, const char *data, size_t n)
 {
     size_t space, wrote;
 

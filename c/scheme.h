@@ -219,7 +219,7 @@ struct ios {
 // low-level interface functions
 size_t ios_read(struct ios *s, char *dest, size_t n);
 size_t ios_readall(struct ios *s, char *dest, size_t n);
-size_t ios_write(struct ios *s, char *data, size_t n);
+size_t ios_write(struct ios *s, const char *data, size_t n);
 off_t ios_seek(struct ios *s, off_t pos);  // absolute seek
 off_t ios_seek_end(struct ios *s);
 off_t ios_skip(struct ios *s, off_t offs);  // relative seek
