@@ -17,6 +17,8 @@
 
 #include "scheme.h"
 
+extern char **environ;
+
 size_t llength(value_t v)
 {
     size_t n = 0;
@@ -357,13 +359,35 @@ static value_t fl_path_exists(value_t *args, uint32_t nargs)
     return os_path_exists(str) ? FL_T : FL_F;
 }
 
-static value_t fl_os_getenv(value_t *args, uint32_t nargs)
+value_t builtin_get_environment_variables(value_t *args, uint32_t nargs)
+{
+    struct accum acc = ACCUM_EMPTY;
+    char **pairs;
+    const char *pair;
+    const char *pivot;
+    value_t name, value;
+
+    (void)args;
+    argcount("get-environment-variables", nargs, 0);
+    for (pairs = environ; (pair = *pairs); pairs++) {
+        pivot = strchr(pair, '=');
+        if (!pivot) {
+            continue;
+        }
+        name = string_from_cstrn(pair, pivot - pair);
+        value = string_from_cstr(pivot + 1);
+        accum_pair(&acc, name, value);
+    }
+    return acc.list;
+}
+
+value_t builtin_get_environment_variable(value_t *args, uint32_t nargs)
 {
     char *name;
     char *val;
 
-    argcount("os.getenv", nargs, 1);
-    name = tostring(args[0], "os.getenv");
+    argcount("get-environment-variable", nargs, 1);
+    name = tostring(args[0], "get-environment-variable");
     val = getenv(name);
     if (val == NULL)
         return FL_F;
@@ -372,17 +396,17 @@ static value_t fl_os_getenv(value_t *args, uint32_t nargs)
     return cvalue_static_cstring(val);
 }
 
-static value_t fl_os_setenv(value_t *args, uint32_t nargs)
+value_t builtin_set_environment_variable(value_t *args, uint32_t nargs)
 {
     const char *name;
     const char *value;
 
-    argcount("os.setenv", nargs, 2);
-    name = tostring(args[0], "os.setenv");
+    argcount("set-environment-variable", nargs, 2);
+    name = tostring(args[0], "set-environment-variable");
     if (args[1] == FL_F) {
         value = 0;
     } else {
-        value = tostring(args[1], "os.setenv");
+        value = tostring(args[1], "set-environment-variable");
     }
     os_setenv(name, value);
     return FL_T;
@@ -511,8 +535,7 @@ static struct builtinspec builtin_info[] = {
     { "path.cwd", fl_path_cwd },
     { "path.exists?", fl_path_exists },
 
-    { "os.getenv", fl_os_getenv },
-    { "os.setenv", fl_os_setenv },
+    { "os.getenv", builtin_get_environment_variable },  // TODO: remove
 
     { "import-procedure", builtin_import },
 

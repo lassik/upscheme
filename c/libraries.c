@@ -84,6 +84,13 @@ static struct builtin_procedure builtin_procedures[] = {
     { "read-directory", builtin_os_read_directory, SRFI_170 | UP_2019 },
     { "close-directory", builtin_os_close_directory, SRFI_170 | UP_2019 },
 
+    { "get-environment-variables", builtin_get_environment_variables,
+      R7RS_PROCESS_CONTEXT | UP_2019 },
+    { "get-environment-variable", builtin_get_environment_variable,
+      R7RS_PROCESS_CONTEXT | UP_2019 },
+    { "set-environment-variable", builtin_set_environment_variable,
+      R7RS_PROCESS_CONTEXT | UP_2019 },
+
     { 0, 0, 0 },
 };
 
