@@ -23,6 +23,17 @@
 (define-macro (begin0 first . rest)
   `(prog1 ,first ,@rest))
 
+(define (fold-proc cons_ nil_ proc)
+  (let loop ((acc nil_))
+    (let ((value (proc)))
+      (if (eof-object? value) acc (loop (cons_ value acc))))))
+
+(define (directory-names path)
+  (let ((d (open-directory path)))
+    (unwind-protect
+     (fold-proc cons '() (λ () (read-directory d)))
+     (close-directory d))))
+
 (define vector-ref aref)
 (define vector-set! aset!)
 (define vector-length length)

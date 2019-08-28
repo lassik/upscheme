@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <dirent.h>
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
@@ -17,6 +18,9 @@
 #include <unistd.h>
 
 #include "scheme.h"
+
+static value_t dirsym;
+struct fltype *dirtype;
 
 void path_to_dirname(char *path)
 {
@@ -114,6 +118,105 @@ void os_setenv(const char *name, const char *value)
     }
 }
 
+int isdirvalue(value_t v)
+{
+    return iscvalue(v) && cv_class((struct cvalue *)ptr(v)) == dirtype;
+}
+
+static DIR **todirhandleptr(value_t v, const char *fname)
+{
+    if (!isdirvalue(v))
+        type_error(fname, "dir", v);
+    return value2c(DIR **, v);
+}
+
+value_t builtin_os_open_directory(value_t *args, uint32_t nargs)
+{
+    const char *path;
+    DIR *dirhandle;
+    DIR **dirhandleptr;
+    value_t dirvalue;
+
+    argcount("open-directory", nargs, 1);
+    path = tostring(args[0], "path");
+    if (!(dirhandle = opendir(path))) {
+        lerror(IOError, "cannot open directory");
+    }
+    dirvalue = cvalue(dirtype, sizeof(DIR *));
+    dirhandleptr = value2c(DIR **, dirvalue);
+    *dirhandleptr = dirhandle;
+    return dirvalue;
+}
+
+value_t builtin_os_read_directory(value_t *args, uint32_t nargs)
+{
+    DIR *dirhandle;
+    DIR **dirhandleptr;
+    struct dirent *d;
+
+    argcount("read-directory", nargs, 1);
+    dirhandleptr = todirhandleptr(args[0], "dir");
+    dirhandle = *dirhandleptr;
+    for (;;) {
+        errno = 0;
+        if (!(d = readdir(dirhandle))) {
+            break;
+        }
+        if (!strcmp(d->d_name, ".") || !strcmp(d->d_name, "..")) {
+            continue;
+        }
+        break;
+    }
+    if (!d && errno) {
+        lerror(IOError, "cannot read directory");
+    }
+    return d ? string_from_cstr(d->d_name) : FL_EOF;
+}
+
+value_t builtin_os_close_directory(value_t *args, uint32_t nargs)
+{
+    DIR *dirhandle;
+    DIR **dirhandleptr;
+
+    argcount("read-directory", nargs, 1);
+    dirhandleptr = todirhandleptr(args[0], "dir");
+    dirhandle = *dirhandleptr;
+    if (dirhandle) {
+        if (closedir(dirhandle) == -1) {
+            lerror(IOError, "cannot close directory");
+        }
+        *dirhandleptr = dirhandle = 0;
+    }
+    return FL_F;
+}
+
+static void print_dir(value_t v, struct ios *f)
+{
+    (void)v;
+    fl_print_str("#<directory>", f);
+}
+
+static void free_dir(value_t self)
+{
+    DIR *dirhandle;
+    DIR **dirhandleptr;
+
+    dirhandleptr = todirhandleptr(self, "dir");
+    dirhandle = *dirhandleptr;
+    if (dirhandle) {
+        if (closedir(dirhandle) == -1) {
+            // lerror(IOError, "cannot close directory");
+        }
+        *dirhandleptr = dirhandle = 0;
+    }
+}
+
+static void relocate_dir(value_t oldv, value_t newv)
+{
+    (void)oldv;
+    (void)newv;
+}
+
 // TODO: cleanup
 static struct termios term_mode_orig;
 static struct termios term_mode_raw;
@@ -145,4 +248,12 @@ value_t builtin_term_exit(value_t *args, uint32_t nargs)
     term_mode_init();
     tcsetattr(0, TCSAFLUSH, &term_mode_orig);
     return FL_T;
+}
+
+struct cvtable dir_vtable = { print_dir, relocate_dir, free_dir, NULL };
+
+void os_init(void)
+{
+    dirsym = symbol("dir");
+    dirtype = define_opaque_type(dirsym, sizeof(DIR *), &dir_vtable, NULL);
 }

@@ -526,4 +526,5 @@ void builtins_init(void)
     table_init();
     iostream_init();
     print_init();
+    os_init();
 }

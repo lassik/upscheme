@@ -471,6 +471,11 @@ char *get_exename(char *buf, size_t size);
 int os_path_exists(const char *path);
 void os_setenv(const char *name, const char *value);
 
+value_t builtin_os_open_directory(value_t *args, uint32_t nargs);
+value_t builtin_os_read_directory(value_t *args, uint32_t nargs);
+value_t builtin_os_close_directory(value_t *args, uint32_t nargs);
+void os_init(void);
+
 //// #include "random.h"
 
 #define random() genrand_int32()
