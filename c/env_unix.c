@@ -60,8 +60,8 @@ static value_t envst_language_c(void)
     value_t head, tail;
 
     head = tail = fl_cons(symbol("language"), FL_NIL);
-    push_pair(&tail, "implementation-name", string_from_cstr(
-                  SCHEME_C_COMPILER_NAME));
+    push_pair(&tail, "implementation-name",
+              string_from_cstr(SCHEME_C_COMPILER_NAME));
     push_pair(&tail, "implementation-version",
               string_from_cstr(SCHEME_C_COMPILER_VERSION));
     return head;
