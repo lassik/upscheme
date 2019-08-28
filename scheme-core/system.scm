@@ -916,6 +916,34 @@
 Up Scheme
 " 1))
 
+(define (sgr . ns)
+  (let ((out (open-output-string)))
+    (display "\x1b[" out)
+    (unless (null? ns)
+      (let loop ((ns ns))
+        (display (car ns) out)
+        (let ((ns (cdr ns)))
+          (unless (null? ns)
+            (display #\; out)
+            (loop ns)))))
+    (display "m" out)
+    (get-output-string out)))
+
+(define bold    1)
+
+(define (fg n) (+ 30 n))
+(define (bg n) (+ 40 n))
+
+(define black   0)
+(define red     1)
+(define green   2)
+(define yellow  3)
+(define blue    4)
+(define magenta 5)
+(define cyan    6)
+(define white   7)
+(define default-color 8)
+
 (define (repl)
   (define (prompt)
     (display "up> ")
