@@ -1038,6 +1038,36 @@ Up Scheme
                         (list piv)
                         (simple-sort grtr))))))
 
+(define (sort l (less? <) (key identity))
+  (if (or (null? l) (null? (cdr l))) l
+      (let ((piv (car l)))
+        (receive (less grtr)
+                 (separate (lambda (x) (less? (key x) (key piv)))
+                           (cdr l))
+                 (nconc (sort less)
+                        (list piv)
+                        (sort grtr))))))
+
+(define (apropos-list key)
+  (let ((key (string-downcase
+              (cond ((string? key) key)
+                    ((symbol? key) (symbol->string key))
+                    (else (error "Please give a string or symbol key"))))))
+    (sort (filter (λ (sym)
+                    (string.find (string-downcase (symbol->string sym)) key))
+                  (environment))
+          string<? symbol->string)))
+
+(define (apropos . args)
+  (for-each (λ (sym)
+              (displayln
+               (string-append
+                (let ((val (symbol-value sym)))
+                  (if (procedure? val) "procedure" "variable "))
+                "  "
+                (symbol->string sym))))
+            (apply apropos-list args)))
+
 (define (system-image->buffer)
   (let ((out (buffer))
         (excludes '(*linefeed* *directory-separator* *argv* that
