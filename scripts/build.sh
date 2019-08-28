@@ -37,6 +37,7 @@ o_files="$o_files table.o"
 o_files="$o_files text_ini.o"
 o_files="$o_files time_unix.o"
 o_files="$o_files utf8.o"
+o_files="$o_files util.o"
 default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO -Wextra -std=gnu99 -Wno-strict-aliasing"
 default_lflags="-lm"
 case "$os" in
@@ -120,6 +121,7 @@ $CC $CFLAGS -c ../c/table.c
 $CC $CFLAGS -c ../c/text_ini.c
 $CC $CFLAGS -c ../c/time_unix.c
 $CC $CFLAGS -c ../c/utf8.c
+$CC $CFLAGS -c ../c/util.c
 
 $CC $CFLAGS -c ../c/boot_image.c
 $CC -o upscheme $o_files $LFLAGS

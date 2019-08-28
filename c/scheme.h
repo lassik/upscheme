@@ -1002,6 +1002,22 @@ value_t fl_stringp(value_t *args, uint32_t nargs);
 value_t fl_string_reverse(value_t *args, uint32_t nargs);
 value_t fl_string_sub(value_t *args, uint32_t nargs);
 
+// util.c
+
+struct accum {
+    value_t list;
+    value_t tail;
+};
+
+#define ACCUM_EMPTY                    \
+    {                                  \
+        .list = FL_NIL, .tail = FL_NIL \
+    }
+
+void accum_elt(struct accum *accum, value_t elt);
+void accum_pair(struct accum *accum, value_t a, value_t d);
+void accum_name_value(struct accum *accum, const char *name, value_t value);
+
 // boot_image.c
 
 extern char boot_image[];
