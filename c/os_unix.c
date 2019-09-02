@@ -99,10 +99,7 @@ int os_path_exists(const char *path)
 {
     struct stat st;
 
-    if (stat(path, &st) == -1) {
-        return FL_F;
-    }
-    return FL_T;
+    return stat(path, &st) != -1;
 }
 
 void os_setenv(const char *name, const char *value)
