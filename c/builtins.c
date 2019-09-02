@@ -549,7 +549,6 @@ static struct builtinspec builtin_info[] = {
 
     { "path.cwd", fl_path_cwd },
 
-    { "path.exists?", builtin_file_exists },            // TODO: remove
     { "os.getenv", builtin_get_environment_variable },  // TODO: remove
 
     { "help*", builtin_help_star },
