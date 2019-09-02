@@ -41,3 +41,12 @@ macos_task:
   osx_instance:
     image: mojave-base
   compile_script: scripts/build.sh
+cygwin_task:
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+    os_version: 2019
+  setup_script:
+    - choco install -y --no-progress cygwin
+    - c:\tools\cygwin\cygwinsetup -q -P binutils,gcc-core
+  compile_script:
+    - c:\tools\cygwin\bin\bash --login "%CD%\scripts\build.sh"
