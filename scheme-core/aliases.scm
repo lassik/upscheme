@@ -187,7 +187,6 @@
     (prog1 (proc f)
            (io.close f))))
 
-(define (file-exists? f) (path.exists? f))
 (define (delete-file name) (void)) ; TODO
 
 (define assertion-violation

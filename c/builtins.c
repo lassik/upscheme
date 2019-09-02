@@ -350,12 +350,12 @@ static value_t fl_path_cwd(value_t *args, uint32_t nargs)
     return FL_T;
 }
 
-static value_t fl_path_exists(value_t *args, uint32_t nargs)
+value_t builtin_file_exists(value_t *args, uint32_t nargs)
 {
     char *str;
 
-    argcount("path.exists?", nargs, 1);
-    str = tostring(args[0], "path.exists?");
+    argcount("file-exists?", nargs, 1);
+    str = tostring(args[0], "file-exists?");
     return os_path_exists(str) ? FL_T : FL_F;
 }
 
@@ -548,8 +548,8 @@ static struct builtinspec builtin_info[] = {
     { "atan", fl_atan },
 
     { "path.cwd", fl_path_cwd },
-    { "path.exists?", fl_path_exists },
 
+    { "path.exists?", builtin_file_exists },            // TODO: remove
     { "os.getenv", builtin_get_environment_variable },  // TODO: remove
 
     { "help*", builtin_help_star },

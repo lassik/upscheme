@@ -996,6 +996,8 @@ value_t builtin_read_ini_file(value_t *args, uint32_t nargs);
 
 value_t builtin_color_name_to_rgb24(value_t *args, uint32_t nargs);
 
+value_t builtin_file_exists(value_t *args, uint32_t nargs);
+
 value_t builtin_get_environment_variables(value_t *args, uint32_t nargs);
 value_t builtin_get_environment_variable(value_t *args, uint32_t nargs);
 value_t builtin_set_environment_variable(value_t *args, uint32_t nargs);

@@ -81,6 +81,8 @@ static struct builtin_procedure builtin_procedures[] = {
 
     { "color-name->rgb24", builtin_color_name_to_rgb24, UP_2019 },
 
+    { "file-exists?", builtin_file_exists, R7RS_FILE | UP_2019 },
+
     { "open-directory", builtin_os_open_directory, SRFI_170 | UP_2019 },
     { "read-directory", builtin_os_read_directory, SRFI_170 | UP_2019 },
     { "close-directory", builtin_os_close_directory, SRFI_170 | UP_2019 },
