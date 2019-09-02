@@ -549,8 +549,6 @@ static struct builtinspec builtin_info[] = {
 
     { "path.cwd", fl_path_cwd },
 
-    { "os.getenv", builtin_get_environment_variable },  // TODO: remove
-
     { "help*", builtin_help_star },
 
     { "import-procedure", builtin_import },
