@@ -515,6 +515,15 @@
   `(call-with-values (lambda () ,expr)
      (lambda ,formals ,@body)))
 
+(define-macro (let-values bindings . body)
+  (unless (pair? bindings) (error "let-values: syntax error"))
+  (let* ((binding (car bindings))
+         (names (car binding))
+         (form (cadr binding)))
+    (unless (null? (cddr binding)) (error "let-values: syntax error"))
+    (unless (null? (cdr bindings)) (error "let-values: syntax error"))
+    `(receive ,names ,form ,@body)))
+
 (define-macro (dotimes var . body)
   (let ((v (car var))
         (cnt (cadr var)))
