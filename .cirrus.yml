@@ -16,21 +16,21 @@ centos_task:
   container:
     image: centos
   setup_script:
-    - yum update
+    - yum update -y
     - yum install -y gcc libc-devel
   compile_script: scripts/build.sh
 debian_task:
   container:
     image: debian
   setup_script:
-    - apt update
+    - apt update -y
     - apt install -y gcc libc-dev
   compile_script: scripts/build.sh
 ubuntu_task:
   container:
     image: ubuntu
   setup_script:
-    - apt update
+    - apt update -y
     - apt install -y gcc libc-dev
   compile_script: scripts/build.sh
 freebsd_task:
