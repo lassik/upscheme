@@ -181,7 +181,7 @@ static int32_t ascii_display_to_control_int(int32_t cc)
 
 value_t builtin_ascii_control_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-control?", args, nargs);
     return (((cc >= 0x0) && (cc <= 0x1f)) || (cc == 0x7f)) ? FL_T : FL_F;
@@ -189,7 +189,7 @@ value_t builtin_ascii_control_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_display_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-display?", args, nargs);
     return ((cc >= 0x20) && (cc <= 0x7e)) ? FL_T : FL_F;
@@ -197,7 +197,7 @@ value_t builtin_ascii_display_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_whitespace_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-whitespace?", args, nargs);
     if (cc < 0x09) {
@@ -211,7 +211,7 @@ value_t builtin_ascii_whitespace_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_space_or_tab_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-space-or-tab?", args, nargs);
     return ((cc == 0x09) || (cc == 0x20)) ? FL_T : FL_F;
@@ -219,7 +219,7 @@ value_t builtin_ascii_space_or_tab_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_punctuation_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-punctuation?", args, nargs);
     if ((cc >= 0x21) && (cc <= 0x2f)) {
@@ -239,7 +239,7 @@ value_t builtin_ascii_punctuation_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_upper_case_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-upper-case?", args, nargs);
     return ((cc >= 0x41) && (cc <= 0x5a)) ? FL_T : FL_F;
@@ -247,7 +247,7 @@ value_t builtin_ascii_upper_case_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_lower_case_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-lower-case?", args, nargs);
     return ((cc >= 0x61) && (cc <= 0x7a)) ? FL_T : FL_F;
@@ -255,7 +255,7 @@ value_t builtin_ascii_lower_case_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_alphanumeric_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-alphanumeric?", args, nargs);
     if ((cc >= 0x30) && (cc <= 0x39)) {
@@ -272,7 +272,7 @@ value_t builtin_ascii_alphanumeric_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_numeric_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-numeric?", args, nargs);
     return ((cc >= 0x30) && (cc <= 0x39)) ? FL_T : FL_F;
@@ -280,7 +280,7 @@ value_t builtin_ascii_numeric_p(value_t *args, uint32_t nargs)
 
 value_t builtin_ascii_alphabetic_p(value_t *args, uint32_t nargs)
 {
-    uint32_t cc;
+    int32_t cc;
 
     cc = must_get_char_as_int("ascii-alphabetic?", args, nargs);
     return ((cc >= 0x41) && (cc <= 0x5a)) || ((cc >= 0x61) && (cc <= 0x7a));
