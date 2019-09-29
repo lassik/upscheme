@@ -44,9 +44,10 @@ struct builtin_library {
 #define SRFI_0 (1 << 8)
 #define SRFI_13 (1 << 9)    // String Libraries
 #define SRFI_170 (1 << 10)  // POSIX API
+#define SRFI_175 (1 << 11)  // POSIX API
 
 // Up Scheme libraries
-#define UP_2019 (1 << 11)
+#define UP_2019 (1 << 20)
 
 static struct builtin_procedure builtin_procedures[] = {
 #if 0
@@ -93,6 +94,44 @@ static struct builtin_procedure builtin_procedures[] = {
       R7RS_PROCESS_CONTEXT | UP_2019 },
     { "set-environment-variable", builtin_set_environment_variable,
       R7RS_PROCESS_CONTEXT | UP_2019 },
+
+    { "ascii-codepoint?", builtin_ascii_codepoint_p, SRFI_175 | UP_2019 },
+    //{ "ascii-bytevector?", builtin_ascii_bytevector_p, SRFI_175 | UP_2019 },
+    { "ascii-char?", builtin_ascii_char_p, SRFI_175 | UP_2019 },
+    //{ "ascii-string?", builtin_ascii_string_p, SRFI_175 | UP_2019 },
+    { "ascii-control?", builtin_ascii_control_p, SRFI_175 | UP_2019 },
+    { "ascii-display?", builtin_ascii_display_p, SRFI_175 | UP_2019 },
+    { "ascii-space-or-tab?", builtin_ascii_space_or_tab_p,
+      SRFI_175 | UP_2019 },
+    { "ascii-punctuation?", builtin_ascii_punctuation_p, SRFI_175 | UP_2019 },
+    { "ascii-alphanumeric?", builtin_ascii_alphanumeric_p,
+      SRFI_175 | UP_2019 },
+    { "ascii-alphabetic?", builtin_ascii_alphabetic_p, SRFI_175 | UP_2019 },
+    { "ascii-numeric?", builtin_ascii_numeric_p, SRFI_175 | UP_2019 },
+    { "ascii-whitespace?", builtin_ascii_whitespace_p, SRFI_175 | UP_2019 },
+    { "ascii-upper-case?", builtin_ascii_upper_case_p, SRFI_175 | UP_2019 },
+    { "ascii-lower-case?", builtin_ascii_lower_case_p, SRFI_175 | UP_2019 },
+    { "ascii-upcase", builtin_ascii_upcase, SRFI_175 | UP_2019 },
+    { "ascii-downcase", builtin_ascii_downcase, SRFI_175 | UP_2019 },
+    { "ascii-open-bracket", builtin_ascii_open_bracket, SRFI_175 | UP_2019 },
+    { "ascii-close-bracket", builtin_ascii_close_bracket,
+      SRFI_175 | UP_2019 },
+    { "ascii-mirror-bracket", builtin_ascii_mirror_bracket,
+      SRFI_175 | UP_2019 },
+    { "ascii-control->display", builtin_ascii_control_to_display,
+      SRFI_175 | UP_2019 },
+    { "ascii-display->control", builtin_ascii_display_to_control,
+      SRFI_175 | UP_2019 },
+    { "ascii-nth-digit", builtin_ascii_nth_digit, SRFI_175 | UP_2019 },
+    { "ascii-nth-upper-case", builtin_ascii_nth_upper_case,
+      SRFI_175 | UP_2019 },
+    { "ascii-nth-lower-case", builtin_ascii_nth_lower_case,
+      SRFI_175 | UP_2019 },
+    { "ascii-digit-value", builtin_ascii_digit_value, SRFI_175 | UP_2019 },
+    { "ascii-upper-case-value", builtin_ascii_upper_case_value,
+      SRFI_175 | UP_2019 },
+    { "ascii-lower-case-value", builtin_ascii_lower_case_value,
+      SRFI_175 | UP_2019 },
 
     { 0, 0, 0 },
 };

@@ -14,6 +14,7 @@ o_files="$o_files bitvector.o"
 o_files="$o_files boot_image.o"
 o_files="$o_files buf.o"
 o_files="$o_files builtins.o"
+o_files="$o_files char.o"
 o_files="$o_files dump.o"
 o_files="$o_files env_unix.o"
 o_files="$o_files equalhash.o"
@@ -98,6 +99,7 @@ $CC $CFLAGS -c ../c/bitvector-ops.c
 $CC $CFLAGS -c ../c/bitvector.c
 $CC $CFLAGS -c ../c/buf.c
 $CC $CFLAGS -c ../c/builtins.c
+$CC $CFLAGS -c ../c/char.c
 $CC $CFLAGS -c ../c/dump.c
 $CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c

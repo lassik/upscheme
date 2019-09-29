@@ -169,6 +169,34 @@ int u8_isvalid(const char *str, int length);
 // be allocated to at least len+1 bytes. returns 1 for error, 0 otherwise
 int u8_reverse(char *dest, char *src, size_t len);
 
+//// char.c
+
+value_t builtin_ascii_codepoint_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_char_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_control_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_display_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_whitespace_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_space_or_tab_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_punctuation_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_upper_case_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_lower_case_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_alphanumeric_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_numeric_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_alphabetic_p(value_t *args, uint32_t nargs);
+value_t builtin_ascii_upcase(value_t *args, uint32_t nargs);
+value_t builtin_ascii_downcase(value_t *args, uint32_t nargs);
+value_t builtin_ascii_open_bracket(value_t *args, uint32_t nargs);
+value_t builtin_ascii_close_bracket(value_t *args, uint32_t nargs);
+value_t builtin_ascii_mirror_bracket(value_t *args, uint32_t nargs);
+value_t builtin_ascii_control_to_display(value_t *args, uint32_t nargs);
+value_t builtin_ascii_display_to_control(value_t *args, uint32_t nargs);
+value_t builtin_ascii_nth_digit(value_t *args, uint32_t nargs);
+value_t builtin_ascii_nth_upper_case(value_t *args, uint32_t nargs);
+value_t builtin_ascii_nth_lower_case(value_t *args, uint32_t nargs);
+value_t builtin_ascii_digit_value(value_t *args, uint32_t nargs);
+value_t builtin_ascii_upper_case_value(value_t *args, uint32_t nargs);
+value_t builtin_ascii_lower_case_value(value_t *args, uint32_t nargs);
+
 //// #include "ios.h"
 
 // this flag controls when data actually moves out to the underlying I/O
