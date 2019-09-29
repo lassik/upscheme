@@ -51,7 +51,6 @@ static int32_t must_get_char_as_int(const char *procname, value_t *args,
                                     uint32_t nargs)
 {
     struct cprim *cp;
-    int32_t cc;
 
     argcount(procname, nargs, 1);
     if (isfixnum(args[0])) {
@@ -60,7 +59,6 @@ static int32_t must_get_char_as_int(const char *procname, value_t *args,
     if (iscprim(args[0])) {
         cp = (struct cprim *)ptr(args[0]);
         if (cp_class(cp) == wchartype) {
-            cc = *(int32_t *)cp_data(cp);
             return *(int32_t *)cp_data(cp);  // TODO: Is this right?
         }
     }
