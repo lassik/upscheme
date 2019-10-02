@@ -17,7 +17,7 @@ centos_task:
     image: centos
   setup_script:
     - yum update -y
-    - yum install -y gcc libc-devel
+    - yum install -y gcc glibc-devel
   compile_script: scripts/build.sh
 debian_task:
   container:
