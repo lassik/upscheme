@@ -188,9 +188,7 @@ static char **parse_command_line_flags(char **argv)
 
 int main(int argc, char **argv)
 {
-    char **newargv;
-
-    newargv = parse_command_line_flags(argv + 1);
+    parse_command_line_flags(argv + 1);
     if (helpflag) {
         generic_usage(stdout, 0);
     } else if (versionflag) {
