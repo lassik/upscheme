@@ -59,13 +59,13 @@ static int32_t must_get_char_as_int(const char *procname, value_t *args,
     if (iscprim(args[0])) {
         cp = (struct cprim *)ptr(args[0]);
         if (cp_class(cp) == wchartype) {
-            return *(int32_t *)cp_data(cp);  // TODO: Is this right?
+            return *(int32_t *)cp_data(cp);
         }
     }
     type_error(procname, "wchar or fixnum", args[0]);
 }
 
-static int32_t map_char_int(const char *procname, int32_t (*mapfun)(int32_t),
+static value_t map_char_int(const char *procname, int32_t (*mapfun)(int32_t),
                             value_t *args, uint32_t nargs)
 {
     struct cprim *cp;
@@ -79,7 +79,8 @@ static int32_t map_char_int(const char *procname, int32_t (*mapfun)(int32_t),
         cp = (struct cprim *)ptr(args[0]);
         if (cp_class(cp) == wchartype) {
             cc = *(int32_t *)cp_data(cp);
-            return mk_wchar(mapfun(cc));  // TODO: Is this right?
+            cc = mapfun(cc);
+            return (cc == -1) ? FL_F : mk_wchar(cc);
         }
     }
     type_error(procname, "wchar or byte", args[0]);
