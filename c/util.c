@@ -14,6 +14,13 @@
 
 #include "scheme.h"
 
+static void *reallocarray(void *ptr, size_t nmemb, size_t size)
+{
+    return realloc(ptr, nmemb * size);
+}
+
+//
+
 void accum_elt(struct accum *accum, value_t elt)
 {
     value_t newtail;
@@ -35,4 +42,37 @@ void accum_pair(struct accum *accum, value_t a, value_t d)
 void accum_name_value(struct accum *accum, const char *name, value_t value)
 {
     accum_pair(accum, string_from_cstr(name), value);
+}
+
+//
+
+void sv_accum_init(struct sv_accum *accum)
+{
+    accum->fill = 0;
+    accum->cap = 8;
+    accum->vec = calloc(accum->cap, sizeof(char *));
+    if (!accum->vec) {
+        lerror(MemoryError, "out of memory");
+    }
+}
+
+void sv_accum_strdup(struct sv_accum *accum, const char *str)
+{
+    char *dup;
+
+    if (__unlikely(accum->cap <= accum->fill + 1)) {
+        while (accum->cap <= accum->fill + 1) {
+            accum->cap *= 2;
+        }
+        accum->vec = reallocarray(accum->vec, accum->cap, sizeof(char *));
+        if (!accum->vec) {
+            lerror(MemoryError, "out of memory");
+        }
+    }
+    dup = strdup(str);
+    if (!dup) {
+        lerror(MemoryError, "out of memory");
+    }
+    accum->vec[accum->fill++] = dup;
+    accum->vec[accum->fill] = 0;
 }

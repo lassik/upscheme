@@ -1053,6 +1053,15 @@ void accum_elt(struct accum *accum, value_t elt);
 void accum_pair(struct accum *accum, value_t a, value_t d);
 void accum_name_value(struct accum *accum, const char *name, value_t value);
 
+struct sv_accum {
+    char **vec;
+    size_t cap;
+    size_t fill;
+};
+
+void sv_accum_init(struct sv_accum *accum);
+void sv_accum_strdup(struct sv_accum *accum, const char *str);
+
 // boot_image.c
 
 extern char boot_image[];
