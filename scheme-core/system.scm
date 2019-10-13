@@ -1126,14 +1126,17 @@
               string<? symbol->string))))
 
 (define (apropos . args)
-  (for-each (λ (sym)
-              (displayln
-               (string-append
-                (let ((val (symbol-value sym)))
-                  (if (procedure? val) "procedure" "variable "))
-                "  "
-                (symbol->string sym))))
-            (apply apropos-list args)))
+  (let ((syms (apply apropos-list args)))
+    (and (not (null? syms))
+         (for-each (λ (sym)
+                     (displayln
+                      (string-append
+                       (let ((val (symbol-value sym)))
+                         (if (procedure? val) "procedure" "variable "))
+                       "  "
+                       (symbol->string sym))))
+                   syms)
+         #t)))
 
 (define-macro (help . args)
   `(apply help* ',args))
