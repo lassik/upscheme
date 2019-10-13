@@ -2,7 +2,11 @@ typedef uintptr_t value_t;
 typedef uintptr_t ufixnum_t;
 typedef intptr_t fixnum_t;
 
+#undef BITS64
+#if UINTPTR_MAX == 0xffffffffffffffffULL
 #define BITS64
+#endif
+
 #define SCHEME_C_COMPILER_NAME "GCC"  // TODO: wrong
 #define SCHEME_C_COMPILER_VERSION __VERSION__
 
