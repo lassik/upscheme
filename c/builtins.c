@@ -367,6 +367,7 @@ value_t builtin_get_environment_variables(value_t *args, uint32_t nargs)
     const char *pivot;
     value_t name, value;
 
+    // TODO: memory leak: acc not freed on type error
     (void)args;
     argcount("get-environment-variables", nargs, 0);
     for (pairs = environ; (pair = *pairs); pairs++) {
