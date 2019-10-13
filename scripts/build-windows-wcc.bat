@@ -32,6 +32,6 @@ wcc386 -q -wx ..\c\text_ini.c
 wcc386 -q -wx ..\c\time_windows.c
 wcc386 -q -wx ..\c\utf8.c
 
-wcc386 -q -wx ..\c\flmain.c
+wcc386 -q -wx ..\c\main.c
 
-wlink op q name upscheme file algo_color, bitvector-ops, bitvector, buf, builtins, dump, env_windows, equalhash, flisp, hashing, htable, int2str, ios, iostream, libraries, lltinit, os_windows, ptrhash, random, string, table, time_windows, text_ini, utf8, flmain
+wlink op q name upscheme file algo_color, bitvector-ops, bitvector, buf, builtins, dump, env_windows, equalhash, flisp, hashing, htable, int2str, ios, iostream, libraries, lltinit, os_windows, ptrhash, random, string, table, time_windows, text_ini, utf8, main

@@ -19,7 +19,7 @@ o_files="$o_files dump.o"
 o_files="$o_files env_unix.o"
 o_files="$o_files equalhash.o"
 o_files="$o_files flisp.o"
-o_files="$o_files flmain.o"
+o_files="$o_files main.o"
 o_files="$o_files hashing.o"
 o_files="$o_files htable.o"
 o_files="$o_files int2str.o"
@@ -104,7 +104,7 @@ $CC $CFLAGS -c ../c/dump.c
 $CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c
 $CC $CFLAGS -c ../c/flisp.c
-$CC $CFLAGS -c ../c/flmain.c
+$CC $CFLAGS -c ../c/main.c
 $CC $CFLAGS -c ../c/hashing.c
 $CC $CFLAGS -c ../c/htable.c
 $CC $CFLAGS -c ../c/int2str.c
