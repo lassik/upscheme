@@ -21,6 +21,8 @@ void *reallocarray(void *ptr, size_t nmemb, size_t size)
 
 //
 
+void accum_init(struct accum *accum) { accum->list = accum->tail = FL_NIL; }
+
 void accum_elt(struct accum *accum, value_t elt)
 {
     value_t newtail;
@@ -41,7 +43,12 @@ void accum_pair(struct accum *accum, value_t a, value_t d)
 
 void accum_name_value(struct accum *accum, const char *name, value_t value)
 {
-    accum_pair(accum, string_from_cstr(name), value);
+    accum_pair(accum, symbol(name), value);
+}
+
+void accum_name_value1(struct accum *accum, const char *name, value_t value)
+{
+    accum_pair(accum, symbol(name), fl_cons(value, FL_NIL));
 }
 
 //

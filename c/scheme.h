@@ -1053,9 +1053,11 @@ struct accum {
         .list = FL_NIL, .tail = FL_NIL \
     }
 
+void accum_init(struct accum *accum);
 void accum_elt(struct accum *accum, value_t elt);
 void accum_pair(struct accum *accum, value_t a, value_t d);
 void accum_name_value(struct accum *accum, const char *name, value_t value);
+void accum_name_value1(struct accum *accum, const char *name, value_t value);
 
 struct sv_accum {
     char **vec;
