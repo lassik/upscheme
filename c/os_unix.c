@@ -218,6 +218,8 @@ static void relocate_dir(value_t oldv, value_t newv)
 static struct termios term_mode_orig;
 static struct termios term_mode_raw;
 
+void cfmakeraw(struct termios *t);
+
 static void term_mode_init(void)
 {
     static int done;
