@@ -15,7 +15,7 @@ struct printer_options {
 struct printer {
     int line;
     int column;
-    unsigned int level;
+    int level;
     unsigned int cycle_labels;
     struct htable cycle_traversed;
     struct printer_options opts;
