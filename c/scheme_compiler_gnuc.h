@@ -5,21 +5,6 @@ typedef intptr_t fixnum_t;
 #define SCHEME_C_COMPILER_NAME "GCC"  // TODO: wrong
 #define SCHEME_C_COMPILER_VERSION __VERSION__
 
-#if UINTPTR_MAX == 0xffffffffffffffffULL
-#define BITS64
-#else
-#undef BITS64
-#endif
-
-#define UINT32_TOP_BIT 0x80000000
-#define UINT64_TOP_BIT 0x8000000000000000ULL
-
-#ifdef BITS64
-#define TOP_BIT UINT64_TOP_BIT
-#else
-#define TOP_BIT UINT32_TOP_BIT
-#endif
-
 #define DBL_MAXINT 9007199254740992LL
 #define FLT_MAXINT 16777216
 #define U64_MAX 18446744073709551615ULL
@@ -27,6 +12,21 @@ typedef intptr_t fixnum_t;
 #define S64_MIN (-S64_MAX - 1LL)
 #define BIT63 0x8000000000000000LL
 #define BIT31 0x80000000
+
+#define UINT32_TOP_BIT 0x80000000
+#define UINT64_TOP_BIT 0x8000000000000000ULL
+
+#if UINTPTR_MAX == 0xffffffffffffffffULL
+#define BITS64
+#else
+#undef BITS64
+#endif
+
+#ifdef BITS64
+#define TOP_BIT UINT64_TOP_BIT
+#else
+#define TOP_BIT UINT32_TOP_BIT
+#endif
 
 #define LOG2_10 3.3219280948873626
 #define sign_bit(r) ((*(int64_t *)&(r)) & BIT63)
