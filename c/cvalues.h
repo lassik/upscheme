@@ -245,31 +245,42 @@ void cv_pin(struct cvalue *cv)
     autorelease(cv);
 }
 
-#define num_init(ctype, cnvt, tag)                                     \
+#define NUM_INIT_SUFFIX(ctype, cnvt, tag, suffix)                      \
     static int cvalue_##ctype##_init(struct fltype *type, value_t arg, \
                                      void *dest)                       \
     {                                                                  \
-        ctype##_t n = 0;                                               \
+        ctype##suffix n = 0;                                           \
         (void)type;                                                    \
         if (isfixnum(arg)) {                                           \
             n = numval(arg);                                           \
         } else if (iscprim(arg)) {                                     \
             struct cprim *cp = (struct cprim *)ptr(arg);               \
             void *p = cp_data(cp);                                     \
-            n = (ctype##_t)conv_to_##cnvt(p, cp_numtype(cp));          \
+            n = (ctype##suffix)conv_to_##cnvt(p, cp_numtype(cp));      \
         } else {                                                       \
             return 1;                                                  \
         }                                                              \
-        *((ctype##_t *)dest) = n;                                      \
+        *((ctype##suffix *)dest) = n;                                  \
         return 0;                                                      \
     }
-num_init(int8, int32, T_INT8) num_init(uint8, uint32, T_UINT8)
-num_init(int16, int32, T_INT16) num_init(uint16, uint32, T_UINT16)
-num_init(int32, int32, T_INT32) num_init(uint32, uint32, T_UINT32)
-num_init(int64, int64, T_INT64) num_init(uint64, uint64, T_UINT64)
-num_init(float, double, T_FLOAT) num_init(double, double, T_DOUBLE)
 
-#define num_ctor_init(typenam, ctype, tag)                           \
+#define NUM_INIT(ctype, cnvt, tag) NUM_INIT_SUFFIX(ctype, cnvt, tag, )
+#define NUM_INIT_T(ctype, cnvt, tag) NUM_INIT_SUFFIX(ctype, cnvt, tag, _t)
+
+NUM_INIT_T(int8, int32, T_INT8);
+NUM_INIT_T(int16, int32, T_INT16);
+NUM_INIT_T(int32, int32, T_INT32);
+NUM_INIT_T(int64, int64, T_INT64);
+
+NUM_INIT_T(uint8, uint32, T_UINT8);
+NUM_INIT_T(uint16, uint32, T_UINT16);
+NUM_INIT_T(uint32, uint32, T_UINT32);
+NUM_INIT_T(uint64, uint64, T_UINT64);
+
+NUM_INIT(float, double, T_FLOAT);
+NUM_INIT(double, double, T_DOUBLE);
+
+#define NUM_CTOR_INIT_SUFFIX(typenam, ctype, tag, suffix)            \
     value_t cvalue_##typenam(value_t *args, uint32_t nargs)          \
     {                                                                \
         value_t cp;                                                  \
@@ -277,35 +288,52 @@ num_init(float, double, T_FLOAT) num_init(double, double, T_DOUBLE)
             PUSH(fixnum(0));                                         \
             args = &Stack[SP - 1];                                   \
         }                                                            \
-        cp = cprim(typenam##type, sizeof(ctype##_t));                \
+        cp = cprim(typenam##type, sizeof(ctype##suffix));            \
         if (cvalue_##ctype##_init(typenam##type, args[0],            \
                                   cp_data((struct cprim *)ptr(cp)))) \
             type_error(#typenam, "number", args[0]);                 \
         return cp;                                                   \
     }
 
-#define num_ctor_ctor(typenam, ctype, tag)                    \
-    value_t mk_##typenam(ctype##_t n)                         \
-    {                                                         \
-        value_t cp = cprim(typenam##type, sizeof(ctype##_t)); \
-        *(ctype##_t *)cp_data((struct cprim *)ptr(cp)) = n;   \
-        return cp;                                            \
+#define NUM_CTOR_CTOR_SUFFIX(typenam, ctype, tag, suffix)         \
+    value_t mk_##typenam(ctype##suffix n)                         \
+    {                                                             \
+        value_t cp = cprim(typenam##type, sizeof(ctype##suffix)); \
+        *(ctype##suffix *)cp_data((struct cprim *)ptr(cp)) = n;   \
+        return cp;                                                \
     }
 
-#define num_ctor(typenam, ctype, tag) \
-    num_ctor_init(typenam, ctype, tag) num_ctor_ctor(typenam, ctype, tag)
+#define NUM_CTOR(typenam, ctype, tag)           \
+    NUM_CTOR_INIT_SUFFIX(typenam, ctype, tag, ) \
+    NUM_CTOR_CTOR_SUFFIX(typenam, ctype, tag, )
 
-num_ctor(int8, int8, T_INT8) num_ctor(uint8, uint8, T_UINT8)
-num_ctor(int16, int16, T_INT16) num_ctor(uint16, uint16, T_UINT16)
-num_ctor(int32, int32, T_INT32) num_ctor(uint32, uint32, T_UINT32)
-num_ctor(int64, int64, T_INT64) num_ctor(uint64, uint64, T_UINT64)
-num_ctor(byte, uint8, T_UINT8) num_ctor(wchar, int32, T_INT32)
+#define NUM_CTOR_T(typenam, ctype, tag)           \
+    NUM_CTOR_INIT_SUFFIX(typenam, ctype, tag, _t) \
+    NUM_CTOR_CTOR_SUFFIX(typenam, ctype, tag, _t)
+
+NUM_CTOR_T(int8, int8, T_INT8);
+NUM_CTOR_T(int16, int16, T_INT16);
+NUM_CTOR_T(int32, int32, T_INT32);
+NUM_CTOR_T(int64, int64, T_INT64);
+
+NUM_CTOR_T(uint8, uint8, T_UINT8);
+NUM_CTOR_T(uint16, uint16, T_UINT16);
+NUM_CTOR_T(uint32, uint32, T_UINT32);
+NUM_CTOR_T(uint64, uint64, T_UINT64);
+
+NUM_CTOR_T(byte, uint8, T_UINT8);
+NUM_CTOR_T(wchar, int32, T_INT32);
+
 #ifdef BITS64
-num_ctor(long, int64, T_INT64) num_ctor(ulong, uint64, T_UINT64)
+NUM_CTOR_T(long, int64, T_INT64);
+NUM_CTOR_T(ulong, uint64, T_UINT64);
 #else
-num_ctor(long, int32, T_INT32) num_ctor(ulong, uint32, T_UINT32)
+NUM_CTOR_T(long, int32, T_INT32);
+NUM_CTOR_T(ulong, uint32, T_UINT32);
 #endif
-num_ctor(float, float, T_FLOAT) num_ctor(double, double, T_DOUBLE)
+
+NUM_CTOR(float, float, T_FLOAT);
+NUM_CTOR(double, double, T_DOUBLE);
 
 value_t size_wrap(size_t sz)
 {
@@ -1052,7 +1080,7 @@ static void cvalues_init(void)
     setc(emptystringsym, cvalue_static_cstring(""));
 }
 
-#define RETURN_NUM_AS(var, type) return (mk_##type((type##_t)var))
+#define RETURN_INT_AS(var, type) return (mk_##type((type##_t)var))
 
 value_t return_from_uint64(uint64_t Uaccum)
 {
@@ -1060,13 +1088,13 @@ value_t return_from_uint64(uint64_t Uaccum)
         return fixnum((fixnum_t)Uaccum);
     }
     if (Uaccum > (uint64_t)S64_MAX) {
-        RETURN_NUM_AS(Uaccum, uint64);
+        RETURN_INT_AS(Uaccum, uint64);
     } else if (Uaccum > (uint64_t)UINT_MAX) {
-        RETURN_NUM_AS(Uaccum, int64);
+        RETURN_INT_AS(Uaccum, int64);
     } else if (Uaccum > (uint64_t)INT_MAX) {
-        RETURN_NUM_AS(Uaccum, uint32);
+        RETURN_INT_AS(Uaccum, uint32);
     }
-    RETURN_NUM_AS(Uaccum, int32);
+    RETURN_INT_AS(Uaccum, int32);
 }
 
 value_t return_from_int64(int64_t Saccum)
@@ -1075,11 +1103,11 @@ value_t return_from_int64(int64_t Saccum)
         return fixnum((fixnum_t)Saccum);
     }
     if (Saccum > (int64_t)UINT_MAX || Saccum < (int64_t)INT_MIN) {
-        RETURN_NUM_AS(Saccum, int64);
+        RETURN_INT_AS(Saccum, int64);
     } else if (Saccum > (int64_t)INT_MAX) {
-        RETURN_NUM_AS(Saccum, uint32);
+        RETURN_INT_AS(Saccum, uint32);
     }
-    RETURN_NUM_AS(Saccum, int32);
+    RETURN_INT_AS(Saccum, int32);
 }
 
 static value_t fl_add_any(value_t *args, uint32_t nargs, fixnum_t carryIn)
@@ -1158,9 +1186,9 @@ static value_t fl_add_any(value_t *args, uint32_t nargs, fixnum_t carryIn)
                 if (fits_fixnum(Saccum)) {
                     return fixnum((fixnum_t)Saccum);
                 }
-                RETURN_NUM_AS(Saccum, int32);
+                RETURN_INT_AS(Saccum, int32);
             }
-            RETURN_NUM_AS(Saccum, int64);
+            RETURN_INT_AS(Saccum, int64);
         }
         Uaccum -= negpart;
     } else {
@@ -1293,9 +1321,9 @@ static value_t fl_mul_any(value_t *args, uint32_t nargs, int64_t Saccum)
             if (fits_fixnum(Saccum)) {
                 return fixnum((fixnum_t)Saccum);
             }
-            RETURN_NUM_AS(Saccum, int32);
+            RETURN_INT_AS(Saccum, int32);
         }
-        RETURN_NUM_AS(Saccum, int64);
+        RETURN_INT_AS(Saccum, int64);
     } else {
         Uaccum *= (uint64_t)Saccum;
     }

@@ -5,9 +5,6 @@
 #define __ORDER_LITTLE_ENDIAN__ 1234
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
 
-typedef float float_t;
-typedef double double_t;
-
 #pragma aux DivideByZeroError aborts;
 extern void DivideByZeroError(void);
 
