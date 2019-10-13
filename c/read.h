@@ -132,7 +132,7 @@ int isnumtok_base(char *tok, value_t *pval, int base)
         if (!read_digits(tok + 1, &end, base, &ui64)) {
             return 0;
         }
-        if (ui64 >= TOP_BIT) {  // TODO: hack alert
+        if (ui64 >= UINT64_TOP_BIT) {
             lerror(ArgError, "Number too negative");
         }
         if (pval)
