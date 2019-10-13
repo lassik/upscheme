@@ -44,7 +44,7 @@ struct builtin_library {
 #define SRFI_0 (1 << 8)
 #define SRFI_13 (1 << 9)    // String Libraries
 #define SRFI_170 (1 << 10)  // POSIX API
-#define SRFI_175 (1 << 11)  // POSIX API
+#define SRFI_175 (1 << 11)  // ASCII character library
 
 // Up Scheme libraries
 #define UP_2019 (1 << 20)
@@ -143,6 +143,7 @@ static struct builtin_library builtin_libraries[] = {
     { "scheme/file", R7RS_FILE },
     { "srfi/13", SRFI_13 },
     { "srfi/170", SRFI_170 },
+    { "srfi/175", SRFI_175 },
     { "upscheme/2019/unstable", UP_2019 },
     { 0, 0 },
 };
