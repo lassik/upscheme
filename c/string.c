@@ -19,8 +19,6 @@
 
 #include "scheme.h"
 
-extern void display_defaults(struct ios *f, value_t v);
-
 value_t fl_stringp(value_t *args, uint32_t nargs)
 {
     argcount("string?", nargs, 1);

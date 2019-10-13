@@ -913,6 +913,14 @@ void display_defaults(struct ios *f, value_t v)
     print_with_options(f, v, &opts);
 }
 
+void write_simple_defaults(struct ios *f, value_t v)
+{
+    struct printer_options opts;
+
+    memset(&opts, 0, sizeof(opts));
+    print_with_options(f, v, &opts);
+}
+
 void write_defaults_indent(struct ios *f, value_t v)
 {
     struct printer_options opts;

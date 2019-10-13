@@ -715,6 +715,10 @@ value_t fl_toplevel_eval(value_t expr);
 value_t fl_apply(value_t f, value_t l);
 value_t fl_applyn(uint32_t n, value_t f, ...);
 
+void display_defaults(struct ios *f, value_t v);
+void write_simple_defaults(struct ios *f, value_t v);
+void write_defaults_indent(struct ios *f, value_t v);
+
 extern value_t printprettysym, printreadablysym, printwidthsym;
 
 // object model manipulation

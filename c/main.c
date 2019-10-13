@@ -15,7 +15,6 @@
 #define BOOT_ENV_R7RS 1
 #define BOOT_ENV_UNSTABLE 2
 
-extern void write_defaults_indent(struct ios *f, value_t v);
 
 static value_t argv_list(int argc, char *argv[])
 {
