@@ -15,6 +15,59 @@
 #define BOOT_ENV_R7RS 1
 #define BOOT_ENV_UNSTABLE 2
 
+static value_t get_features_list(void)
+{
+    static struct accum acc;
+    static int initialized;
+
+    if (!initialized) {
+        initialized = 1;
+        accum_init(&acc);
+#ifdef BITS64
+        accum_elt(&acc, symbol("64-bit"));
+#endif
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+        accum_elt(&acc, symbol("big-endian"));
+#endif
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+        accum_elt(&acc, symbol("little-endian"));
+#endif
+        accum_elt(&acc, symbol("r7rs"));
+    }
+    return acc.list;
+}
+
+static value_t get_version_alist(void)
+{
+    static struct accum acc;
+    static int initialized;
+
+    if (!initialized) {
+        initialized = 1;
+        accum_init(&acc);
+        accum_name_value1(&acc, "command", string_from_cstr("upscheme"));
+        accum_name_value1(&acc, "scheme-id", symbol("upscheme"));
+        accum_name_value(
+        &acc, "language",
+        fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
+        accum_name_value(&acc, "features", get_features_list());
+    }
+    return acc.list;
+}
+
+value_t builtin_features(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("features", nargs, 0);
+    return get_features_list();
+}
+
+value_t builtin_version_alist(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("version-alist", nargs, 0);
+    return get_version_alist();
+}
 
 static value_t argv_list(int argc, char *argv[])
 {
@@ -82,14 +135,14 @@ static void generic_runtime_usage(FILE *out, int status)
 
 static void runtime_usage(void) { generic_runtime_usage(stderr, 2); }
 
-#define VERSION_STRING "0.1.0"
-
 static void version(void)
 {
-    printf("(version \"%s\")\n", VERSION_STRING);
-    printf("(canonical-command \"upscheme\")\n");
-    printf("(scheme-id upscheme)\n");
-    printf("(languages scheme r7rs)\n");
+    value_t list;
+
+    for (list = get_version_alist(); iscons(list); list = cdr_(list)) {
+        write_simple_defaults(ios_stdout, car_(list));
+        ios_putc('\n', ios_stdout);
+    }
     exit(0);
 }
 
@@ -216,13 +269,14 @@ int main(int argc, char **argv)
     parse_command_line_flags(argv + 1);
     if (helpflag) {
         generic_usage(stdout, 0);
-    } else if (versionflag) {
-        version();
     }
     fl_init(512 * 1024);
     {
         FL_TRY_EXTERN
         {
+            if (versionflag) {
+                version();
+            }
             if (fl_load_boot_image())
                 return 1;
 

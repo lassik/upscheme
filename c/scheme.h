@@ -1010,6 +1010,9 @@ value_t builtin_import(value_t *args, uint32_t nargs);
 
 //// #include "builtins.h"
 
+value_t builtin_features(value_t *args, uint32_t nargs);
+value_t builtin_version_alist(value_t *args, uint32_t nargs);
+
 value_t builtin_pid(value_t *args, uint32_t nargs);
 value_t builtin_parent_pid(value_t *args, uint32_t nargs);
 value_t builtin_process_group(value_t *args, uint32_t nargs);

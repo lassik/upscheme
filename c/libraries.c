@@ -45,6 +45,7 @@ struct builtin_library {
 #define SRFI_13 (1 << 9)    // String Libraries
 #define SRFI_170 (1 << 10)  // POSIX API
 #define SRFI_175 (1 << 11)  // ASCII character library
+#define SRFI_176 (1 << 11)  // Version flag
 
 // Up Scheme libraries
 #define UP_2019 (1 << 20)
@@ -56,6 +57,9 @@ static struct builtin_procedure builtin_procedures[] = {
     { "string-null?", string_null_p, SRFI_13, UP_2019 },
     { "make-string", string_make_string, SRFI_13 | UP_2019 },
 #endif
+
+    { "features", builtin_features, R7RS_BASE | UP_2019 },
+    { "version-alist", builtin_version_alist, SRFI_176 | UP_2019 },
 
     { "string?", fl_stringp, SRFI_13 | R7RS_BASE | UP_2019 },
     { "string-reverse", fl_string_reverse, SRFI_13 | UP_2019 },
@@ -144,6 +148,7 @@ static struct builtin_library builtin_libraries[] = {
     { "srfi/13", SRFI_13 },
     { "srfi/170", SRFI_170 },
     { "srfi/175", SRFI_175 },
+    { "srfi/176", SRFI_176 },
     { "upscheme/2019/unstable", UP_2019 },
     { 0, 0 },
 };
