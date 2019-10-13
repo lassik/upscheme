@@ -31,10 +31,8 @@ typedef intptr_t fixnum_t;
 
 #define LOG2_10 3.3219280948873626
 #define sign_bit(r) ((*(int64_t *)&(r)) & INT64_TOP_BIT)
-#define NBABS(n, nb) (((n) ^ ((n) >> ((nb)-1))) - ((n) >> ((nb)-1)))
 #define DFINITE(d) \
     (((*(int64_t *)&(d)) & 0x7ff0000000000000LL) != 0x7ff0000000000000LL)
-#define DNAN(d) ((d) != (d))
 
 #define __unlikely(x) __builtin_expect(!!(x), 0)
 #define __likely(x) __builtin_expect(!!(x), 1)
