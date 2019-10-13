@@ -51,6 +51,10 @@ static value_t get_version_alist(void)
         &acc, "language",
         fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
         accum_name_value(&acc, "features", get_features_list());
+        accum_name_value(
+        &acc, "c-compiler",
+        fl_list2(string_from_cstr(SCHEME_C_COMPILER_NAME),
+                 string_from_cstr(SCHEME_C_COMPILER_VERSION)));
     }
     return acc.list;
 }
