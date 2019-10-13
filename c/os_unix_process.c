@@ -51,27 +51,24 @@ value_t builtin_spawn(value_t *args, uint32_t nargs)
     int fds[2];
     struct pollfd pollfd;
     ssize_t nbyte;
-    value_t exec_args;
-    char *exec_argv[16];
-    size_t exec_argv_fill = 0;
+    value_t unix_argv_obj;
+    struct sv_accum unix_argv;
 
+    // TODO: memory leak: unix_argv not freed on type error
     argcount("spawn", nargs, 1);
-    exec_args = args[0];
-    if (exec_args == FL_NIL) {
+    unix_argv_obj = args[0];
+    if (unix_argv_obj == FL_NIL) {
         lerror(ArgError, "executable argument list is empty");
     }
-    for (;;) {
-        if (!iscons(exec_args)) {
+    sv_accum_init(&unix_argv);
+    do {
+        if (!iscons(unix_argv_obj)) {
             lerror(ArgError, "executable arguments not a proper list");
         }
-        exec_argv[exec_argv_fill++] =
-        tostring(car_(exec_args), "executable argument");
-        if ((exec_args = cdr_(exec_args)) == FL_NIL) {
-            break;
-        }
-    }
-    exec_argv[exec_argv_fill++] = 0;
-
+        sv_accum_strdup(&unix_argv,
+                        tostring(car_(unix_argv_obj), "executable argument"));
+        unix_argv_obj = cdr_(unix_argv_obj);
+    } while (unix_argv_obj != FL_NIL);
     // TODO: Signal mask for the child process.
     if (pipe(fds) == -1) {
         diesys("cannot create pipe");
@@ -84,7 +81,7 @@ value_t builtin_spawn(value_t *args, uint32_t nargs)
     if (!child) {
         // We are in the new child process.
         close(fds[0]);
-        execvp(exec_argv[0], exec_argv);
+        execvp(unix_argv.vec[0], unix_argv.vec);
         exec_errno = errno;
         nbyte = write(fds[1], &exec_errno, sizeof(exec_errno));
         if (nbyte == (ssize_t)-1) {
