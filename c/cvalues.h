@@ -1195,8 +1195,8 @@ static value_t fl_neg(value_t n)
             return fixnum(-(int32_t) * (uint16_t *)a);
         case T_INT32:
             i32 = *(int32_t *)a;
-            if (i32 == (int32_t)BIT31)
-                return mk_uint32((uint32_t)BIT31);
+            if (i32 == (int32_t)INT32_TOP_BIT)
+                return mk_uint32((uint32_t)INT32_TOP_BIT);
             return mk_int32(-i32);
         case T_UINT32:
             ui32 = *(uint32_t *)a;
@@ -1205,8 +1205,8 @@ static value_t fl_neg(value_t n)
             return mk_int64(-(int64_t)ui32);
         case T_INT64:
             i64 = *(int64_t *)a;
-            if (i64 == (int64_t)BIT63)
-                return mk_uint64((uint64_t)BIT63);
+            if (i64 == (int64_t)INT64_TOP_BIT)
+                return mk_uint64((uint64_t)INT64_TOP_BIT);
             return mk_int64(-i64);
         case T_UINT64:
             return mk_int64(-(int64_t) * (uint64_t *)a);

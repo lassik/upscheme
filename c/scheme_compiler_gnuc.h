@@ -10,10 +10,11 @@ typedef intptr_t fixnum_t;
 #define U64_MAX 18446744073709551615ULL
 #define S64_MAX 9223372036854775807LL
 #define S64_MIN (-S64_MAX - 1LL)
-#define BIT63 0x8000000000000000LL
-#define BIT31 0x80000000
 
+#define INT32_TOP_BIT 0x80000000
 #define UINT32_TOP_BIT 0x80000000
+
+#define INT64_TOP_BIT 0x8000000000000000LL
 #define UINT64_TOP_BIT 0x8000000000000000ULL
 
 #if UINTPTR_MAX == 0xffffffffffffffffULL
@@ -29,7 +30,7 @@ typedef intptr_t fixnum_t;
 #endif
 
 #define LOG2_10 3.3219280948873626
-#define sign_bit(r) ((*(int64_t *)&(r)) & BIT63)
+#define sign_bit(r) ((*(int64_t *)&(r)) & INT64_TOP_BIT)
 #define NBABS(n, nb) (((n) ^ ((n) >> ((nb)-1))) - ((n) >> ((nb)-1)))
 #define DFINITE(d) \
     (((*(int64_t *)&(d)) & 0x7ff0000000000000LL) != 0x7ff0000000000000LL)
