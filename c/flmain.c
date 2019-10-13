@@ -43,6 +43,25 @@ static const char usage_message[] =
 "usage: upscheme [options] script-file [script-arg...]"
 "\n";
 
+static const char runtime_usage_message[] =
+"usage: upscheme [-:option,option...] ..."
+"\n"
+"The -: flag sets Up Scheme runtime options. An option is one of:"
+"\n"
+"\n"
+"null      start in an environment with only import and cond-expand"
+"\n"
+"r7rs      start in R7RS environment with no Up Scheme extensions"
+"\n"
+"unstable  start with the very latest in-development Up Scheme extensions"
+"\n"
+"debug     set debugging options"
+"\n"
+"search    set module search path"
+"\n"
+"help      show this help"
+"\n";
+
 static int evalflag;
 static int helpflag;
 static int versionflag;
@@ -55,6 +74,14 @@ static void generic_usage(FILE *out, int status)
 }
 
 static void usage(void) { generic_usage(stderr, 2); }
+
+static void generic_runtime_usage(FILE *out, int status)
+{
+    fprintf(out, "%s", runtime_usage_message);
+    exit(status);
+}
+
+static void runtime_usage(void) { generic_runtime_usage(stderr, 2); }
 
 #define VERSION_STRING "0.1.0"
 
@@ -83,50 +110,51 @@ static void runtime_option(const char *name, const char *value)
 {
     if (!strcmp("null", name)) {
         if (value)
-            usage();
+            runtime_usage();
         boot_env = BOOT_ENV_NULL;
     } else if (!strcmp("r7rs", name)) {
         if (value)
-            usage();
+            runtime_usage();
         boot_env = BOOT_ENV_R7RS;
     } else if (!strcmp("unstable", name)) {
         if (value)
-            usage();
+            runtime_usage();
         boot_env = BOOT_ENV_UNSTABLE;
     } else if (!strcmp("debug", name)) {
         if (!value)
-            usage();
+            runtime_usage();
     } else if (!strcmp("search", name)) {
         if (!value)
-            usage();
+            runtime_usage();
+    } else if (!strcmp("help", name)) {
+        generic_runtime_usage(stdout, 0);
     } else {
-        usage();
+        runtime_usage();
     }
 }
 
 static void runtime_options(const char *arg)
 {
-    char *whole;
     char *name;
     char *value;
+    char *whole;
     char *limit;
 
-    if (!(name = whole = strdup(arg))) {
-        usage();  // TODO: out of memory
+    if (!(whole = strdup(arg))) {
+        runtime_usage();  // TODO: out of memory
     }
-    while (name[0]) {
-        if (!(limit = strchr(name, ','))) {
-            limit = strchr(name, 0);
+    for (name = whole; name; name = limit) {
+        if ((limit = strchr(name, ','))) {
+            *limit++ = 0;
         }
         if ((value = strchr(name, '='))) {
-            if (value < limit) {
-                *value++ = 0;
-            } else {
-                value = 0;
-            }
+            *value++ = 0;
         }
-        runtime_option(name, value);
-        name = limit;
+        if (*name) {
+            runtime_option(name, value);
+        } else if (value) {
+            runtime_usage();
+        }
     }
     free(whole);
 }
@@ -142,11 +170,6 @@ static char **short_option(char **argv, int option)
         break;
     case 'V':
         versionflag = 1;
-        break;
-    case ':':
-        if (!argv[0])
-            usage();
-        runtime_options(*argv++);
         break;
     default:
         usage();
@@ -171,6 +194,9 @@ static char **parse_command_line_flags(char **argv)
                     argv++;
                     argv = long_option(argv, arg);
                 }
+            } else if (arg[1] == ':') {
+                argv++;
+                runtime_options(&arg[2]);
             } else if (!arg[1]) {
                 break;
             } else {
