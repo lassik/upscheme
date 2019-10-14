@@ -956,14 +956,18 @@ no_kw:
     return nargs;
 }
 
+#ifndef bswap_16
 #define bswap_16(x) (((x)&0x00ff) << 8 | ((x)&0xff00) >> 8)
+#endif
 
+#ifndef bswap_32
 #ifdef __INTEL_COMPILER
 #define bswap_32(x) _bswap(x)
 #else
 #define bswap_32(x)                                       \
     ((((x)&0xff000000) >> 24) | (((x)&0x00ff0000) >> 8) | \
      (((x)&0x0000ff00) << 8) | (((x)&0x000000ff) << 24))
+#endif
 #endif
 
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
