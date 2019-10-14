@@ -19,6 +19,8 @@
 
 #include "scheme.h"
 
+pid_t getpgid(pid_t pid);
+
 static value_t dirsym;
 struct fltype *dirtype;
 
