@@ -185,11 +185,24 @@ static value_t get_version_alist(void)
         fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
         accum_name_value(&acc, "features", get_features_list());
         accum_name_value(&acc, "platform", get_platform());
+        accum_name_value(&acc, "c-type-bits", get_c_type_bits_list());
         accum_name_value(
-        &acc, "c-compiler",
+        &acc, "c-compiler-version",
         fl_list2(string_from_cstr(SCHEME_C_COMPILER_NAME),
                  string_from_cstr(SCHEME_C_COMPILER_VERSION)));
-        accum_name_value(&acc, "c-type-bits", get_c_type_bits_list());
+        accum_name_value1(&acc, "c-compiler-command",
+                          string_from_cstr(env_build_cc));
+        accum_name_value1(&acc, "c-compiler-flags",
+                          string_from_cstr(env_build_cflags));
+        accum_name_value1(&acc, "c-linker-flags",
+                          string_from_cstr(env_build_lflags));
+        accum_name_value1(&acc, "revision",
+                          string_from_cstr(env_build_revision));
+        accum_name_value1(&acc, "build-date",
+                          string_from_cstr(env_build_date));
+        accum_name_value1(&acc, "release", string_from_cstr(env_release));
+        accum_name_value1(&acc, "release-date",
+                          string_from_cstr(env_release_date));
     }
     return acc.list;
 }

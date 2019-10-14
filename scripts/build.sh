@@ -16,6 +16,8 @@ o_files="$o_files buf.o"
 o_files="$o_files builtins.o"
 o_files="$o_files char.o"
 o_files="$o_files dump.o"
+o_files="$o_files env_build.o"
+o_files="$o_files env_release.o"
 o_files="$o_files env_unix.o"
 o_files="$o_files equalhash.o"
 o_files="$o_files flisp.o"
@@ -81,10 +83,21 @@ esac
 CC="${CC:-$default_cc}"
 CFLAGS="${CFLAGS:-$default_cflags}"
 LFLAGS="${LFLAGS:-$default_lflags}"
+revision="$(git describe --dirty --always 2>/dev/null || echo unknown)"
+builddate="$(date -u '+%Y-%m-%d')"
 builddir="build-$os-$(uname -m | tr A-Z- a-z_)-$(basename "$CC")"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
 set -x
+
+cat >c/env_build.c <<EOF
+// Generated from scratch at each build.
+char env_build_cc[] = "$CC";
+char env_build_cflags[] = "$CFLAGS";
+char env_build_lflags[] = "$LFLAGS";
+char env_build_revision[] = "$revision";
+char env_build_date[] = "$builddate";
+EOF
 
 mkdir -p "$builddir"
 find "$builddir" -mindepth 1 -delete
@@ -102,6 +115,8 @@ $CC $CFLAGS -c ../c/buf.c
 $CC $CFLAGS -c ../c/builtins.c
 $CC $CFLAGS -c ../c/char.c
 $CC $CFLAGS -c ../c/dump.c
+$CC $CFLAGS -c ../c/env_build.c
+$CC $CFLAGS -c ../c/env_release.c
 $CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c
 $CC $CFLAGS -c ../c/flisp.c
