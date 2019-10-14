@@ -56,11 +56,11 @@ static value_t build_c_type_bits_list(void)
 static value_t build_stable_specs_list(void)
 {
     struct accum acc;
-    const char **sp;
+    const int *p;
 
     accum_init(&acc);
-    for (sp = upscheme_stable_specs; *sp; sp++) {
-        accum_elt(&acc, string_from_cstr(*sp));
+    for (p = upscheme_stable_specs; *p; p++) {
+        accum_elt(&acc, fixnum(*p));
     }
     return acc.list;
 }
@@ -217,7 +217,7 @@ static value_t get_version_alist(void)
         accum_name_value(&acc, "upscheme/stable-specs",
                          build_stable_specs_list());
         accum_name_value1(&acc, "upscheme/unstable-spec",
-                          string_from_cstr(upscheme_unstable_spec));
+                          fixnum(upscheme_unstable_spec));
     }
     return acc.list;
 }

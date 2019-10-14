@@ -1016,8 +1016,8 @@ extern const char env_release_date[];
 
 //// #include "libraries.h"
 
-extern const char *upscheme_stable_specs[];
-extern const char upscheme_unstable_spec[];
+extern const int upscheme_stable_specs[];
+extern const int upscheme_unstable_spec;
 
 value_t builtin_import(value_t *args, uint32_t nargs);
 
