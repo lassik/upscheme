@@ -35,6 +35,7 @@
 #include "scheme_compiler_watcomc.h"
 #endif
 
+#undef ALIGN
 #define ALIGN(x, sz) (((x) + (sz - 1)) & (-sz))
 
 extern double D_PNAN;
