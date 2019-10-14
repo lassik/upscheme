@@ -38,9 +38,9 @@ static value_t get_features_list(void)
     return acc.list;
 }
 
-static value_t get_c_type_bits_list(void)
+static value_t build_c_type_bits_list(void)
 {
-    static struct accum acc;
+    struct accum acc;
 
     accum_init(&acc);
     accum_name_value1(&acc, "int", fixnum(sizeof(int) * CHAR_BIT));
@@ -53,13 +53,13 @@ static value_t get_c_type_bits_list(void)
     return acc.list;
 }
 
-static value_t get_platform(void)
+static value_t build_platform_list(void)
 {
+    struct accum acc;
     const char *kernel;
     const char *userland;
     const char *computer;
     const char *endian;
-    static struct accum acc;
 
     // <http://predef.sf.net/>
 
@@ -184,8 +184,8 @@ static value_t get_version_alist(void)
         &acc, "language",
         fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
         accum_name_value(&acc, "features", get_features_list());
-        accum_name_value(&acc, "platform", get_platform());
-        accum_name_value(&acc, "c-type-bits", get_c_type_bits_list());
+        accum_name_value(&acc, "platform", build_platform_list());
+        accum_name_value(&acc, "c-type-bits", build_c_type_bits_list());
         accum_name_value(
         &acc, "c-compiler-version",
         fl_list2(string_from_cstr(SCHEME_C_COMPILER_NAME),
