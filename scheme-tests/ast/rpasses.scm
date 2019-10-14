@@ -1,4 +1,3 @@
-; -*- scheme -*-
 (load "match-lsp.scm")
 (load "asttools.scm")
 

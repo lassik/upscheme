@@ -1,4 +1,3 @@
-; -*- scheme -*-
 ; tree regular expression pattern matching
 ; by Jeff Bezanson
 

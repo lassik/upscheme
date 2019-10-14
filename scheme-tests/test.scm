@@ -1,5 +1,3 @@
-; -*- scheme -*-
-
 ; make label self-evaluating, but evaluating the lambda in the process
 ;(defmacro labl (name f)
 ;  (list list ''labl (list 'quote name) f))

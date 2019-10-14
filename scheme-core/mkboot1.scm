@@ -1,5 +1,3 @@
-; -*- scheme -*-
-
 (load "system.scm")
 (load "aliases.scm")
 (load "compiler.scm")

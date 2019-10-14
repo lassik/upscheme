@@ -1,5 +1,3 @@
-; -*- scheme -*-
-
 (define (hins1)
   (let ((h (table)))
     (dotimes (n 200000)

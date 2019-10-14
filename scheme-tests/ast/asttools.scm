@@ -1,4 +1,3 @@
-; -*- scheme -*-
 ; utilities for AST processing
 
 (define (symconcat s1 s2)

@@ -1,4 +1,3 @@
-; -*- scheme -*-
 (define (maplist f l)
   (if (null? l) ()
     (cons (f l) (maplist f (cdr l)))))

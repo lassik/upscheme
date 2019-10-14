@@ -1,4 +1,3 @@
-; -*- scheme -*-
 ; femtoLisp standard library
 ; by Jeff Bezanson (C) 2009
 ; Distributed under the BSD License

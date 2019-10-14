@@ -1,5 +1,3 @@
-; -*- scheme -*-
-
 (define Instructions
   (let ((e (table))
         (keys

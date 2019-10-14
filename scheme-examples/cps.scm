@@ -1,4 +1,3 @@
-; -*- scheme -*-
 (define (begin->cps forms k)
   (cond ((atom? forms)       `(,k ,forms))
         ((null? (cdr forms))  (cps- (car forms) k))

@@ -1,4 +1,3 @@
-; -*- scheme -*-
 (define-macro (assert-fail expr . what)
   `(assert (trycatch (begin ,expr #f)
                      (lambda (e) ,(if (null? what) #t

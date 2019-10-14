@@ -1,5 +1,3 @@
-; -*- scheme -*-
-
 (define (rule30-step b)
   (let ((L (ash b -1))
         (R (ash b 1)))

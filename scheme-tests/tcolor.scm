@@ -1,4 +1,3 @@
-; -*- scheme -*-
 ; color for performance
 
 (load "color.scm")
