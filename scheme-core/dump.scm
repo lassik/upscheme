@@ -1,5 +1,5 @@
 (define (dump-buffers-as-c-literal . bufs)
-  (display "char boot_image[] = \"")
+  (display "unsigned char boot_image[] = \"")
   (let loop-bufs ((bufs bufs))
     (if (not (null? bufs))
         (begin (let ((buf (car bufs)))
