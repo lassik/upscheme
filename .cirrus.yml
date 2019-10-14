@@ -50,3 +50,12 @@ cygwin_task:
     - c:\tools\cygwin\cygwinsetup -q -P binutils,gcc-core
   compile_script:
     - c:\tools\cygwin\bin\bash --login "%CD%\scripts\build.sh"
+msys_task:
+  windows_container:
+    image: cirrusci/windowsservercore:cmake
+    os_version: 2019
+  setup_script:
+    - set PATH=c:\tools\msys64\bin;c:\tools\msys64\usr\bin;%PATH%
+    - pacman --noconfirm -S gcc
+  compile_script:
+    - c:\tools\msys64\usr\bin\bash --login "%CD%\scripts\build.sh"

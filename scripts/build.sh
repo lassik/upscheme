@@ -2,7 +2,7 @@
 set -eu
 os="$(uname | tr A-Z- a-z_)"
 case $os in
-cygwin*)
+cygwin*|msys*)
     os=linux
     ;;
 esac
