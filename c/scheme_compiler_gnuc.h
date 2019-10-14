@@ -5,6 +5,16 @@ typedef intptr_t fixnum_t;
 #define SCHEME_C_COMPILER_NAME "GCC"  // TODO: wrong
 #define SCHEME_C_COMPILER_VERSION __VERSION__
 
+#if __GNUC__ < 3  // Haiku
+#define __unlikely(x) (x)
+#define __likely(x) (x)
+#define __ORDER_BIG_ENDIAN__ 4321
+#define __ORDER_LITTLE_ENDIAN__ 1234
+#ifdef __i386__
+#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+#endif
+#endif
+
 #define DBL_MAXINT 9007199254740992LL
 #define FLT_MAXINT 16777216
 #define U64_MAX 18446744073709551615ULL

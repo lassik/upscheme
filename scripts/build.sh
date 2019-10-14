@@ -54,6 +54,7 @@ freebsd)
 haiku)
     default_cc="gcc"
     default_cflags="-Wall -O2 -D NDEBUG -D USE_COMPUTED_GOTO"
+    default_lflags="$default_lflags -lsocket"
     ;;
 linux)
     default_cc="gcc"

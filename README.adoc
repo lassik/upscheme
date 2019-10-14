@@ -30,3 +30,4 @@ system C compiler. 64-bit and 32-bit builds work. Supported operating systems:
   ** DragonFly BSD (gcc)
 * Solaris (gcc)
 * Minix (clang)
+* Haiku (gcc)
