@@ -198,10 +198,9 @@ static value_t get_version_alist(void)
         accum_name_value(&acc, "features", get_features_list());
         accum_name_value(&acc, "platform", build_platform_list());
         accum_name_value(&acc, "c-type-bits", build_c_type_bits_list());
-        accum_name_value(
-        &acc, "c-compiler-version",
-        fl_list2(string_from_cstr(SCHEME_C_COMPILER_NAME),
-                 string_from_cstr(SCHEME_C_COMPILER_VERSION)));
+        accum_name_value1(&acc, "c-compiler-version",
+                          string_from_cstr(SCHEME_C_COMPILER_NAME
+                                           " " SCHEME_C_COMPILER_VERSION));
         accum_name_value1(&acc, "c-compiler-command",
                           string_from_cstr(env_build_cc));
         accum_name_value1(&acc, "c-compiler-flags",
