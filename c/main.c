@@ -83,6 +83,12 @@ static value_t get_platform(void)
 #ifdef __DragonFly__
     userland = kernel = "dragonfly";
 #endif
+#ifdef __sun
+    userland = kernel = "solaris";
+#endif
+#ifdef __minix
+    userland = kernel = "minix";
+#endif
 #ifdef __APPLE__
     userland = kernel = "darwin";
 #endif
