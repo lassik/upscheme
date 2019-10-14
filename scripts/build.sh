@@ -92,11 +92,11 @@ set -x
 
 cat >c/env_build.c <<EOF
 // Generated from scratch at each build.
-char env_build_cc[] = "$CC";
-char env_build_cflags[] = "$CFLAGS";
-char env_build_lflags[] = "$LFLAGS";
-char env_build_revision[] = "$revision";
-char env_build_date[] = "$builddate";
+const char env_build_cc[] = "$CC";
+const char env_build_cflags[] = "$CFLAGS";
+const char env_build_lflags[] = "$LFLAGS";
+const char env_build_revision[] = "$revision";
+const char env_build_date[] = "$builddate";
 EOF
 
 mkdir -p "$builddir"

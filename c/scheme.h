@@ -1005,14 +1005,14 @@ const char *env_get_os_name(void);
 
 value_t builtin_environment_stack(value_t *args, uint32_t nargs);
 
-extern char env_build_cc[];
-extern char env_build_cflags[];
-extern char env_build_lflags[];
-extern char env_build_revision[];
-extern char env_build_date[];
+extern const char env_build_cc[];
+extern const char env_build_cflags[];
+extern const char env_build_lflags[];
+extern const char env_build_revision[];
+extern const char env_build_date[];
 
-extern char env_release[];
-extern char env_release_date[];
+extern const char env_release[];
+extern const char env_release_date[];
 
 //// #include "libraries.h"
 

@@ -50,6 +50,9 @@ struct builtin_library {
 // Up Scheme libraries
 #define UP_2019 (1 << 20)
 
+const char *upscheme_stable_specs[] = { 0 };
+const char upscheme_unstable_spec[] = "2019";
+
 static struct builtin_procedure builtin_procedures[] = {
 #if 0
     { "create-directory", fs_create_directory, SRFI_170 | UP_2019 },
