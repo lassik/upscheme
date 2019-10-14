@@ -105,7 +105,6 @@ $CC $CFLAGS -c ../c/dump.c
 $CC $CFLAGS -c ../c/env_unix.c
 $CC $CFLAGS -c ../c/equalhash.c
 $CC $CFLAGS -c ../c/flisp.c
-$CC $CFLAGS -c ../c/main.c
 $CC $CFLAGS -c ../c/hashing.c
 $CC $CFLAGS -c ../c/htable.c
 $CC $CFLAGS -c ../c/int2str.c
@@ -113,6 +112,7 @@ $CC $CFLAGS -c ../c/ios.c
 $CC $CFLAGS -c ../c/iostream.c
 $CC $CFLAGS -c ../c/libraries.c
 $CC $CFLAGS -c ../c/lltinit.c
+$CC $CFLAGS -c ../c/main.c
 $CC $CFLAGS -c ../c/os_"$os".c
 $CC $CFLAGS -c ../c/os_unix.c
 $CC $CFLAGS -c ../c/os_unix_process.c
