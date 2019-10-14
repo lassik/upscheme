@@ -263,6 +263,8 @@ static const char runtime_usage_message[] =
 "\n"
 "search    set module search path"
 "\n"
+"version   show version information"
+"\n"
 "help      show this help"
 "\n";
 
@@ -330,6 +332,8 @@ static void runtime_option(const char *name, const char *value)
     } else if (!strcmp("search", name)) {
         if (!value)
             runtime_usage();
+    } else if (!strcmp("version", name)) {
+        versionflag = 1;
     } else if (!strcmp("help", name)) {
         generic_runtime_usage(stdout, 0);
     } else {
