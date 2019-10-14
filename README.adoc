@@ -10,7 +10,7 @@ interpreter by Jeff Bezanson.
 == Platforms
 
 Builds in seconds with no warnings and no external dependencies using only the
-system C compiler. 64-bit executable only; 32-bit coming soon.
+system C compiler. 64-bit and 32-bit builds work. Supported operating systems:
 
 * Windows (wcc)
 * MacOS (clang)
@@ -28,3 +28,5 @@ system C compiler. 64-bit executable only; 32-bit coming soon.
   ** OpenBSD (clang)
   ** NetBSD (gcc)
   ** DragonFly BSD (gcc)
+* Solaris (gcc)
+* Minix (clang)
