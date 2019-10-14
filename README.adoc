@@ -24,6 +24,7 @@ system C compiler. 64-bit and 32-bit builds work. Supported operating systems:
   ** Void Linux (gcc)
   ** Cygwin (gcc)
   ** Msys (gcc)
+  ** https://bellard.org/jslinux/[JSLinux] (gcc) (x86, riscv64)
 * BSD
   ** FreeBSD (clang)
   ** OpenBSD (clang)
