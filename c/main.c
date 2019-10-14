@@ -89,6 +89,10 @@ static value_t get_platform(void)
 #ifdef __minix
     userland = kernel = "minix";
 #endif
+#ifdef __HAIKU__
+    userland = "beos";
+    kernel = "haiku";
+#endif
 #ifdef __APPLE__
     userland = kernel = "darwin";
 #endif
