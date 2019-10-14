@@ -5,11 +5,27 @@ typedef intptr_t fixnum_t;
 #define SCHEME_C_COMPILER_NAME "GCC"  // TODO: wrong
 #define SCHEME_C_COMPILER_VERSION __VERSION__
 
-#if __GNUC__ < 3  // Haiku
+// Support old GCC 2 used by Haiku.
+
+// TODO: The real mimimum GCC versions for these features may be higher.
+
+#if __GNUC__ >= 3
+#define __unlikely(x) __builtin_expect(!!(x), 0)
+#define __likely(x) __builtin_expect(!!(x), 1)
+#else
 #define __unlikely(x) (x)
 #define __likely(x) (x)
+#endif
+
+#ifndef __ORDER_BIG_ENDIAN__
 #define __ORDER_BIG_ENDIAN__ 4321
+#endif
+
+#ifndef __ORDER_LITTLE_ENDIAN__
 #define __ORDER_LITTLE_ENDIAN__ 1234
+#endif
+
+#ifndef __BYTE_ORDER__
 #ifdef __i386__
 #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
 #endif
@@ -43,9 +59,6 @@ typedef intptr_t fixnum_t;
 #define sign_bit(r) ((*(int64_t *)&(r)) & INT64_TOP_BIT)
 #define DFINITE(d) \
     (((*(int64_t *)&(d)) & 0x7ff0000000000000LL) != 0x7ff0000000000000LL)
-
-#define __unlikely(x) __builtin_expect(!!(x), 0)
-#define __likely(x) __builtin_expect(!!(x), 1)
 
 void DivideByZeroError(void) __attribute__((__noreturn__));
 
