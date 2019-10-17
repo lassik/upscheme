@@ -1003,6 +1003,14 @@ void argcount(const char *fname, uint32_t nargs, uint32_t c);
 
 const char *env_get_os_name(void);
 
+// env.c
+
+value_t get_version_alist(void);
+value_t builtin_features(value_t *args, uint32_t nargs);
+value_t builtin_version_alist(value_t *args, uint32_t nargs);
+
+// env_*.c
+
 value_t builtin_environment_stack(value_t *args, uint32_t nargs);
 
 extern const char env_build_cc[];
@@ -1022,9 +1030,6 @@ extern const int upscheme_unstable_spec;
 value_t builtin_import(value_t *args, uint32_t nargs);
 
 //// #include "builtins.h"
-
-value_t builtin_features(value_t *args, uint32_t nargs);
-value_t builtin_version_alist(value_t *args, uint32_t nargs);
 
 value_t builtin_pid(value_t *args, uint32_t nargs);
 value_t builtin_parent_pid(value_t *args, uint32_t nargs);

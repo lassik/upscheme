@@ -16,6 +16,7 @@ o_files="$o_files buf.o"
 o_files="$o_files builtins.o"
 o_files="$o_files char.o"
 o_files="$o_files dump.o"
+o_files="$o_files env.o"
 o_files="$o_files env_build.o"
 o_files="$o_files env_release.o"
 o_files="$o_files env_unix.o"
@@ -115,6 +116,7 @@ $CC $CFLAGS -c ../c/buf.c
 $CC $CFLAGS -c ../c/builtins.c
 $CC $CFLAGS -c ../c/char.c
 $CC $CFLAGS -c ../c/dump.c
+$CC $CFLAGS -c ../c/env.c
 $CC $CFLAGS -c ../c/env_build.c
 $CC $CFLAGS -c ../c/env_release.c
 $CC $CFLAGS -c ../c/env_unix.c
