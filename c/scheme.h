@@ -1015,11 +1015,12 @@ value_t builtin_version_alist(value_t *args, uint32_t nargs);
 
 value_t builtin_environment_stack(value_t *args, uint32_t nargs);
 
-extern const char env_build_cc[];
-extern const char env_build_cflags[];
-extern const char env_build_lflags[];
-extern const char env_build_revision[];
+extern const char *env_build_c_compile[];
+extern const char *env_build_c_link[];
 extern const char env_build_date[];
+extern const char env_build_git_branch[];
+extern const char env_build_git_commit[];
+extern const char *env_build_git_modified[];
 
 extern const char env_release[];
 extern const char env_release_date[];
