@@ -94,7 +94,7 @@ static int32_t cc_base_offset_limit(int32_t cc, int32_t base, int32_t offset,
         limit = maxlimit;
     }
     if ((cc >= base) && (cc < base + limit)) {
-        return fixnum(offset + (base - cc));
+        return fixnum(offset + (cc - base));
     }
     return FL_F;
 }
