@@ -12,6 +12,30 @@
 
 #include "scheme.h"
 
+value_t envst_language(void)
+{
+    struct accum acc = ACCUM_EMPTY;
+
+    accum_elt(&acc, symbol("language"));
+    accum_name_value(&acc, "implementation-name",
+                     string_from_cstr("Up Scheme"));
+    accum_name_value(&acc, "implementation-version",
+                     string_from_cstr("0.1.0"));
+    return acc.list;
+}
+
+value_t envst_language_c(void)
+{
+    struct accum acc = ACCUM_EMPTY;
+
+    accum_elt(&acc, symbol("language"));
+    accum_name_value(&acc, "implementation-name",
+                     string_from_cstr(SCHEME_C_COMPILER_NAME));
+    accum_name_value(&acc, "implementation-version",
+                     string_from_cstr(SCHEME_C_COMPILER_VERSION));
+    return acc.list;
+}
+
 static value_t get_features_list(void)
 {
     static struct accum acc;

@@ -1005,6 +1005,8 @@ const char *env_get_os_name(void);
 
 // env.c
 
+value_t envst_language(void);
+value_t envst_language_c(void);
 value_t get_version_alist(void);
 value_t builtin_features(value_t *args, uint32_t nargs);
 value_t builtin_version_alist(value_t *args, uint32_t nargs);
