@@ -45,7 +45,7 @@ static value_t get_features_list(void)
         initialized = 1;
         accum_init(&acc);
 #ifdef BITS64
-        accum_elt(&acc, symbol("64-bit"));
+        accum_elt(&acc, symbol("bits-64"));
 #endif
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
         accum_elt(&acc, symbol("big-endian"));
