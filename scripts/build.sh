@@ -88,7 +88,6 @@ builddate="$(date -u '+%Y-%m-%d')"
 builddir="build-$os-$(uname -m | tr A-Z- a-z_)-$(basename "$CC")"
 cd "$(dirname "$0")"/..
 echo "Entering directory '$PWD'"
-set -x
 
 pre_cflags="$(echo "$CC" "$CFLAGS" | tr ' ' '\n' | sed -e 's/^/"/' -e 's/$/",/')"
 pre_lflags="$(echo "$CC" "$LFLAGS" | tr ' ' '\n' | sed -e 's/^/"/' -e 's/$/",/')"
@@ -97,6 +96,7 @@ git_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 git_commit="$(git rev-parse --short HEAD 2>/dev/null || true)"
 git_modified="$(git diff-files --name-only 2>/dev/null | head | xargs -n 1 printf '"%s",\n')"
 
+set -x
 cat >c/env_build.c <<EOF
 // Generated from scratch at each build.
 const char *env_build_c_compile[] = {
