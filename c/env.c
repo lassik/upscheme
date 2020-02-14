@@ -231,34 +231,34 @@ value_t get_version_alist(void)
         accum_init(&acc);
         accum_name_value1(&acc, "command", string_from_cstr("upscheme"));
         accum_name_value1(&acc, "release", string_from_cstr(env_release));
-        accum_name_value1(&acc, "release/date",
+        accum_name_value1(&acc, "release.date",
                           string_from_cstr(env_release_date));
         accum_name_value(
         &acc, "languages",
         fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
-        accum_name_value1(&acc, "scheme/id", symbol("upscheme"));
-        accum_name_value(&acc, "scheme/srfi", build_srfi_list());
-        accum_name_value(&acc, "scheme/features", get_features_list());
-        accum_name_value1(&acc, "build/platform",
+        accum_name_value1(&acc, "scheme.id", symbol("upscheme"));
+        accum_name_value(&acc, "scheme.srfi", build_srfi_list());
+        accum_name_value(&acc, "scheme.features", get_features_list());
+        accum_name_value1(&acc, "build.platform",
                           string_from_cstr(get_build_platform()));
-        accum_name_value1(&acc, "build/date",
+        accum_name_value1(&acc, "build.date",
                           string_from_cstr(env_build_date));
-        accum_name_value1(&acc, "build/git/branch",
+        accum_name_value1(&acc, "build.git.branch",
                           string_from_cstr(env_build_git_branch));
-        accum_name_value1(&acc, "build/git/commit",
+        accum_name_value1(&acc, "build.git.commit",
                           string_from_cstr(env_build_git_commit));
-        accum_name_value(&acc, "build/git/modified",
+        accum_name_value(&acc, "build.git.modified",
                          list_from_cstrv(env_build_git_modified));
-        accum_name_value(&acc, "c/type-bits", build_c_type_bits_list());
-        accum_name_value1(&acc, "c/version",
+        accum_name_value(&acc, "c.type-bits", build_c_type_bits_list());
+        accum_name_value1(&acc, "c.version",
                           string_from_cstr(SCHEME_C_COMPILER_NAME
                                            " " SCHEME_C_COMPILER_VERSION));
-        accum_name_value(&acc, "c/compile",
+        accum_name_value(&acc, "c.compile",
                          list_from_cstrv(env_build_c_compile));
-        accum_name_value(&acc, "c/link", list_from_cstrv(env_build_c_link));
-        accum_name_value(&acc, "upscheme/stable-specs",
+        accum_name_value(&acc, "c.link", list_from_cstrv(env_build_c_link));
+        accum_name_value(&acc, "upscheme.stable-specs",
                          build_stable_specs_list());
-        accum_name_value1(&acc, "upscheme/unstable-spec",
+        accum_name_value1(&acc, "upscheme.unstable-spec",
                           fixnum(upscheme_unstable_spec));
     }
     return acc.list;
