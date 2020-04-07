@@ -94,7 +94,7 @@ static void version(void)
     exit(0);
 }
 
-static char **long_option(char **argv, const char *option)
+static const char **long_option(const char **argv, const char *option)
 {
     if (!strcmp(option, "--help")) {
         helpflag = 1;
@@ -161,7 +161,7 @@ static void runtime_options(const char *arg)
     free(whole);
 }
 
-static char **short_option(char **argv, int option)
+static const char **short_option(const char **argv, int option)
 {
     switch (option) {
     case 'e':
@@ -180,9 +180,9 @@ static char **short_option(char **argv, int option)
     return argv;
 }
 
-static char **parse_command_line_flags(char **argv)
+static const char **parse_command_line_flags(const char **argv)
 {
-    char *arg;
+    const char *arg;
     int option;
 
     while ((arg = *argv)) {
@@ -216,7 +216,7 @@ static char **parse_command_line_flags(char **argv)
 
 int main(int argc, char **argv)
 {
-    parse_command_line_flags(argv + 1);
+    parse_command_line_flags((const char **)(argv + 1));
     if (helpflag) {
         generic_usage(stdout, 0);
     }
