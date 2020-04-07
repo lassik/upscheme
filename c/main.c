@@ -220,9 +220,10 @@ static const char **parse_command_line_flags(const char **argv)
 
 int main(int argc, char **argv)
 {
-    const char **cargv = (const char **)argv;
-    const char **command_line;
+    static const char **cargv;
+    static const char **command_line;
 
+    cargv = (const char **)argv;
     command_line = parse_command_line_flags(cargv + 1);
     if (helpflag) {
         generic_usage(stdout, 0);
