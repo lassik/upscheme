@@ -277,3 +277,12 @@ value_t builtin_version_alist(value_t *args, uint32_t nargs)
     argcount("version-alist", nargs, 0);
     return get_version_alist();
 }
+
+value_t builtin_os_executable_file(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("os-executable-file", nargs, 0);
+    char buf[512];
+    char *exe = get_exename(buf, sizeof(buf));
+    return exe ? string_from_cstr(exe) : FL_F;
+}

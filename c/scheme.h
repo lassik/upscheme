@@ -1010,6 +1010,7 @@ value_t envst_language_c(void);
 value_t get_version_alist(void);
 value_t builtin_features(value_t *args, uint32_t nargs);
 value_t builtin_version_alist(value_t *args, uint32_t nargs);
+value_t builtin_os_executable_file(value_t *args, uint32_t nargs);
 
 // env_*.c
 
