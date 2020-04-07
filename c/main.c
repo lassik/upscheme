@@ -220,17 +220,18 @@ static const char **parse_command_line_flags(const char **argv)
 
 int main(int argc, char **argv)
 {
+    const char **cargv = (const char **)argv;
     const char **command_line;
 
-    command_line = parse_command_line_flags((const char **)(argv + 1));
+    command_line = parse_command_line_flags(cargv + 1);
     if (helpflag) {
         generic_usage(stdout, 0);
     }
     fl_init(512 * 1024);
     {
         fl_gc_handle(&os_command_line);
-        os_command_line = argv_list(argc, (const char **)argv);
-        command_line_offset = (command_line - (const char **)argv) / sizeof(*argv);
+        os_command_line = argv_list(argc, cargv);
+        command_line_offset = (command_line - cargv) / sizeof(*cargv);
         FL_TRY_EXTERN
         {
             if (versionflag) {
