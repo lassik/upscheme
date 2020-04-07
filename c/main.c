@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     {
         fl_gc_handle(&os_command_line);
         os_command_line = argv_list(argc, cargv);
-        command_line_offset = (command_line - cargv) / sizeof(*cargv);
+        command_line_offset = command_line - cargv;
         FL_TRY_EXTERN
         {
             if (versionflag) {
