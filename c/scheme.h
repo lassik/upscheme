@@ -1010,6 +1010,12 @@ value_t envst_language_c(void);
 value_t get_version_alist(void);
 value_t builtin_features(value_t *args, uint32_t nargs);
 value_t builtin_version_alist(value_t *args, uint32_t nargs);
+value_t builtin_script_file(value_t *args, uint32_t nargs);
+value_t builtin_script_directory(value_t *args, uint32_t nargs);
+value_t builtin_command_name(value_t *args, uint32_t nargs);
+value_t builtin_command_args(value_t *args, uint32_t nargs);
+value_t builtin_command_line(value_t *args, uint32_t nargs);
+value_t builtin_os_command_line(value_t *args, uint32_t nargs);
 value_t builtin_os_executable_file(value_t *args, uint32_t nargs);
 
 // env_*.c
@@ -1025,6 +1031,12 @@ extern const char *env_build_git_modified[];
 
 extern const char env_release[];
 extern const char env_release_date[];
+
+// main.c
+
+extern const char *script_file;
+extern value_t os_command_line;
+extern int command_line_offset;
 
 //// #include "libraries.h"
 

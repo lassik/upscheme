@@ -63,6 +63,12 @@ static struct builtin_procedure builtin_procedures[] = {
 
     { "features", builtin_features, R7RS_BASE | UP_2019 },
     { "version-alist", builtin_version_alist, SRFI_176 | UP_2019 },
+    { "script-file", builtin_script_file, UP_2019 },
+    { "script-directory", builtin_script_directory, UP_2019 },
+    { "command-name", builtin_command_name, UP_2019 },
+    { "command-args", builtin_command_args, UP_2019 },
+    { "command-line", builtin_command_line, UP_2019 },
+    { "os-command-line", builtin_os_command_line, UP_2019 },
     { "os-executable-file", builtin_os_executable_file, UP_2019 },
 
     { "string?", fl_stringp, SRFI_13 | R7RS_BASE | UP_2019 },

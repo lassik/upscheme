@@ -278,6 +278,91 @@ value_t builtin_version_alist(value_t *args, uint32_t nargs)
     return get_version_alist();
 }
 
+value_t builtin_script_file(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("script-file", nargs, 0);
+    return script_file ? string_from_cstr(script_file) : FL_F;
+}
+
+value_t builtin_script_directory(value_t *args, uint32_t nargs)
+{
+    char *path;
+    char *pathslash;
+    value_t obj;
+
+    (void)args;
+    argcount("script-directory", nargs, 0);
+    if (!script_file) {
+        return FL_F;
+    }
+    path = strdup(script_file);
+    path_to_dirname(path);
+    pathslash = calloc(1, strlen(path) + 2);
+    memcpy(pathslash, path, strlen(path));
+    pathslash[strlen(path)] = '/';
+    obj = string_from_cstr(pathslash);
+    free(pathslash);
+    free(path);
+    return obj;
+}
+
+value_t builtin_command_name(value_t *args, uint32_t nargs)
+{
+    char *path;
+    char *p;
+
+    (void)args;
+    argcount("command-name", nargs, 0);
+    if (!script_file) {
+        return FL_F;
+    }
+    path = strdup(script_file);
+    for (p = strchr(path, 0); p > path; p--) {
+        if (p[-1] == '/')
+            break;
+    }
+    return string_from_cstr(p);
+}
+
+value_t builtin_command_args(value_t *args, uint32_t nargs)
+{
+    value_t v;
+    int i;
+
+    (void)args;
+    argcount("command-args", nargs, 0);
+    if (command_line_offset < 1) {
+        return FL_NIL;
+    }
+    v = os_command_line;
+    for (i = 0; i < command_line_offset + 1; i++) {
+        v = cdr(v);
+    }
+    return v;
+}
+
+value_t builtin_command_line(value_t *args, uint32_t nargs)
+{
+    value_t cmdname, cmdargs;
+
+    (void)args;
+    argcount("command-line", nargs, 0);
+    cmdname = builtin_command_name(0, 0);
+    cmdargs = builtin_command_args(0, 0);
+    if (cmdname == FL_F) {
+        cmdname = string_from_cstr("");
+    }
+    return fl_cons(cmdname, cmdargs);
+}
+
+value_t builtin_os_command_line(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("os-command-line", nargs, 0);
+    return os_command_line;
+}
+
 value_t builtin_os_executable_file(value_t *args, uint32_t nargs)
 {
     (void)args;

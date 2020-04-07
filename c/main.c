@@ -15,7 +15,7 @@
 #define BOOT_ENV_R7RS 1
 #define BOOT_ENV_UNSTABLE 2
 
-static value_t argv_list(int argc, char *argv[])
+static value_t argv_list(int argc, const char **argv)
 {
     int i;
     value_t lst = FL_NIL, temp;
@@ -61,6 +61,10 @@ static const char runtime_usage_message[] =
 "\n"
 "help      show this help"
 "\n";
+
+const char *script_file;
+value_t os_command_line;
+int command_line_offset;
 
 static int evalflag;
 static int helpflag;
@@ -216,12 +220,17 @@ static const char **parse_command_line_flags(const char **argv)
 
 int main(int argc, char **argv)
 {
-    parse_command_line_flags((const char **)(argv + 1));
+    const char **command_line;
+
+    command_line = parse_command_line_flags((const char **)(argv + 1));
     if (helpflag) {
         generic_usage(stdout, 0);
     }
     fl_init(512 * 1024);
     {
+        fl_gc_handle(&os_command_line);
+        os_command_line = argv_list(argc, (const char **)argv);
+        command_line_offset = (command_line - (const char **)argv) / sizeof(*argv);
         FL_TRY_EXTERN
         {
             if (versionflag) {
@@ -229,9 +238,12 @@ int main(int argc, char **argv)
             }
             if (fl_load_boot_image())
                 return 1;
-
+            script_file = command_line[0];
+            if (script_file) {
+                script_file = realpath(command_line[0], 0);
+            }
             (void)fl_applyn(1, symbol_value(symbol("__start")),
-                            argv_list(argc, argv));
+                            os_command_line);
         }
         FL_CATCH_EXTERN
         {
