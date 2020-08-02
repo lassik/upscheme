@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <unistd.h>     // TODO: Unix only
+extern char **environ;  // TODO: Unix only
+
 #include "scheme.h"
 
 #define BITSIZEOF(t) (sizeof(t) * CHAR_BIT)
@@ -359,17 +362,74 @@ value_t builtin_command_line(value_t *args, uint32_t nargs)
     return fl_cons(cmdname, cmdargs);
 }
 
-value_t builtin_os_command_line(value_t *args, uint32_t nargs)
+//
+
+value_t builtin_os_current_directory_as_bytevector(value_t *args,
+                                                   uint32_t nargs)
 {
     (void)args;
-    argcount("os-command-line", nargs, 0);
+    argcount("os-current-directory-as-bytevector", nargs, 0);
+    return string_from_cstr(getcwd(NULL, 0));
+}
+
+value_t builtin_os_environment_variable_as_bytevector(value_t *args,
+                                                      uint32_t nargs)
+{
+    argcount("os-environment-variable-as-bytevector", nargs, 1);
+    char *name = tostring(args[0], "os-environment-variable-as-bytevector");
+    const char *value = getenv(name);
+    return value ? string_from_cstr(value) : FL_F;
+}
+
+value_t builtin_os_environment_variables_as_bytevectors(value_t *args,
+                                                        uint32_t nargs)
+{
+    char **varp;
+    const char *var;
+    const char *sep;
+    value_t head, tail, newtail;
+
+    (void)args;
+    argcount("os-environment-variables-as-bytevectors", nargs, 0);
+    head = tail = newtail = FL_NIL;
+    fl_gc_handle(&head);
+    fl_gc_handle(&tail);
+    fl_gc_handle(&newtail);
+    head = tail = fl_cons(FL_NIL, FL_NIL);
+    for (varp = environ; (var = *varp); varp++) {
+        if ((sep = strchr(var, '='))) {
+            newtail = fl_cons(string_from_cstrn(var, sep - var),
+                              string_from_cstr(sep + 1));
+        } else {
+            newtail = fl_cons(string_from_cstr(var), FL_NIL);
+        }
+        newtail = fl_cons(newtail, FL_NIL);
+        cdr_(tail) = newtail;
+        tail = newtail;
+    }
+    fl_free_gc_handles(3);
+    return cdr_(head);
+}
+
+value_t builtin_os_command_line_as_bytevector(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("os-command-line-as-bytevector", nargs, 0);
+    return FL_F;
+}
+
+value_t builtin_os_command_line_as_bytevectors(value_t *args, uint32_t nargs)
+{
+    (void)args;
+    argcount("os-command-line-as-bytevectors", nargs, 0);
     return os_command_line;
 }
 
-value_t builtin_os_executable_file(value_t *args, uint32_t nargs)
+value_t builtin_os_executable_file_as_bytevector(value_t *args,
+                                                 uint32_t nargs)
 {
     (void)args;
-    argcount("os-executable-file", nargs, 0);
+    argcount("os-executable-file-as-bytevector", nargs, 0);
     char buf[512];
     char *exe = get_exename(buf, sizeof(buf));
     return exe ? string_from_cstr(exe) : FL_F;

@@ -1015,8 +1015,13 @@ value_t builtin_script_directory(value_t *args, uint32_t nargs);
 value_t builtin_command_name(value_t *args, uint32_t nargs);
 value_t builtin_command_args(value_t *args, uint32_t nargs);
 value_t builtin_command_line(value_t *args, uint32_t nargs);
-value_t builtin_os_command_line(value_t *args, uint32_t nargs);
-value_t builtin_os_executable_file(value_t *args, uint32_t nargs);
+
+value_t builtin_os_current_directory_as_bytevector(value_t *args, uint32_t nargs);
+value_t builtin_os_environment_variable_as_bytevector(value_t *args, uint32_t nargs);
+value_t builtin_os_environment_variables_as_bytevectors(value_t *args, uint32_t nargs);
+value_t builtin_os_command_line_as_bytevector(value_t *args, uint32_t nargs);
+value_t builtin_os_command_line_as_bytevectors(value_t *args, uint32_t nargs);
+value_t builtin_os_executable_file_as_bytevector(value_t *args, uint32_t nargs);
 
 // env_*.c
 

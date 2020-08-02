@@ -68,8 +68,6 @@ static struct builtin_procedure builtin_procedures[] = {
     { "command-name", builtin_command_name, UP_2019 },
     { "command-args", builtin_command_args, UP_2019 },
     { "command-line", builtin_command_line, UP_2019 },
-    { "os-command-line", builtin_os_command_line, UP_2019 },
-    { "os-executable-file", builtin_os_executable_file, UP_2019 },
 
     { "string?", fl_stringp, SRFI_13 | R7RS_BASE | UP_2019 },
     { "string-reverse", fl_string_reverse, SRFI_13 | UP_2019 },
@@ -108,6 +106,19 @@ static struct builtin_procedure builtin_procedures[] = {
       R7RS_PROCESS_CONTEXT | UP_2019 },
     { "set-environment-variable", builtin_set_environment_variable,
       R7RS_PROCESS_CONTEXT | UP_2019 },
+
+    { "os-current-directory-as-bytevector",
+      builtin_os_current_directory_as_bytevector, UP_2019 },
+    { "os-environment-variable-as-bytevector",
+      builtin_os_environment_variable_as_bytevector, UP_2019 },
+    { "os-environment-variables-as-bytevectors",
+      builtin_os_environment_variables_as_bytevectors, UP_2019 },
+    { "os-command-line-as-bytevector", builtin_os_command_line_as_bytevector,
+      UP_2019 },
+    { "os-command-line-as-bytevectors",
+      builtin_os_command_line_as_bytevectors, UP_2019 },
+    { "os-executable-file-as-bytevector",
+      builtin_os_executable_file_as_bytevector, UP_2019 },
 
     { "ascii-codepoint?", builtin_ascii_codepoint_p, SRFI_175 | UP_2019 },
     //{ "ascii-bytevector?", builtin_ascii_bytevector_p, SRFI_175 | UP_2019 },
