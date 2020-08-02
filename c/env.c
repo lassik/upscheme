@@ -12,6 +12,8 @@
 
 #include "scheme.h"
 
+#define BITSIZEOF(t) (sizeof(t) * CHAR_BIT)
+
 value_t envst_language(void)
 {
     struct accum acc = ACCUM_EMPTY;
@@ -63,13 +65,13 @@ static value_t build_c_type_bits_list(void)
     struct accum acc;
 
     accum_init(&acc);
-    accum_name_value1(&acc, "int", fixnum(sizeof(int) * CHAR_BIT));
-    accum_name_value1(&acc, "long", fixnum(sizeof(long) * CHAR_BIT));
-    accum_name_value1(&acc, "float", fixnum(sizeof(float) * CHAR_BIT));
-    accum_name_value1(&acc, "double", fixnum(sizeof(double) * CHAR_BIT));
-    accum_name_value1(&acc, "pointer", fixnum(sizeof(void *) * CHAR_BIT));
-    accum_name_value1(&acc, "size_t", fixnum(sizeof(size_t) * CHAR_BIT));
-    accum_name_value1(&acc, "value_t", fixnum(sizeof(value_t) * CHAR_BIT));
+    accum_name_value1(&acc, "int", fixnum(BITSIZEOF(int)));
+    accum_name_value1(&acc, "long", fixnum(BITSIZEOF(long)));
+    accum_name_value1(&acc, "float", fixnum(BITSIZEOF(float)));
+    accum_name_value1(&acc, "double", fixnum(BITSIZEOF(double)));
+    accum_name_value1(&acc, "pointer", fixnum(BITSIZEOF(void *)));
+    accum_name_value1(&acc, "size_t", fixnum(BITSIZEOF(size_t)));
+    accum_name_value1(&acc, "value_t", fixnum(BITSIZEOF(value_t)));
     return acc.list;
 }
 
