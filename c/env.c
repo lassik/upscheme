@@ -235,16 +235,17 @@ value_t get_version_alist(void)
         accum_name_value1(&acc, "release", string_from_cstr(env_release));
         accum_name_value1(&acc, "release.date",
                           string_from_cstr(env_release_date));
+        accum_name_value(&acc, "encodings", fl_cons(symbol("utf-8"), FL_NIL));
         accum_name_value(
         &acc, "languages",
         fl_cons(symbol("scheme"), fl_cons(symbol("r7rs"), FL_NIL)));
         accum_name_value1(&acc, "scheme.id", symbol("upscheme"));
         accum_name_value(&acc, "scheme.srfi", build_srfi_list());
         accum_name_value(&acc, "scheme.features", get_features_list());
-        accum_name_value1(&acc, "build.platform",
-                          string_from_cstr(get_build_platform()));
         accum_name_value1(&acc, "build.date",
                           string_from_cstr(env_build_date));
+        accum_name_value1(&acc, "build.platform",
+                          string_from_cstr(get_build_platform()));
         accum_name_value1(&acc, "build.git.branch",
                           string_from_cstr(env_build_git_branch));
         accum_name_value1(&acc, "build.git.commit",
